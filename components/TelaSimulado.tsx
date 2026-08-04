@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
+import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 
 interface Props {
   questoes: Questao[];
@@ -151,6 +152,12 @@ export default function TelaSimulado({ questoes, onConcluir, onSair }: Props) {
               <span className="font-medium">Fonte:</span>{" "}
               {questao.arquivo_origem}
               <span className="opacity-70"> · página {questao.pagina}</span>
+              <div>
+                <BotaoConsultarMaterial
+                  arquivoOrigem={questao.arquivo_origem}
+                  pagina={questao.pagina}
+                />
+              </div>
             </div>
           </div>
 

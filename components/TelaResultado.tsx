@@ -9,6 +9,7 @@ import {
   ROTULO_CURTO,
   TEMAS,
 } from "@/lib/constantes";
+import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 
 interface Props {
   respostas: Resposta[];
@@ -94,6 +95,10 @@ export default function TelaResultado({ respostas, onReiniciar }: Props) {
                 <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
                   {r.questao.arquivo_origem} · página {r.questao.pagina}
                 </p>
+                <BotaoConsultarMaterial
+                  arquivoOrigem={r.questao.arquivo_origem}
+                  pagina={r.questao.pagina}
+                />
               </div>
             ))}
           </div>
