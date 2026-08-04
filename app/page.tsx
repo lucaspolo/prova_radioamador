@@ -4,6 +4,8 @@ import { useState } from "react";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaResultado from "@/components/TelaResultado";
+import Dashboard from "@/components/Dashboard";
+import { useHistorico } from "@/hooks/useHistorico";
 import { sortearSimulado } from "@/lib/questoes";
 import type { EscolhaTema, Questao, Resposta } from "@/lib/tipos";
 
@@ -21,15 +23,20 @@ export default function Home() {
   const [etapa, setEtapa] = useState<Etapa>("inicio");
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [respostas, setRespostas] = useState<Resposta[]>([]);
+  const [escolhaAtual, setEscolhaAtual] = useState<EscolhaTema>("todos");
+  const { historico, carregado, registrar, limpar } = useHistorico();
 
   function iniciar(escolha: EscolhaTema, quantidade: number) {
     setQuestoes(sortearSimulado(escolha, quantidade));
     setRespostas([]);
+    setEscolhaAtual(escolha);
     setEtapa("simulado");
   }
 
   function concluir(finais: Resposta[]) {
     setRespostas(finais);
+    // Só entra no histórico o simulado terminado; abandonar não conta.
+    registrar(escolhaAtual, finais);
     setEtapa("resultado");
   }
 
@@ -44,7 +51,16 @@ export default function Home() {
         </p>
       </header>
 
-      {etapa === "inicio" && <TelaInicio onIniciar={iniciar} />}
+      {etapa === "inicio" && (
+        <div className="space-y-8">
+          <Dashboard
+            historico={historico}
+            carregado={carregado}
+            onLimpar={limpar}
+          />
+          <TelaInicio onIniciar={iniciar} />
+        </div>
+      )}
 
       {etapa === "simulado" && (
         <TelaSimulado

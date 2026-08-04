@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx testes/sorteio.test.ts && tsx testes/render.test.tsx"
+    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/render.test.tsx"
   },
   "dependencies": {
     "next": "16.3.0",

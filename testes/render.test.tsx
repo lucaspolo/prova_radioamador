@@ -2,7 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaResultado from "@/components/TelaResultado";
+import Dashboard from "@/components/Dashboard";
 import { sortearSimulado } from "@/lib/questoes";
+import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
 import type { Resposta } from "@/lib/tipos";
 
 let falhas = 0;
@@ -78,6 +80,59 @@ function checar(nome: string, ok: boolean, detalhe = "") {
     <TelaResultado respostas={corte} onReiniciar={() => {}} />,
   );
   checar("11 de 20 aprova (nota de corte exata)", html3.includes("Aprovado") && !html3.includes("Reprovado"));
+}
+
+// --- Dashboard ------------------------------------------------------------
+{
+  type H = Historico;
+  const vazio: H = { versao: VERSAO_HISTORICO, simulados: [] };
+
+  // Antes de ler o storage não pode renderizar nada, senão quem já tem
+  // histórico vê "nenhum simulado" piscar a cada carregamento.
+  const naoCarregado = renderToStaticMarkup(
+    <Dashboard historico={vazio} carregado={false} onLimpar={() => {}} />,
+  );
+  checar("Dashboard não renderiza antes de ler o storage", naoCarregado === "");
+
+  const semDados = renderToStaticMarkup(
+    <Dashboard historico={vazio} carregado onLimpar={() => {}} />,
+  );
+  checar("histórico vazio mostra convite ao primeiro simulado", semDados.includes("primeiro simulado"));
+
+  // Um simulado só de Eletrônica com 6 de 20 (30%) fica abaixo do corte.
+  const fraco = sortearSimulado("Conhecimentos de Eletrônica e Eletricidade", 20);
+  const h: H = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      montarRegistro(
+        "Conhecimentos de Eletrônica e Eletricidade",
+        fraco.map((q, i) => ({ questao: q, respondeu: q.resposta_correta, acertou: i < 6 })),
+      ),
+    ],
+  };
+  const comDados = renderToStaticMarkup(
+    <Dashboard historico={h} carregado onLimpar={() => {}} />,
+  );
+  checar("mostra o percentual da matéria (6/20 = 30%)", comDados.includes("30%"));
+  checar("cita a linha de corte de 55%", comDados.includes("55%"));
+  checar("alerta a matéria abaixo do corte", comDados.includes("Abaixo da linha de corte"));
+  checar("aponta Eletrônica como a matéria fraca", comDados.includes("<strong>Eletrônica</strong>"));
+  checar("matérias sem dados aparecem como tal", comDados.includes("sem dados"));
+  checar("oferece limpar histórico", comDados.includes("Limpar histórico"));
+
+  // Acima do corte, sem alerta.
+  const forte = sortearSimulado("Legislação de Telecomunicações", 20);
+  const h2: H = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      montarRegistro(
+        "Legislação de Telecomunicações",
+        forte.map((q, i) => ({ questao: q, respondeu: q.resposta_correta, acertou: i < 18 })),
+      ),
+    ],
+  };
+  const bom = renderToStaticMarkup(<Dashboard historico={h2} carregado onLimpar={() => {}} />);
+  checar("90% não dispara alerta de matéria fraca", bom.includes("90%") && !bom.includes("Abaixo da linha de corte"));
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);
