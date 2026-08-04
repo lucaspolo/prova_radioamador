@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Classe, EscolhaTema } from "@/lib/tipos";
+import type { Classe, Tema } from "@/lib/tipos";
 import {
   CLASSES,
   CLASSE_PADRAO,
@@ -14,14 +14,14 @@ import {
 import { contarPorTema, disponiveis } from "@/lib/questoes";
 
 interface Props {
-  onIniciar: (escolha: EscolhaTema, quantidade: number, classe: Classe) => void;
+  onIniciar: (tema: Tema, quantidade: number, classe: Classe) => void;
 }
 
 export default function TelaInicio({ onIniciar }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
-  const [escolha, setEscolha] = useState<EscolhaTema>("todos");
+  const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
   const formato = FORMATO[classe];
-  const [quantidade, setQuantidade] = useState(formato.questoes);
+  const [quantidade, setQuantidade] = useState(FORMATO[CLASSE_PADRAO].questoes);
   const contagem = contarPorTema(classe);
   const total = disponiveis(escolha, classe);
   const opcoes = tamanhos(classe);
@@ -29,6 +29,8 @@ export default function TelaInicio({ onIniciar }: Props) {
   // Não dá para sortear mais questões do que existem no tema escolhido.
   const limite = Math.min(quantidade, total);
 
+  // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
+  // ficaria selecionado um número que nem aparece mais entre as opções.
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
   // ficaria selecionado um número que nem aparece mais entre as opções.
   function trocarClasse(nova: Classe) {
@@ -81,14 +83,7 @@ export default function TelaInicio({ onIniciar }: Props) {
         <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
           Matéria
         </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <BotaoTema
-            ativo={escolha === "todos"}
-            titulo="Todos os Temas"
-            detalhe={`${contagem["Legislação de Telecomunicações"] + contagem["Técnica e ética operacional"] + contagem["Conhecimentos de Eletrônica e Eletricidade"]} questões · divididas igualmente`}
-            classes="border-slate-300 dark:border-slate-700"
-            onClick={() => setEscolha("todos")}
-          />
+        <div className="grid gap-3 sm:grid-cols-3">
           {TEMAS.map((tema) => (
             <BotaoTema
               key={tema}
@@ -128,7 +123,8 @@ export default function TelaInicio({ onIniciar }: Props) {
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
           A prova da Anatel para a Classe {classe} tem {formato.questoes}{" "}
           questões por matéria, exige {formato.minimo} acertos e dá{" "}
-          {formato.minutos} minutos.
+          {formato.minutos} minutos. Cada matéria é uma prova separada — por
+          isso o simulado é sempre de uma matéria só.
         </p>
       </section>
 

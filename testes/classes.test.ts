@@ -8,6 +8,17 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   console.log(`${ok ? "  ok  " : "FALHA "} ${nome}${detalhe ? " — " + detalhe : ""}`);
 }
 
+const TODOS_TEMAS: Tema[] = [
+  "Legislação de Telecomunicações",
+  "Técnica e ética operacional",
+  "Conhecimentos de Eletrônica e Eletricidade",
+];
+const ROTULO: Record<Tema, string> = {
+  "Legislação de Telecomunicações": "Legislação",
+  "Técnica e ética operacional": "Técnica",
+  "Conhecimentos de Eletrônica e Eletricidade": "Eletrônica",
+};
+
 const nivelA = BANCO.filter((q) => q.nivel === "A");
 const nivelB = BANCO.filter((q) => q.nivel === "B");
 console.log(`Banco: ${BANCO.length} — nível B: ${nivelB.length}, nível A: ${nivelA.length}\n`);
@@ -53,8 +64,10 @@ console.log(`Banco: ${BANCO.length} — nível B: ${nivelB.length}, nível A: ${
   const idsA = new Set(nivelA.map((q) => q.id));
   let vazou = 0;
   for (let i = 0; i < 300; i++) {
-    for (const q of sortearSimulado("todos", 20, undefined, "B")) {
-      if (idsA.has(q.id)) vazou++;
+    for (const tema of TODOS_TEMAS) {
+      for (const q of sortearSimulado(tema, 20, undefined, "B")) {
+        if (idsA.has(q.id)) vazou++;
+      }
     }
   }
   checar("300 baterias de Classe B não trazem conteúdo da Classe A", vazou === 0, `${vazou} vazamentos`);
@@ -72,24 +85,18 @@ console.log(`Banco: ${BANCO.length} — nível B: ${nivelB.length}, nível A: ${
 // --- O sorteio continua íntegro em todas as classes ------------------------
 {
   for (const classe of CLASSES) {
-    const n = FORMATO[classe].questoes * 3;
-    const s = sortearSimulado("todos", n, undefined, classe);
-    const porTema = TEMAS_DE(s);
-    checar(
-      `Classe ${classe}: bateria de ${n} traz ${FORMATO[classe].questoes} de cada matéria`,
-      s.length === n && porTema.every((k) => k === FORMATO[classe].questoes),
-      porTema.join("/"),
-    );
-    checar(`Classe ${classe}: sem repetição`, new Set(s.map((q) => q.id)).size === s.length);
-  }
-
-  function TEMAS_DE(s: { tema: Tema }[]): number[] {
-    const temas: Tema[] = [
-      "Legislação de Telecomunicações",
-      "Técnica e ética operacional",
-      "Conhecimentos de Eletrônica e Eletricidade",
-    ];
-    return temas.map((t) => s.filter((q) => q.tema === t).length);
+    const n = FORMATO[classe].questoes;
+    for (const tema of TODOS_TEMAS) {
+      const s = sortearSimulado(tema, n, undefined, classe);
+      checar(
+        `Classe ${classe}: prova de ${ROTULO[tema]} tem ${n} questões da matéria`,
+        s.length === n && s.every((q) => q.tema === tema),
+      );
+      checar(
+        `Classe ${classe}: ${ROTULO[tema]} sem repetição`,
+        new Set(s.map((q) => q.id)).size === s.length,
+      );
+    }
   }
 }
 
@@ -107,9 +114,9 @@ console.log(`Banco: ${BANCO.length} — nível B: ${nivelB.length}, nível A: ${
     outras.every((t) => contarPorTema("A")[t] === contarPorTema("B")[t]));
 
   checar("disponiveis() respeita a classe",
-    disponiveis("todos", "A") > disponiveis("todos", "B"));
+    disponiveis(tema, "A") > disponiveis(tema, "B"));
   checar("sem classe, comporta-se como Classe B",
-    disponiveis("todos") === disponiveis("todos", "B"));
+    disponiveis(tema) === disponiveis(tema, "B"));
 }
 
 // --- As questões da Classe A são de Eletrônica e vieram da ementa ---------

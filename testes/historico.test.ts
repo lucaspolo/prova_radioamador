@@ -41,7 +41,7 @@ const storage = new StorageFalso();
 (globalThis as unknown as { window: unknown }).window = { localStorage: storage };
 
 function respostasFalsas(qtd: number, acertos: number): Resposta[] {
-  return sortearSimulado("todos", qtd).map((q, i) => ({
+  return sortearSimulado("Legislação de Telecomunicações", qtd).map((q, i) => ({
     questao: q,
     respondeu: i < acertos ? q.resposta_correta : !q.resposta_correta,
     acertou: i < acertos,
@@ -55,7 +55,7 @@ function respostasFalsas(qtd: number, acertos: number): Resposta[] {
 
   const h: Historico = {
     versao: VERSAO_HISTORICO,
-    simulados: [montarRegistro("todos", respostasFalsas(20, 12))],
+    simulados: [montarRegistro("Legislação de Telecomunicações", respostasFalsas(20, 12))],
   };
   checar("gravar devolve true", gravar(h) === true);
 
@@ -81,7 +81,7 @@ function respostasFalsas(qtd: number, acertos: number): Resposta[] {
   checar("valor null é descartado", ler().simulados.length === 0);
 
   // Registros malformados são filtrados sem derrubar os válidos ao lado.
-  const bom = montarRegistro("todos", respostasFalsas(10, 5));
+  const bom = montarRegistro("Legislação de Telecomunicações", respostasFalsas(10, 5));
   storage.setItem(
     CHAVE_STORAGE,
     JSON.stringify({ versao: VERSAO_HISTORICO, simulados: [bom, { id: 1 }, null] }),
@@ -103,7 +103,7 @@ function respostasFalsas(qtd: number, acertos: number): Resposta[] {
 // --- Teto de simulados ----------------------------------------------------
 {
   const muitos: SimuladoSalvo[] = Array.from({ length: MAX_SIMULADOS + 50 }, () =>
-    montarRegistro("todos", respostasFalsas(10, 5)),
+    montarRegistro("Legislação de Telecomunicações", respostasFalsas(10, 5)),
   );
   const cortado = muitos.slice(0, MAX_SIMULADOS);
   checar(`teto de ${MAX_SIMULADOS} simulados`, cortado.length === MAX_SIMULADOS);

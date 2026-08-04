@@ -68,5 +68,3 @@ export interface Resposta {
   acertou: boolean;
 }
 
-/** Filtro de tema escolhido na tela inicial. */
-export type EscolhaTema = Tema | "todos";

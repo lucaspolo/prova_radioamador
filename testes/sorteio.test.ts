@@ -1,5 +1,5 @@
 import { sortearSimulado, disponiveis, contarPorTema, acervo, BANCO } from "@/lib/questoes";
-import { TEMAS, FORMATO } from "@/lib/constantes";
+import { TEMAS } from "@/lib/constantes";
 import type { Tema } from "@/lib/tipos";
 
 let falhas = 0;
@@ -14,13 +14,13 @@ console.log();
 
 // 1. Tamanho exato pedido
 for (const n of [10, 20, 40, 60]) {
-  const s = sortearSimulado("todos", n);
-  checar(`todos: pede ${n}, recebe ${s.length}`, s.length === n);
+  const s = sortearSimulado(TEMAS[0], n);
+  checar(`pede ${n}, recebe ${s.length}`, s.length === n);
 }
 
 // 2. Sem repetição dentro de uma mesma bateria
 for (let i = 0; i < 200; i++) {
-  const s = sortearSimulado("todos", 60);
+  const s = sortearSimulado(TEMAS[0], 60);
   if (new Set(s.map((q) => q.id)).size !== s.length) {
     checar("sem questões repetidas na bateria", false, `iteração ${i}`);
     break;
@@ -28,27 +28,6 @@ for (let i = 0; i < 200; i++) {
   if (i === 199) checar("sem questões repetidas em 200 baterias de 60", true);
 }
 
-// 3. "todos" distribui igualmente entre os três temas
-{
-  const s = sortearSimulado("todos", 60);
-  const porTema = TEMAS.map((t) => s.filter((q) => q.tema === t).length);
-  checar(
-    "bateria de 60 traz 20 de cada matéria (espelha a prova real)",
-    porTema.every((n) => n === FORMATO.B.questoes),
-    porTema.join("/"),
-  );
-}
-
-// 4. Divisão com sobra: 10 questões -> 4/3/3
-{
-  const s = sortearSimulado("todos", 10);
-  const porTema = TEMAS.map((t) => s.filter((q) => q.tema === t).length).sort(
-    (a, b) => b - a,
-  );
-  checar("10 questões distribuem 4/3/3", JSON.stringify(porTema) === "[4,3,3]", porTema.join("/"));
-}
-
-// 5. Tema único devolve só aquele tema
 for (const tema of TEMAS) {
   const s = sortearSimulado(tema, 20);
   checar(
@@ -70,27 +49,19 @@ for (const tema of TEMAS) {
 
 // 7. Sorteio realmente varia entre chamadas
 {
-  const a = sortearSimulado("todos", 20).map((q) => q.id).join();
-  const b = sortearSimulado("todos", 20).map((q) => q.id).join();
+  const a = sortearSimulado(TEMAS[0], 20).map((q) => q.id).join();
+  const b = sortearSimulado(TEMAS[0], 20).map((q) => q.id).join();
   checar("duas baterias seguidas diferem", a !== b);
 }
 
-// 8. Embaralhamento não agrupa os temas no início da lista
-{
-  let agrupadas = 0;
-  for (let i = 0; i < 100; i++) {
-    const s = sortearSimulado("todos", 60);
-    const primeiras20 = new Set(s.slice(0, 20).map((q) => q.tema));
-    if (primeiras20.size === 1) agrupadas++;
-  }
-  checar("temas vêm intercalados, não em blocos", agrupadas === 0, `${agrupadas}/100 agrupadas`);
-}
-
-// 9. disponiveis() bate com o acervo da classe padrão (B), que exclui o
+// disponiveis() bate com o acervo da classe padrão (B), que exclui o
 // acréscimo técnico exclusivo da Classe A.
-checar("disponiveis('todos')", disponiveis("todos") === acervo("B").length,
-  `${disponiveis("todos")} de ${BANCO.length} no banco inteiro`);
 for (const t of TEMAS) checar(`disponiveis("${t.slice(0, 18)}")`, disponiveis(t) === contagem[t]);
+checar(
+  "a soma por tema é o acervo da Classe B",
+  TEMAS.reduce((a, t) => a + disponiveis(t), 0) === acervo("B").length,
+  `${acervo("B").length} de ${BANCO.length} no banco inteiro`,
+);
 
 // 10. Integridade do banco consumido pelo app
 {

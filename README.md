@@ -59,9 +59,11 @@ public/       banco_questoes.json, trechos.json e pdfs/
 
 - Escolha da classe (A, B ou C), que define o acervo elegível, o tamanho da
   bateria padrão e o critério de aprovação.
-- Bateria por matéria ou com os três temas misturados. Em "Todos os Temas" as
-  vagas são divididas igualmente, então uma bateria de três matérias reproduz a
-  prova real em vez de refletir o desequilíbrio do banco.
+- Bateria sempre de **uma matéria**, como a prova real: a Anatel aplica três
+  exames separados, cada um com seu tempo e seu mínimo de acertos. Uma bateria
+  misturando os três temas não corresponde a prova nenhuma — e o veredito dela
+  aprovava quem compensasse uma matéria fraca com duas fortes, o que a norma
+  não permite.
 - Feedback imediato a cada questão, com explicação e indicação da fonte, mais o
   **trecho literal do PDF** que originou a afirmação, com a passagem destacada.
 - Atalhos de teclado: `V` / `F` para responder, `Enter` para avançar.

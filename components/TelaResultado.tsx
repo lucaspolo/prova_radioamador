@@ -1,13 +1,12 @@
 "use client";
 
-import type { Classe, Resposta, Tema } from "@/lib/tipos";
+import type { Classe, Resposta } from "@/lib/tipos";
 import {
   CLASSE_PADRAO,
   COR_TEMA,
   FORMATO,
   percentualAprovacao,
   ROTULO_CURTO,
-  TEMAS,
 } from "@/lib/constantes";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import TrechoOrigem from "./TrechoOrigem";
@@ -66,8 +65,6 @@ export default function TelaResultado({
         </p>
       </div>
 
-      {/* Desempenho por matéria, quando a bateria misturou temas */}
-      <PorTema respostas={respostas} />
 
       {erradas.length > 0 && (
         <section>
@@ -132,43 +129,3 @@ export default function TelaResultado({
   );
 }
 
-function PorTema({ respostas }: { respostas: Resposta[] }) {
-  const presentes = TEMAS.filter((t) =>
-    respostas.some((r) => r.questao.tema === t),
-  );
-  // Com um único tema, a barra repetiria o placar geral.
-  if (presentes.length < 2) return null;
-
-  return (
-    <section>
-      <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-        Desempenho por matéria
-      </h2>
-      <div className="space-y-3">
-        {presentes.map((tema: Tema) => {
-          const doTema = respostas.filter((r) => r.questao.tema === tema);
-          const certas = doTema.filter((r) => r.acertou).length;
-          const pct = Math.round((certas / doTema.length) * 100);
-          return (
-            <div key={tema}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span className={COR_TEMA[tema].texto}>
-                  {ROTULO_CURTO[tema]}
-                </span>
-                <span className="font-medium">
-                  {certas}/{doTema.length} · {pct}%
-                </span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                <div
-                  className={`h-full rounded-full ${COR_TEMA[tema].barra}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}

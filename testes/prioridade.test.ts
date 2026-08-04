@@ -183,17 +183,10 @@ function historicoCom(
 {
   const h = historicoCom([{ erradas: doTema.slice(0, 5).map((q) => q.id), certas: [] }]);
 
-  const s = sortearSimulado("todos", 60, h);
+  const s = sortearSimulado(TEMA, 60, h);
   checar("com histórico, ainda sorteia a quantidade exata", s.length === 60);
   checar("sem repetição", new Set(s.map((q) => q.id)).size === 60);
-  const porTema = new Set(["Legislação de Telecomunicações", "Técnica e ética operacional", TEMA])
-    .values()
-    .toArray()
-    .map((t) => s.filter((q) => q.tema === t).length);
-  checar("mantém 20 por matéria", porTema.every((n) => n === 20), porTema.join("/"));
-
-  const t = sortearSimulado(TEMA, 20, h);
-  checar("tema único continua homogêneo", t.every((q) => q.tema === TEMA));
+  checar("com histórico, a bateria continua homogênea", s.every((q) => q.tema === TEMA));
 
   const tudo = sortearSimulado(TEMA, 99999, h);
   checar("pedir além do disponível devolve tudo, sem repetir", tudo.length === doTema.length && new Set(tudo.map((q) => q.id)).size === doTema.length);

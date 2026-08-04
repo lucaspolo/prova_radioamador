@@ -17,7 +17,12 @@ function checar(nome: string, ok: boolean, detalhe = "") {
 {
   const html = renderToStaticMarkup(<TelaInicio onIniciar={() => {}} />);
   checar("TelaInicio renderiza", html.length > 0);
-  checar("mostra as 3 matérias + Todos", ["Todos os Temas", "Legislação", "Técnica e Ética", "Eletrônica"].every((s) => html.includes(s)));
+  checar("mostra as 3 matérias", ["Legislação", "Técnica e Ética", "Eletrônica"].every((s) => html.includes(s)));
+  // A bateria mista foi removida: cada matéria é uma prova separada, com seu
+  // próprio mínimo. Uma bateria dos três temas aprovava quem compensasse uma
+  // matéria fraca com duas fortes, o que a Anatel não permite.
+  checar("não oferece bateria com os três temas", !html.includes("Todos os Temas"));
+  checar("mostra as 3 classes", ["Classe A", "Classe B", "Classe C"].every((s) => html.includes(s)));
   checar("marca a bateria de 20 como prova real", html.includes("prova real"));
   checar("cita o critério oficial 11 acertos", html.includes("11 acertos"));
   checar("botão inicia com 20 questões", html.includes("Iniciar simulado"));
@@ -25,7 +30,7 @@ function checar(nome: string, ok: boolean, detalhe = "") {
 
 // --- Tela de simulado -----------------------------------------------------
 {
-  const questoes = sortearSimulado("todos", 20);
+  const questoes = sortearSimulado("Legislação de Telecomunicações", 20);
   const html = renderToStaticMarkup(
     <TelaSimulado questoes={questoes} onConcluir={() => {}} onSair={() => {}} />,
   );
@@ -73,7 +78,7 @@ function checar(nome: string, ok: boolean, detalhe = "") {
 
 // --- Tela de resultado ----------------------------------------------------
 {
-  const questoes = sortearSimulado("todos", 20);
+  const questoes = sortearSimulado("Legislação de Telecomunicações", 20);
   // 12 acertos de 20 = 60% -> aprovado pelo critério oficial (mínimo 11).
   const respostas: Resposta[] = questoes.map((q, i) => ({
     questao: q,
@@ -88,7 +93,10 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   checar("percentual 60%", html.includes("60%"));
   checar("veredito Aprovado com 12 de 20", html.includes("Aprovado") && !html.includes("Reprovado"));
   checar("lista os 8 erros para revisão", html.includes("Revisão dos erros (8)"));
-  checar("mostra desempenho por matéria", html.includes("Desempenho por matéria"));
+  // Com bateria de uma matéria só, o placar geral já é o da matéria: uma
+  // seção "por matéria" repetiria o mesmo número.
+  checar("não repete o placar numa seção por matéria", !html.includes("Desempenho por matéria"));
+  checar("diz de qual classe é o critério", html.includes("Classe"));
 
   // Reprovação: 10 de 20 fica abaixo do mínimo de 11.
   const reprova: Resposta[] = questoes.map((q, i) => ({

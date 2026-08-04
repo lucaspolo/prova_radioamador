@@ -1,5 +1,5 @@
 import bancoBruto from "@/public/banco_questoes.json";
-import type { Classe, EscolhaTema, Questao, Tema } from "./tipos";
+import type { Classe, Questao, Tema } from "./tipos";
 import { CLASSE_PADRAO, FORMATO, TEMAS } from "./constantes";
 import type { Historico } from "./historico";
 import {
@@ -40,61 +40,42 @@ export function contarPorTema(classe: Classe = CLASSE_PADRAO): Record<Tema, numb
 }
 
 /**
- * Sorteia uma bateria.
+ * Sorteia uma bateria de uma matéria.
  *
- * Com "todos", distribui as vagas igualmente entre os três temas — assim uma
- * bateria de 60 reproduz a prova real (20 de cada) em vez de refletir o
- * desequilíbrio do banco, em que Legislação tem bem mais questões que os
- * demais. As sobras da divisão vão para os primeiros temas.
+ * Só existe bateria de uma matéria porque a prova real é assim: três exames
+ * separados, cada um com seu tempo e seu mínimo de acertos. Uma bateria mista
+ * não corresponde a prova nenhuma — e o veredito dela mentia, aprovando quem
+ * compensasse uma matéria fraca com duas fortes, o que a Anatel não permite.
  *
  * Quando há histórico, o sorteio é ponderado: o que foi errado volta mais
  * cedo e o que já foi dominado rareia. Sem histórico, cai num embaralhamento
- * uniforme — o comportamento de antes.
+ * uniforme.
  */
 export function sortearSimulado(
-  escolha: EscolhaTema,
+  tema: Tema,
   quantidade: number,
   historico?: Historico,
   classe: Classe = CLASSE_PADRAO,
 ): Questao[] {
-  const elegiveis = acervo(classe);
+  const candidatas = acervo(classe).filter((q) => q.tema === tema);
   const desempenho = historico
     ? desempenhoPorQuestao(historico)
     : new Map<string, Desempenho>();
-  const pesoDe = (q: Questao) => peso(desempenho.get(q.id));
 
-  const sortear = (candidatas: Questao[], vagas: number) =>
-    desempenho.size === 0
-      ? embaralharSimples(candidatas).slice(0, vagas)
-      : amostrarPonderado(candidatas, pesoDe, vagas);
-
-  if (escolha !== "todos") {
-    return sortear(
-      elegiveis.filter((q) => q.tema === escolha),
-      quantidade,
-    );
+  if (desempenho.size === 0) {
+    return embaralharSimples(candidatas).slice(0, quantidade);
   }
-
-  const base = Math.floor(quantidade / TEMAS.length);
-  const sobra = quantidade % TEMAS.length;
-
-  const selecionadas = TEMAS.flatMap((tema, i) =>
-    sortear(
-      elegiveis.filter((q) => q.tema === tema),
-      base + (i < sobra ? 1 : 0),
-    ),
+  return amostrarPonderado(
+    candidatas,
+    (q) => peso(desempenho.get(q.id)),
+    quantidade,
   );
-
-  // Reembaralha para os temas não virem agrupados na ordem de apresentação.
-  return embaralharSimples(selecionadas);
 }
 
-/** Quantas questões estão disponíveis para uma escolha de tema, na classe. */
+/** Quantas questões estão disponíveis numa matéria, para a classe. */
 export function disponiveis(
-  escolha: EscolhaTema,
+  tema: Tema,
   classe: Classe = CLASSE_PADRAO,
 ): number {
-  const elegiveis = acervo(classe);
-  if (escolha === "todos") return elegiveis.length;
-  return elegiveis.filter((q) => q.tema === escolha).length;
+  return acervo(classe).filter((q) => q.tema === tema).length;
 }

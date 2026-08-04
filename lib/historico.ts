@@ -1,4 +1,4 @@
-import type { EscolhaTema, Resposta, Tema } from "./tipos";
+import type { Resposta, Tema } from "./tipos";
 import { TEMAS } from "./constantes";
 
 export const CHAVE_STORAGE = "prova-radioamador:historico";
@@ -27,7 +27,13 @@ export interface SimuladoSalvo {
   id: string;
   /** ISO 8601, em UTC. */
   data: string;
-  escolha: EscolhaTema;
+  /**
+   * A matéria do simulado. Registros antigos, de quando existia bateria
+   * mista, guardam "todos" aqui; nada lê este campo para decidir coisa
+   * alguma — as estatísticas saem do tema de cada item —, então não vale
+   * queimar o histórico do usuário só para limpar o tipo.
+   */
+  escolha: Tema;
   total: number;
   acertos: number;
   itens: ItemSalvo[];
@@ -53,7 +59,7 @@ function novoId(): string {
 
 /** Converte as respostas de um simulado no registro que vai para o storage. */
 export function montarRegistro(
-  escolha: EscolhaTema,
+  escolha: Tema,
   respostas: Resposta[],
 ): SimuladoSalvo {
   return {

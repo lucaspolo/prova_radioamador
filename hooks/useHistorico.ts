@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { EscolhaTema, Resposta } from "@/lib/tipos";
+import type { Tema, Resposta } from "@/lib/tipos";
 import {
   gravar,
   ler,
@@ -31,7 +31,7 @@ export function useHistorico() {
   }, []);
 
   const registrar = useCallback(
-    (escolha: EscolhaTema, respostas: Resposta[]) => {
+    (escolha: Tema, respostas: Resposta[]) => {
       if (respostas.length === 0) return;
       setHistorico((atual) => {
         const novo: Historico = {
