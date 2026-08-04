@@ -25,12 +25,26 @@ o corte oficial de 11 acertos.
 
 ```
 app/          rotas e layout (Next.js App Router)
-components/   telas: início, simulado, resultado
-lib/          tipos, constantes da prova e lógica de sorteio
+components/   telas, dashboard e visualizador de PDF
+hooks/        useHistorico — persistência em localStorage
+lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
-testes/       testes de lógica e de renderização
-public/       banco_questoes.json
+              copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
+testes/       sorteio, histórico, PDFs e renderização
+public/       banco_questoes.json e pdfs/
 ```
+
+## Funcionalidades
+
+- Bateria por matéria ou com os três temas misturados. Em "Todos os Temas" as
+  vagas são divididas igualmente, então 60 questões reproduzem a prova real
+  (20 de cada) em vez de refletir o desequilíbrio do banco.
+- Feedback imediato a cada questão, com explicação e indicação da fonte.
+- Atalhos de teclado: `V` / `F` para responder, `Enter` para avançar.
+- Histórico no navegador (`localStorage`) e dashboard com o percentual de
+  acerto por matéria contra a linha de corte oficial de 55%.
+- Botão **Consultar Material**: abre o PDF de origem já na página da questão,
+  sem sair do simulado.
 
 ## Rodando o app
 
@@ -38,8 +52,22 @@ public/       banco_questoes.json
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # gera o site estático em out/
-npm test         # testes de sorteio e de renderização
+npm test         # testes de sorteio, histórico, PDFs e renderização
 ```
+
+O worker do pdf.js é copiado de `node_modules` para `public/` automaticamente
+antes de `dev` e de `build` (`scripts/preparar_worker.mjs`). Ele é gerado, e não
+versionado, para não ficar defasado da versão instalada do `pdfjs-dist`.
+
+Os PDFs de consulta já estão em `public/pdfs/`, com nomes seguros para URL. Para
+republicá-los a partir de outra pasta de origem:
+
+```bash
+npm run pdfs -- /caminho/para/os/pdfs
+```
+
+Isso regrava `lib/mapa-pdfs.json`, que liga o campo `arquivo_origem` de cada
+questão ao arquivo publicado.
 
 ## Regerando o banco de questões
 
