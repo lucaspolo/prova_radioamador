@@ -10,6 +10,7 @@ import {
   TEMAS,
 } from "@/lib/constantes";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
+import TrechoOrigem from "./TrechoOrigem";
 
 interface Props {
   respostas: Resposta[];
@@ -102,6 +103,10 @@ export default function TelaResultado({ respostas, onReiniciar }: Props) {
                   arquivoOrigem={r.questao.arquivo_origem}
                   pagina={r.questao.pagina}
                   origem={r.questao.origem}
+                />
+                <TrechoOrigem
+                  trechoId={r.questao.trecho_id}
+                  afirmacao={r.questao.afirmacao}
                 />
               </div>
             ))}

@@ -26,6 +26,19 @@ export interface Questao {
   /** Página do PDF, usada pelo visualizador da Fase 4. */
   pagina: number;
   origem: Origem;
+  /**
+   * Chave do trecho literal que gerou a afirmação, em public/trechos.json.
+   * Ausente quando `origem` é `ementa`: essas questões nascem de um tópico da
+   * ementa, e não de um texto — não há trecho a mostrar.
+   */
+  trecho_id?: string;
+}
+
+/** Um trecho de PDF, exatamente como foi enviado ao modelo que gerou as questões. */
+export interface Trecho {
+  arquivo: string;
+  pagina: number;
+  texto: string;
 }
 
 /** Uma questão já respondida dentro de um simulado. */

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
+import TrechoOrigem from "./TrechoOrigem";
 
 interface Props {
   questoes: Questao[];
@@ -165,6 +166,10 @@ export default function TelaSimulado({ questoes, onConcluir, onSair }: Props) {
                   arquivoOrigem={questao.arquivo_origem}
                   pagina={questao.pagina}
                   origem={questao.origem}
+                />
+                <TrechoOrigem
+                  trechoId={questao.trecho_id}
+                  afirmacao={questao.afirmacao}
                 />
               </div>
             </div>

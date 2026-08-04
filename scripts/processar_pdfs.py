@@ -476,6 +476,15 @@ class Chunk:
         bruto = f"{self.arquivo_origem}|{self.pagina}|{self.texto}"
         return hashlib.sha1(bruto.encode("utf-8")).hexdigest()
 
+    @property
+    def id_trecho(self) -> str:
+        """Identidade publica do trecho, usada por `public/trechos.json`.
+
+        Deriva da mesma chave: se o texto extraido mudar, o id muda junto e a
+        questao nunca aponta para um trecho que nao foi o que a gerou.
+        """
+        return self.chave_cache[:16]
+
 
 @dataclass
 class Uso:
@@ -895,6 +904,10 @@ def gerar_do_chunk(
     for q in questoes:
         q["arquivo_origem"] = chunk.arquivo_origem
         q["pagina"] = chunk.pagina
+        # Liga a questao ao trecho literal que a gerou, para que o app possa
+        # mostrar o texto de origem sem obrigar o usuario a caçar a frase
+        # dentro do PDF.
+        q["_trecho"] = chunk.id_trecho
     return questoes
 
 
@@ -1129,6 +1142,10 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 # capitulo que trata do assunto — material de estudo, nao a
                 # origem da frase. A interface precisa dizer isso ao usuario.
                 "origem": "ementa" if q.get("_complementar") else "documento",
+                # Presente so' quando a questao veio de um trecho de PDF.
+                # Questoes da ementa nascem de um topico, e nao de um texto:
+                # inventar um trecho para elas seria mentir sobre a origem.
+                **({"trecho_id": q["_trecho"]} if q.get("_trecho") else {}),
             }
         )
 
@@ -1355,8 +1372,30 @@ def main() -> int:
         json.dumps(finais, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
+    # --- Trechos de origem ---------------------------------------------------
+    # Arquivo separado, e nao um campo dentro de cada questao: um mesmo trecho
+    # gera varias questoes, e embutir o texto multiplicaria o banco por ~8. O
+    # app carrega este arquivo sob demanda, so' quando alguem pede para ver o
+    # trecho — o custo de abrir o simulado nao muda.
+    usados = {q["trecho_id"] for q in finais if q.get("trecho_id")}
+    trechos = {
+        c.id_trecho: {
+            "arquivo": c.arquivo_origem,
+            "pagina": c.pagina,
+            "texto": c.texto,
+        }
+        for c in chunks
+        if c.id_trecho in usados
+    }
+    saida_trechos = args.saida.parent / "trechos.json"
+    saida_trechos.write_text(
+        json.dumps(trechos, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
     relatorio(finais)
     log(f"\nSalvo em: {args.saida}")
+    log(f"Trechos de origem: {len(trechos)} em {saida_trechos} "
+        f"({saida_trechos.stat().st_size / 1024:.0f} KB)")
     return 0
 
 

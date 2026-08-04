@@ -65,6 +65,10 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   const hD = render(doDocumento);
   checar("questão extraída do documento é rotulada como Fonte", hD.includes("Fonte:"));
   checar("questão do documento não usa o rótulo de tema", !hD.includes("Estude o tema em:"));
+
+  // O trecho literal só existe para quem veio de um documento.
+  checar("questão de documento oferece o trecho de origem", hD.includes("Ver trecho de origem"));
+  checar("questão da ementa não oferece trecho", !hE.includes("Ver trecho de origem"));
 }
 
 // --- Tela de resultado ----------------------------------------------------

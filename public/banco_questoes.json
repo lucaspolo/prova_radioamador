@@ -7,7 +7,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A operação só deve ocorrer após atender à habilitação e à regularidade exigidas para o serviço.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "4ad8b8096891ea07",
@@ -17,7 +18,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Transmissões com fins comerciais ou de propaganda são incompatíveis com a finalidade do Serviço de Radioamador.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "6dd4382692b2037f",
@@ -27,7 +29,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Parar, consultar o Ato 926 e corrigir a operação reduz o risco de irregularidades e interferências.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "cba23d9d03dbfd1d",
@@ -37,7 +40,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Deve-se evitar potência excessiva sem necessidade, mantendo a operação responsável.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "f345c40e08ed5eb7",
@@ -47,7 +51,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Apoio a comunicações em contextos especiais é uma das possibilidades dentro da finalidade do serviço.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "a147c2c87f99badc",
@@ -57,7 +62,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não se deve operar em segmentos reservados para outros usos, como satélite, repetidoras ou emissões-piloto.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "67059db8abd1f2e7",
@@ -67,7 +73,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A segmentação organiza o espectro, facilita encontrar atividades específicas e diminui conflitos.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "ac5720db8fc55eec",
@@ -77,7 +84,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O serviço destina-se ao aprendizado, experimentação técnica e comunicação entre radioamadores, não a fins comerciais ou publicitários.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "9dce559ee4756e2b"
   },
   {
     "id": "aaf082e68f879933",
@@ -87,7 +95,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A cultura do radioamadorismo enfatiza a identificação clara como uma prática essencial na operação.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "f93d76929c2b4e05",
@@ -97,7 +106,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A boa prática é o uso racional de potência, não o uso máximo.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "998ea225b4706a12",
@@ -107,7 +117,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Disciplina, cooperação, respeito e aprimoramento técnico são pilares culturais do radioamadorismo.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "1fc7614a4f0ad803",
@@ -117,7 +128,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Essas práticas ajudam a manter o serviço sustentável e bem visto pela sociedade e pelos reguladores.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "bdc4eec9e2cd33d1",
@@ -127,7 +139,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse ato é apontado como fonte principal para esses aspectos técnicos e operacionais do serviço.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "d9248069d6e9cec3",
@@ -137,7 +150,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O RGST serve de base geral para princípios, uso adequado do espectro, condutas e consequências; faixas e modos são referenciados no Ato nº 926/2024.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "95c9059358a2bcd5",
@@ -147,7 +161,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Ela é citada como glossário para validar definições oficiais usadas nas normas.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "ea4215473598af20",
@@ -157,7 +172,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Regras gerais de autorização e outorga estão na Resolução nº 720/2020 (RGO); a Resolução nº 719/2020 trata do licenciamento de estação (RGL).",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "4ae5d5b8fa81dd21"
   },
   {
     "id": "610c77a87c190610",
@@ -167,7 +183,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Na faixa de 10 m são previstos trechos de Emissões Piloto, de repetidoras FM e um ponto de chamada em FM.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "9a0763d418ce313d",
@@ -177,7 +194,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em 6 m, o exemplo de frequência de chamada indicado é 50,110 MHz, associado a segmento de DX.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "602b8f98703e9252",
@@ -187,7 +205,8 @@
     "resposta_correta": true,
     "explicacao_curta": "ACDS designa estações autônomas de dados e há trechos em que a permissão é condicionada a não causar interferência.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "dd6d6ed5cb23d432",
@@ -197,7 +216,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não há proibição geral; são pontos onde se espera encontrar chamadas ou tráfego específico, devendo-se respeitar essas preferências.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "5875cfb74bbba13f",
@@ -207,7 +227,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esses usos e subdivisões são indicados como exemplos na organização da faixa de 70 cm.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "f9ab6f0bed5c39da",
@@ -217,7 +238,8 @@
     "resposta_correta": true,
     "explicacao_curta": "É citado exemplo de frequência de chamada em 3 cm em 10.364 MHz.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "4a84bd4d899b7b02",
@@ -227,7 +249,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em 10 m há indicação de ponto de chamada em FM, além de trechos para repetidoras FM e Emissões Piloto.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "aa058a49a8e88314",
@@ -237,7 +260,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A boa prática é começar com potência baixa e aumentar apenas o necessário, mantendo ajuste adequado e emissões limpas.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "782da13ccc2d02b1"
   },
   {
     "id": "887f38fff6a554a6",
@@ -247,7 +271,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Transceptor é a integração de TX e RX no mesmo conjunto.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "78bf431445536161",
@@ -257,7 +282,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Ao sintonizar, ajusta-se a frequência da portadora do sinal desejado, não a potência de transmissão.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "419a50d79a4708b0",
@@ -267,7 +293,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O sistema irradiante engloba a antena e a linha de transmissão com seus acessórios.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "6067e4f9f2f0135e",
@@ -277,7 +304,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A repetidora recebe em uma frequência e retransmite em outra.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "b04f219e07da201a",
@@ -287,7 +315,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A operação típica em repetidora usa par de frequências distintas: uma de entrada e outra de saída.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "9da366fa00932975",
@@ -297,7 +326,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Quem gera RF e entrega potência à linha/antena é o transmissor; o receptor reconstrói a informação do sinal recebido.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "f14191a6b29fdc8c",
@@ -307,7 +337,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O uso é, em princípio, compartilhado pelos radioamadores, obedecendo às regras do serviço e do grupo mantenedor.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "45dbd753db1b9f34",
@@ -317,7 +348,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Escutar antes de falar, identificar-se e usar câmbios curtos são práticas recomendadas de operação.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5518dc18865f8658"
   },
   {
     "id": "c40b2dee343d5128",
@@ -327,7 +359,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O RGST, instituído pela Resolução nº 777/2025, reúne regras gerais do setor, incluindo deveres, fiscalização, infrações, sanções, princípios e estrutura.",
     "pagina": 23,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c50ae513b65ca161"
   },
   {
     "id": "bf2c5da39952e78c",
@@ -337,7 +370,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O RGST é aprovado pela Resolução nº 777/2025; a Resolução nº 779/2025 trata de um glossário de definições.",
     "pagina": 23,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c50ae513b65ca161"
   },
   {
     "id": "e1487edc6e6547e4",
@@ -347,7 +381,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Essa resolução compila definições oficiais de termos regulatórios e técnicos empregados na regulamentação.",
     "pagina": 23,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c50ae513b65ca161"
   },
   {
     "id": "06b3a5c2341df5f1",
@@ -357,7 +392,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse ato define os requisitos operacionais aplicáveis ao Serviço de Radioamador.",
     "pagina": 23,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c50ae513b65ca161"
   },
   {
     "id": "f3afe4727fd66562",
@@ -367,7 +403,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A data correta do Ato nº 3448 é 11 de março de 2026.",
     "pagina": 23,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c50ae513b65ca161"
   },
   {
     "id": "9fb5346bc7dfa761",
@@ -377,7 +414,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Os instrumentos mencionados são duas resoluções (nº 777/2025 e nº 779/2025) e um ato administrativo (nº 3448).",
     "pagina": 23,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c50ae513b65ca161"
   },
   {
     "id": "8821db55a32924e4",
@@ -387,7 +425,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Operar com potência mínima necessária e em conformidade com faixas, identificação e requisitos técnicos reduz o risco regulatório.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "13488007ec9dd7e0",
@@ -397,7 +436,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É indispensável estar habilitado (COER) e ter a estação devidamente licenciada, além de operar em faixa autorizada.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "429cd1563ef02923",
@@ -407,7 +447,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Alterações como a mudança de endereço da estação fixa estão entre os itens que podem demandar providências regulatórias.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "63aedd5d095114f3",
@@ -417,7 +458,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Novas faixas ou modos podem exigir atenção regulatória mesmo quando permitidos pela habilitação e pelo ato técnico.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "1f0c77eabdc8047a",
@@ -427,7 +469,8 @@
     "resposta_correta": true,
     "explicacao_curta": "As tabelas do Ato 926/2024 definem faixas, modos e observações aplicáveis à operação do radioamador.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "d4304406b7ada19f",
@@ -437,7 +480,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Os modos de emissão são permitidos por segmentos específicos de cada faixa e precisam ser conferidos antes de transmitir.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "ea7d061a4ac6274c",
@@ -447,7 +491,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A segmentação distribui usos típicos e reduz interferências, prevendo inclusive calling frequencies e centros de atividade.",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "fec9b9cc0b50e751",
@@ -457,7 +502,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O RGST está na Resolução nº 777/2025; a Resolução nº 720/2020 trata do RGO (outorgas e deveres cadastrais).",
     "pagina": 11,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "abaa5a8d9678dca8"
   },
   {
     "id": "a5d5f7abe8a932f7",
@@ -467,7 +513,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O COER habilita o operador, mas a estação deve estar licenciada e operar dentro das condições técnicas aplicáveis.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "ea1a25524331c29f",
@@ -477,7 +524,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A autorização tem prazo de 20 anos, podendo o interessado pedir que seja de apenas 10 anos.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "47dbfc4e571c4558",
@@ -487,7 +535,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esses são elementos centrais do processo que formaliza a regularidade da estação perante a Anatel.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "452b7129b7881462",
@@ -497,7 +546,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Essa orientação se aplica apenas aos Serviços de Interesse Coletivo e não ao Serviço de Radioamador.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "f8d2b7fb09078f69",
@@ -507,7 +557,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O tipo de estação pode mudar condições de faixa, potência e operação e trazer exigências específicas.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "9b036b930abbe021",
@@ -517,7 +568,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Além do COER, é necessário obter a autorização/outorga e licenciar a estação para operar regularmente.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "f1c3a87a7b4f5b82",
@@ -527,7 +579,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não há prorrogação automática; as licenças são excluídas ao final do prazo se não houver nova autorização (RGL, art. 30).",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "0ef30adc36be2b7f",
@@ -537,7 +590,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Antecipar o pedido no Mosaico evita a exclusão ao término do prazo e facilita a continuidade da regularidade.",
     "pagina": 9,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a398ceed82652e8e"
   },
   {
     "id": "07c4ac9f5f0eb352",
@@ -547,7 +601,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Falar na entrada como se fosse simplex é exemplo clássico de operar a frequência errada e deve ser evitado em repetidoras e satélites.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "b2b3478de979d979",
@@ -557,7 +612,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Repetidoras e satélites têm regras e finalidades específicas; por isso deve-se consultar o trecho correspondente no Ato antes de operar.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "22df3d5550c5becc",
@@ -567,7 +623,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O procedimento inicial recomendado é interromper a transmissão e monitorar o canal antes de novas tentativas.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "fe09373a946a4913",
@@ -577,7 +634,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O procedimento indicado é reduzir a potência e testar novamente, mantendo postura cooperativa e técnica.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "9d32b601f1eae4d3",
@@ -587,7 +645,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esses itens estão na lista de checagens recomendadas antes de retomar a operação.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "98a52011a8ed56be",
@@ -597,7 +656,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A IARP é gratuita e complementa o COER, não o substitui. Ela vale para países signatários e exige observar as condições do país de destino.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "f316599319f57876",
@@ -607,7 +667,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A autorização é válida nos países signatários e deve obedecer faixas, modos e potências definidos por cada país.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "30e23567418e70b8",
@@ -617,7 +678,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Normalmente a solicitação é feita da mesma forma que o licenciamento de uma estação e é recomendável pedir com antecedência.",
     "pagina": 16,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "27e4d5da0adbd8bc"
   },
   {
     "id": "75639137bb4abe8b",
@@ -627,7 +689,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Deve-se utilizar a potência mínima necessária. Operar no máximo não é a prática esperada.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "87650997729e60c5",
@@ -637,7 +700,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A orientação é interromper testes e/ou ajustar a estação para evitar manter a interferência.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "d92ddb782e3d7e03",
@@ -647,7 +711,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A fiscalização pode ocorrer por denúncia, identificação de emissão irregular e verificação de licenças e conformidade técnica.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "24c58e5b0586a228",
@@ -657,7 +722,8 @@
     "resposta_correta": true,
     "explicacao_curta": "As medidas variam conforme a gravidade e incluem advertência, multa e ações administrativas sobre estações/equipamentos, entre outras.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "69d5b1ad14e31c11",
@@ -667,7 +733,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não é permitido usar o serviço para fins comerciais ou incompatíveis com suas finalidades.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "886bc076f86086df",
@@ -677,7 +744,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O RGST é citado como fonte a consultar sobre deveres/obrigações, fiscalização, infrações e sanções.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "2db820bb2dd30e9f",
@@ -687,7 +755,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Segmentos sensíveis devem ser respeitados, exigindo cuidados e restrições específicas.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "ba705917875fde0a",
@@ -697,7 +766,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O Ato nº 926/2024 é indicado como base técnica para faixas, potências, modos e restrições por segmento.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "494e3bb84f33dcd8"
   },
   {
     "id": "8063c6c70591ce84",
@@ -707,7 +777,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em emergências, o foco é salvar vidas e minimizar danos; o tráfego de socorro tem prioridade absoluta.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "639bcbe57616a7ae",
@@ -717,7 +788,8 @@
     "resposta_correta": false,
     "explicacao_curta": "\"BREAK\" não é de uso trivial; em contexto de emergência, \"break\" ou \"break break\" indica tráfego prioritário.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "b612a07a432e33d7",
@@ -727,7 +799,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Durante emergências, a frequência é priorizada para o tráfego de socorro e os demais operadores devem cooperar.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "2f2edb0688233fbf",
@@ -737,7 +810,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não se deve usar uma emergência para testar equipamentos ou brincar.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "6fd34dde9c3478d4",
@@ -747,7 +821,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É proibido ocultar o significado de mensagens entre países; a única exceção é o controle de satélites no serviço de amador.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "cac300cbac9f7761",
@@ -757,7 +832,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O limite de potência é definido pela administração de cada país; não há valor único internacional.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "ed9086623400c2f2",
@@ -767,7 +843,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A identificação por indicativo é obrigatória e deve ocorrer em intervalos curtos.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "1ce202dbd11e6a2c",
@@ -777,7 +854,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Mensagens internacionais de terceiros são vedadas, exceto nessas situações especiais e conforme decisão da administração nacional.",
     "pagina": 38,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8683e19cf9ab0ae7"
   },
   {
     "id": "bf2039e7d482a47d",
@@ -787,7 +865,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Operar com a potência mínima adequada reduz riscos de interferência e mantém a comunicação eficiente.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "76c45938f02076e0",
@@ -797,7 +876,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Quem reduz harmônicos é o filtro passa-baixas na saída do transmissor, não o passa-altas.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "4737ff22f025ff7f",
@@ -807,7 +887,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Baluns/choques de RF mitigam correntes de modo comum, ajudando a evitar interferências.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "0d91ac93fbfcf610",
@@ -817,7 +898,8 @@
     "resposta_correta": false,
     "explicacao_curta": "CL indica encerramento e saída do ar, não permanência em escuta.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "7f3c0ae7836e984c",
@@ -827,7 +909,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Os demais subconjuntos de códigos Q são destinados a aplicações específicas de outros serviços.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "60032420bf79a718",
@@ -837,7 +920,8 @@
     "resposta_correta": false,
     "explicacao_curta": "QRO refere-se a aumentar a potência; quem indica diminuir potência é QRP.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "38a563d42a46ea76",
@@ -847,7 +931,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Breviedade e ordenação por chegada agilizam o atendimento a muitas estações e garantem confirmação eficiente.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "db5042c8bfda2114",
@@ -857,7 +942,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A convenção usual é operar em QRP com ≤ 5 W em CW e ≤ 10 W em SSB.",
     "pagina": 34,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "25a22373a47329ec"
   },
   {
     "id": "5f9094ebccb1931f",
@@ -867,7 +953,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O espectro é administrado pela Anatel como recurso público, compartilhado entre múltiplos serviços.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "2aa3a92836405665",
@@ -877,7 +964,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse é o conceito usado para caracterizar interferências que efetivamente prejudicam o serviço.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "79de4ef8bada46ef",
@@ -887,7 +975,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O Ato 926/2024 traz as características básicas das emissões e permissões por segmento de faixa.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "48693a456992683b",
@@ -897,7 +986,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Embora existam limites de potência, recomenda-se usar a menor potência que atenda ao objetivo do contato.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "48f7f3148b4b348e",
@@ -907,7 +997,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O Ato 926/2024 define quais modos de emissão são permitidos em cada segmento de faixa.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "028407d001bbef65",
@@ -917,7 +1008,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Para ser prejudicial, a interferência deve obstruir, degradar, interromper repetidamente ou comprometer a comunicação.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "85a54930645cfce5",
@@ -927,7 +1019,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O espectro é um recurso público administrado pela Anatel.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "1428812d4c375539",
@@ -937,7 +1030,8 @@
     "resposta_correta": false,
     "explicacao_curta": "As definições exatas dos códigos Q constam no Regulamento de Radiocomunicações da UIT; nacionalmente define-se a faixa de códigos utilizável.",
     "pagina": 20,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "eea073197e17d54f"
   },
   {
     "id": "2ef446d9ca9f2635",
@@ -947,7 +1041,8 @@
     "resposta_correta": true,
     "explicacao_curta": "VHF abrange de 30 a 300 MHz e recebe a denominação de ondas métricas.",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "46f9d6344ca75dc1",
@@ -957,7 +1052,8 @@
     "resposta_correta": false,
     "explicacao_curta": "UHF (300–3000 MHz) corresponde a ondas decimétricas; as ondas centimétricas estão em SHF (3–30 GHz).",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "e5f446489928e949",
@@ -967,7 +1063,8 @@
     "resposta_correta": true,
     "explicacao_curta": "FM modula a frequência, não a amplitude, e é muito usada nas faixas de VHF/UHF.",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "a8b7889973c3959d",
@@ -977,7 +1074,8 @@
     "resposta_correta": true,
     "explicacao_curta": "SSB (single side-band) utiliza apenas uma faixa lateral e é amplamente empregada em HF.",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "fc123ea0f6286bcc",
@@ -987,7 +1085,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em CW a portadora é ligada e desligada em pontos e traços do código Morse, não variada continuamente.",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "b61a7934063e4c31",
@@ -997,7 +1096,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O batimento gera componentes de soma (f1+f2) e de diferença (f1−f2).",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "149f558f3cd19504",
@@ -1007,7 +1107,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em VHF/UHF/SHF predomina a linha de visada, também essencial para enlaces via satélite.",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "31c7127417cdbf4f",
@@ -1017,7 +1118,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A tropodifusão é característica de 300 MHz a 3 GHz e possibilita alcances além do horizonte com sinais fracos.",
     "pagina": 30,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "154def43370b392c"
   },
   {
     "id": "5fb116dd393bff56",
@@ -1027,7 +1129,8 @@
     "resposta_correta": false,
     "explicacao_curta": "As penalidades variam conforme gravidade, reincidência e contexto, podendo incluir multa, suspensão, perda da outorga e inidoneidade.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "aabea3f88af56ff4",
@@ -1037,7 +1140,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A infração independe do conhecimento ou consentimento do titular.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "e3f2b9612be6e536",
@@ -1047,7 +1151,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A autorização para instalar e operar a estação é emitida pela Anatel e atrelada ao certificado do operador.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "ef49c9068275bc5a",
@@ -1057,7 +1162,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A licença autoriza o próprio radioamador; terceiros só podem operar na presença do responsável e sob sua responsabilidade.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "74c931fbdd306ca9",
@@ -1067,7 +1173,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O uso por terceiros é permitido sob supervisão direta, mantendo-se a responsabilidade do titular.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "d3dfdbac6151fac7",
@@ -1077,7 +1184,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Operação em movimento ou em locais variados caracteriza estação móvel ou portátil. A repetidora tem a função de retransmitir sinais para ampliar o alcance.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "dd5508c3ce2f2694",
@@ -1087,7 +1195,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A idade mínima para Classe C é 10 anos.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "a3c28cd0e157a19b",
@@ -1097,7 +1206,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A licença deve indicar o prazo da autorização concedida.",
     "pagina": 44,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a05181ce1aa5e2de"
   },
   {
     "id": "5c225ed542abd914",
@@ -1107,7 +1217,8 @@
     "resposta_correta": true,
     "explicacao_curta": "É exigido que existam estações de comando em número suficiente para permitir a interrupção imediata de interferências causadas pelo satélite.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "9e9632efd0ed5321",
@@ -1117,7 +1228,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É requerido um número suficiente de estações de comando, não apenas uma, para garantir controle e cessação de interferências prejudiciais.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "3525b3c93f221ce6",
@@ -1127,7 +1239,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há a obrigação de verificação das qualificações do operador antes da autorização para operar.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "e8e01f6247a1749c",
@@ -1137,7 +1250,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Recomenda-se demonstrar conhecimento de regulamentos de rádio tanto internacionais quanto nacionais.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "3c78320d324674b0",
@@ -1147,7 +1261,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esses métodos constam do escopo mínimo de conhecimentos recomendados.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "e7bb19a6b2528349",
@@ -1157,7 +1272,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Devem incluir medições e aspectos de compatibilidade eletromagnética, além de práticas para evitar e resolver interferências.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "d7608c7e645c24d5",
@@ -1167,7 +1283,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O plano é um guia voluntário e os planos nacionais podem diferir, devendo ser observados na operação.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "30163fe08fbbd623",
@@ -1177,7 +1294,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A IARU foi fundada em 1925 e reconhece três regiões: 1, 2 e 3, cobrindo, respectivamente, Europa/África/Oriente Médio/Ásia Setentrional; Américas; e Ásia-Pacífico.",
     "pagina": 40,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1df52816d4fb1d46"
   },
   {
     "id": "410b882a0cb06cef",
@@ -1187,7 +1305,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há exigência de tempo mínimo de atividade e aprovação em novos testes, e a inscrição só pode ocorrer após os prazos exigidos.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "79e644ea286c7788",
@@ -1197,7 +1316,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O avanço para Classe A somente pode ser solicitado após decorrido um ano da expedição do COER Classe B.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "427506b99208e0b5",
@@ -1207,7 +1327,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Para menores de 18 anos com COER Classe C, o prazo mínimo para Classe B é de dois anos desde a expedição do COER Classe C.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "d8168701c99bb0e5",
@@ -1217,7 +1338,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Ao mudar de classe, é emitida nova Licença para Funcionamento, condicionada ao pagamento do PPDUR e da TFI.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "986e9a63d1077d98",
@@ -1227,7 +1349,8 @@
     "resposta_correta": false,
     "explicacao_curta": "As condições de uso seguem a classe do operador no controle da estação, não apenas as características da estação.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "7f741d36561d21f5",
@@ -1237,7 +1360,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há uma lista taxativa de casos em que a simultaneidade é permitida; fora deles, não é autorizada.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "3f43e3e430525d35",
@@ -1247,7 +1371,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Para pessoa física, a repetidora pode ser requerida por Classe A ou B; para pessoa jurídica, somente Classe A.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "9dc099711b2704a3",
@@ -1257,7 +1382,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Indicativos especiais são eventuais, vinculados a um evento e não substituem o indicativo regular nem se destinam ao uso cotidiano.",
     "pagina": 46,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "8eab5d106eef5d0d"
   },
   {
     "id": "9f4bd2d7d4ee0800",
@@ -1267,7 +1393,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A IARP somente pode ser emitida a partir de licença de estação móvel; estações fixas brasileiras só podem operar dentro do país.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "6358dfe22ff1fb8f",
@@ -1277,7 +1404,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O estrangeiro está dispensado do COER, mas pode utilizar no Brasil a sua estação móvel, havendo reciprocidade; não se autoriza o uso de estação fixa nessa condição.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "7fc074fc1a077189",
@@ -1287,7 +1415,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A solicitação de licença de estrangeiro exige a posse de CPF.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "ce975220d329dfdb",
@@ -1297,7 +1426,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Na operação de estação brasileira por estrangeiro, é obrigatória a transmissão do indicativo do próprio operador estrangeiro e do operador da estação.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "b67fb305adf8f7ee",
@@ -1307,7 +1437,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A renovação depende, entre outros fatores, da vigência tanto do visto de permanência quanto da licença do país de origem.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "16f12b5108754bec",
@@ -1317,7 +1448,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A repetidora só pode manter a emissão por, no máximo, 5 segundos após a perda do sinal de entrada, e o uso continuado não deve exceder 10 minutos.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "e1dc69c5e75c5895",
@@ -1327,7 +1459,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O acesso às repetidoras não pode ser restringido por codificação, exceto para o telecomando em enlace de subida com estações espaciais.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "4eb477b628a99caa",
@@ -1337,7 +1470,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Na faixa de 60 m, somente a classe A pode operar e há limitação de potência com e.i.r.p. máxima de 25 W.",
     "pagina": 48,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "08d8f95887d54cf9"
   },
   {
     "id": "cf74d4d61a8d00fd",
@@ -1347,7 +1481,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A Anatel pode penalizar tanto empresas (fabricantes, importadores e comerciantes) quanto usuários finais que operem equipamentos irregulares.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "aeca127f0de40eae",
@@ -1357,7 +1492,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em emergências, calamidades, busca e salvamento ou defesa civil, as comunicações emergenciais são prioritárias e exigem a liberação da frequência pelos demais.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "5e26f10a024b1621",
@@ -1367,7 +1503,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O indicativo deve ser usado no início, durante e no término das emissões; é vedada a operação sem identificação.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "2196dee3fac8cd98",
@@ -1377,7 +1514,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nessa situação, a operação só deve ser reiniciada após o recebimento do novo indicativo.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "09e194f8fc9d423b",
@@ -1387,7 +1525,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O indicativo entra em vacância após um ano, e durante esse prazo o antigo titular pode requerê-lo novamente em novo licenciamento.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "600dd3cf9df16d55",
@@ -1397,7 +1536,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A vacância é efetivada na data do processamento da baixa no BDTA pela Anatel.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "9598a46676909011",
@@ -1407,7 +1547,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A convenção de corrente adota o sentido do polo positivo para o negativo.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "ad7ecac34dd2dc84",
@@ -1417,7 +1558,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em CC, a potência é dada por P = V × I.",
     "pagina": 53,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d599d5cc26a6fd56"
   },
   {
     "id": "8f723297a80e9a88",
@@ -1427,7 +1569,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em 2 metros, a frequência de chamada nacional é 146,520 MHz, usada para chamadas gerais e apoio em emergências.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "5355e03e95fc27c0",
@@ -1437,7 +1580,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Os limites são especificados na saída do transmissor. Para e.i.r.p., somam-se ganho de antena e perdas do sistema.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "ad35885192dc3205",
@@ -1447,7 +1591,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O limite para a Classe B é de até 1.000 W na saída do transmissor.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "6c39c5b75619acc7",
@@ -1457,7 +1602,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nessa subfaixa, o limite máximo é 5 W de e.i.r.p., não 1 W.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "4c59ec123e651365",
@@ -1467,7 +1613,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O uso nessa subfaixa é em condição secundária: sem causar interferência prejudicial e sem direito a proteção frente à radionavegação aeronáutica.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "0304d246eeed1bce",
@@ -1477,7 +1624,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O limite de 100 W de e.i.r.p. vale para enlaces terrestres nessas faixas, não para quaisquer aplicações.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "1ebd3c9f3145be66",
@@ -1487,7 +1635,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em 60 m, o limite é de 25 W de e.i.r.p.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "f4800329d7517d8d",
@@ -1497,7 +1646,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Primeiro ocorre a avaliação técnica por um Organismo de Certificação Designado; depois a Anatel concede a homologação autorizando venda e uso.",
     "pagina": 50,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "93065e7906339fb0"
   },
   {
     "id": "b96bcacba5ad4290",
@@ -1507,7 +1657,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A boa prática é respeitar o timer da repetidora e inserir pausas entre passagens.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "5dd4875073a95811",
@@ -1517,7 +1668,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O modo shift/split usa TX e RX em frequências diferentes e alguns rádios permitem que sejam de bandas distintas.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "0fd967fcc490d82e",
@@ -1527,7 +1679,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É possível especificar apenas uma das frequências e o deslocamento (shift), que pode ser positivo ou negativo.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "b5087594f79642dc",
@@ -1537,7 +1690,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O cabo coaxial é mais prático para instalações típicas e, por ser blindado, reduz irradiação indesejada.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "e611197efddb4ebb",
@@ -1547,7 +1701,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Casamento de impedâncias elimina a onda refletida e maximiza a potência entregue à carga.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "bea062eafa3c57e6",
@@ -1557,7 +1712,8 @@
     "resposta_correta": false,
     "explicacao_curta": "ROE alta significa grande fração de energia retornando ao transmissor, com aquecimento e menor eficiência; bom casamento é ROE próxima de 1:1.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "8ce2f901079698f3",
@@ -1567,7 +1723,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Essa aproximação deriva de λ = c/f, usando c ≈ 3×10^8 m/s.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "0373ec3d170193e1",
@@ -1577,7 +1734,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Antenas omnidirecionais irradiam de forma quase uniforme no plano horizontal, não em todas as direções do espaço.",
     "pagina": 27,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "49fabfb458ccf39f"
   },
   {
     "id": "403272db0dcd9a71",
@@ -1587,7 +1745,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O número do indicativo identifica a região de operação principal conforme o estado ou território de licenciamento da estação.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "f27f8e5ad809b57c",
@@ -1597,7 +1756,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A Região 0 é destinada às Ilhas Oceânicas Brasileiras e à Antártica.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "e2152cb7aee66ffe",
@@ -1607,7 +1767,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Minas Gerais corresponde à Região 4 dos indicativos, não à Região 1.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "9ac379bcca42848d",
@@ -1617,7 +1778,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A Região 5 abrange Paraná e Santa Catarina; o Rio Grande do Sul é Região 3.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "86839f61431ee803",
@@ -1627,7 +1789,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Cabe à União organizar e explorar os serviços por meio da Anatel, seguindo as políticas estabelecidas pelo Executivo e Legislativo.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "34b079377ab8576f",
@@ -1637,7 +1800,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A Anatel não explora diretamente os serviços; a exploração cabe a autorizados, permissionários ou concessionários.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "2f280b3c82d47b28",
@@ -1647,7 +1811,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O conceito de telecomunicação inclui meios ópticos (como fibra) e quaisquer processos eletromagnéticos.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "3133965686e68270",
@@ -1657,7 +1822,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A União pode delegar a exploração por concessão, permissão ou autorização; o radioamadorismo é prestado em regime privado mediante autorização.",
     "pagina": 42,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cb2ad74eb32d1672"
   },
   {
     "id": "357f6aafeecba007",
@@ -1667,7 +1833,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Semicondutores têm propriedades entre as de condutores e isolantes, e a dopagem ajusta seu comportamento elétrico.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "d95013a24f9b3d53",
@@ -1677,7 +1844,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em CA, os instrumentos indicam o valor eficaz (RMS), não o valor de pico.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "4f5fe0fc597009aa",
@@ -1687,7 +1855,8 @@
     "resposta_correta": true,
     "explicacao_curta": "XL cresce com a frequência enquanto XC decresce, e ambas são grandezas em ohms.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "08726179c1809385",
@@ -1697,7 +1866,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A reatância indutiva é proporcional à indutância; se L cai pela metade, XL também cai pela metade.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "9d3ba6124fb329e8",
@@ -1707,7 +1877,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para senoides puras, Vpp = 2 × Vp.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "1e96d63165a1e01e",
@@ -1717,7 +1888,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em condições normais de uso, a indutância não depende diretamente da temperatura ambiente.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "aab236f55d1e3908",
@@ -1727,7 +1899,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Campos magnéticos são produzidos por cargas em movimento, ou seja, por correntes elétricas.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "673cbba73aedd9e0",
@@ -1737,7 +1910,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O valor médio de uma senoide em um período é zero; o valor eficaz é cerca de 0,707 do valor de pico.",
     "pagina": 57,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d9c4e1dbff85210b"
   },
   {
     "id": "a06a4636bc41ee25",
@@ -1747,7 +1921,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Impedância reúne os efeitos de resistência e reatância (indutiva e/ou capacitiva) e sua unidade é o ohm.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "6ff1a8001a5ac97c",
@@ -1757,7 +1932,8 @@
     "resposta_correta": false,
     "explicacao_curta": "No indutor, a corrente fica atrasada de 90° em relação à tensão.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "8c878550bd6c3a81",
@@ -1767,7 +1943,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em RLC série, com XL = XC, a impedância é mínima e a corrente se maximiza.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "115d74835cb59786",
@@ -1777,7 +1954,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A potência ativa é P = V × I × cos φ, com V e I em valores eficazes.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "6b33acba77d0af09",
@@ -1787,7 +1965,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A medição de corrente exige conexão em série e o uso da escala e do terminal apropriados.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "ee461aed2e42071f",
@@ -1797,7 +1976,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Além da corrente, o tempo de atuação e o aquecimento influenciam o disparo do fusível.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "e5e756c5d6f8e7d3",
@@ -1807,7 +1987,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O aterramento também protege equipamentos e melhora o desempenho, reduzindo ruídos e interferências e favorecendo a eficiência irradiante.",
     "pagina": 59,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a15184a7f1406199"
   },
   {
     "id": "75954fe484d50e19",
@@ -1817,7 +1998,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Este é o enunciado da Lei das Tensões de Kirchhoff, usada na análise de malhas e elementos em série.",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "4ded49e2b0362aba",
@@ -1827,7 +2009,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em paralelo, a resistência equivalente é sempre menor que a menor resistência do grupo.",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "92bfca32ca999e21",
@@ -1837,7 +2020,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Essa é a convenção do código de cores para resistores de 4 faixas.",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "9354b78d9eabffb0",
@@ -1847,7 +2031,8 @@
     "resposta_correta": false,
     "explicacao_curta": "No multiplicador, marrom representa 10¹; vermelho é que representa 10².",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "7c21588deda53a7e",
@@ -1857,7 +2042,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O diodo conduz no sentido direto e bloqueia no reverso até o limite de ruptura, podendo retificar CA em um semiciclo.",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "377b020682b8c1cc",
@@ -1867,7 +2053,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A carga é medida em coulomb (C) e a capacitância em farad (F); valem a relação C = Q/V.",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "4b6bfbea87bbd733",
@@ -1877,7 +2064,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A indutância cresce com o número de espiras e sua unidade é o henry (H).",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "cc830d8551253a4e",
@@ -1887,7 +2075,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A corrente de base controla a corrente de coletor; pequenas variações na base produzem grandes variações no coletor (ganho β).",
     "pagina": 55,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a1a12c47f27d82ab"
   },
   {
     "id": "26c32480782fe8b1",
@@ -1897,7 +2086,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A modulação digital usa valores discretos (bits), o que a torna mais robusta frente a ruídos e degradações do canal em comparação à AM/FM.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "f6ac26fe58552fe8",
@@ -1907,7 +2097,8 @@
     "resposta_correta": false,
     "explicacao_curta": "ASK varia a amplitude da portadora (alta para “1”, baixa para “0”) mantendo a frequência fixa.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "fa03e4d8a015b2bb",
@@ -1917,7 +2108,8 @@
     "resposta_correta": true,
     "explicacao_curta": "AFSK é uma variação de FSK que usa duas frequências de áudio distintas e tem aplicação difundida em RTTY e APRS.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "ac03f04bb6e3840a",
@@ -1927,7 +2119,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O APRS pode operar em VHF, UHF, HF e via internet, usando digipeaters para cobertura e iGates para encaminhar dados à rede.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "fdc97587dc83aa34",
@@ -1937,7 +2130,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O sistema integra internet e rádio, requer validação do operador e oferece múltiplas formas de acesso.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "abf67e9a201b7d3a",
@@ -1947,7 +2141,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A ANATEL não regula tecnologia; regula apenas o uso do espectro. Os modos devem operar conforme a regulamentação e limites de uso.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "d246c8b32617aae7",
@@ -1957,7 +2152,8 @@
     "resposta_correta": true,
     "explicacao_curta": "SDR desloca funções do hardware para o software, oferecendo flexibilidade, visualização do espectro e, quando previsto, capacidade de transmissão.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "0ee6a7d7de096b43",
@@ -1967,7 +2163,8 @@
     "resposta_correta": false,
     "explicacao_curta": "ACDS são estações automáticas em modos digitais, excetuando-se repetidoras de voz digital e IVG.",
     "pagina": 64,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "cbec25b888a4405e"
   },
   {
     "id": "fef451b33a5c199b",
@@ -1977,7 +2174,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Antinós são os pontos de máxima amplitude em uma onda estacionária.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "c63518aa851f74ac",
@@ -1987,7 +2185,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em ondas estacionárias, o padrão fica parado no meio; não se propaga.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "ce331836ef925f26",
@@ -1997,7 +2196,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Na polarização linear, o campo elétrico varia em um único plano fixo.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "37ec4a7d1af8bb58",
@@ -2007,7 +2207,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na polarização circular, o campo gira em um plano perpendicular à propagação, não paralelo.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "4704aa3e4f818040",
@@ -2017,7 +2218,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Nodes funcionam como pontos de acesso e roteamento em redes de pacotes, como TCP/IP via rádio.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "806eab872d327443",
@@ -2027,7 +2229,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A frequência de excitação pode ser diferente da frequência natural do sistema.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "20bf1e4fda77804a",
@@ -2037,7 +2240,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Diodos detectores retificam RF e produzem sinais de baixa frequência ou contínuos pulsantes.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "5b660bbd707f233c",
@@ -2047,7 +2251,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O coletor apresenta maior amplitude do sinal e o transistor requer ponto Q estável e polarização adequada.",
     "pagina": 63,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "be78aed1958b4c86"
   },
   {
     "id": "4b2e40ac424f3866",
@@ -2057,7 +2262,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para a classe C, a regra geral impõe a letra Y como primeira do sufixo, excetuadas as situações do item 12.2.2.7.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "5ca9e2d24796ab25",
@@ -2067,7 +2273,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nessas situações, a letra identificadora da ilha deve ser a primeira ou única letra do sufixo, não a final.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "cfdc79685e83f728",
@@ -2077,7 +2284,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Na Região Antártica, a letra A é obrigatória como primeira ou única letra do sufixo para as classes A e B.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "ab601f23bce597f1",
@@ -2087,7 +2295,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nesses casos para a classe C, a segunda letra obrigatória do sufixo é W; a primeira é a identificadora da ilha ou da Região Antártica.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "db28c926745170d5",
@@ -2097,7 +2306,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para classes A e B nessas localidades, a letra identificadora da ilha ocupa a primeira ou única posição do sufixo.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "16def7e3f70b42d9",
@@ -2107,7 +2317,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O dígito da UF é obrigatório apenas para faróis e ilhas que não sejam oceânicas, e o uso do dígito 0 é proibido.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "80df1c6c6e073ce3",
@@ -2117,7 +2328,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A regra prevê ausência de vacância e permite a reatribuição logo após o prazo estabelecido no item 12.3.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "1c326d2c7582bfff",
@@ -2127,7 +2339,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em ilhas ou na Região Antártica, para a classe C, a primeira letra do sufixo é a identificadora da ilha ou da região, e a segunda letra deve ser W.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "c2d625964fad30ba"
   },
   {
     "id": "250d568db7da27d3",
@@ -2137,7 +2350,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Essa subfaixa é indicada para DX e possui 50,110 MHz como frequência de chamada.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "94fa42f5489c886a",
@@ -2147,7 +2361,8 @@
     "resposta_correta": false,
     "explicacao_curta": "De 51,110 a 51,500 MHz são entradas de repetidoras, com saídas +500 kHz, e uso exclusivo.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "80dbb3d44f9dd709",
@@ -2157,7 +2372,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Essa subfaixa é reservada a saídas de repetidoras, com as entradas 500 kHz abaixo.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "f30516feadb827f5",
@@ -2167,7 +2383,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em 144,300–144,360 MHz a frequência de chamada indicada é 144,3 MHz; 144,2 MHz está na subfaixa 144,180–144,275 MHz.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "efd4f90b3f7208b6",
@@ -2177,7 +2394,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para uso de satélites nessa subfaixa são permitidos todos os modos requeridos e deve-se evitar transmissão abaixo de 144,0025 MHz.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "397a7c67b5adce63",
@@ -2187,7 +2405,8 @@
     "resposta_correta": true,
     "explicacao_curta": "144,490 MHz é indicada para uplink com a ISS, permitindo o uso de todos os modos necessários ao contato.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "e9167808be786082",
@@ -2197,7 +2416,8 @@
     "resposta_correta": false,
     "explicacao_curta": "145,565–145,575 MHz é destinada a ACDS (APRS), indicada como Modos Digitais, não para fonia FM geral.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "d0373b350e13b70f",
@@ -2207,7 +2427,8 @@
     "resposta_correta": false,
     "explicacao_curta": "De 145,800 a 146,000 MHz a destinação é exclusiva para satélites, não para entradas de repetidoras.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "70ff6b2705ec0218"
   },
   {
     "id": "422ac78086430af5",
@@ -2217,7 +2438,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na medição de tensão, as pontas são conectadas em paralelo ao ponto ou carga a ser medida. Em série é para corrente, não para tensão.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "f1cef6d804c4f8c0",
@@ -2227,7 +2449,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Impedância de entrada elevada reduz o carregamento do circuito e evita alterar significativamente a leitura de tensão.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "6f1bfe9da1385697",
@@ -2237,7 +2460,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Tensão no circuito distorce a leitura de resistência, e componentes em paralelo podem alterar o valor medido, exigindo isolamento do resistor.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "4230a8688256a669",
@@ -2247,7 +2471,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não se deve girar a chave seletora com o instrumento conectado ao circuito. O correto é desconectar antes de mudar a função para evitar danos e leituras incorretas.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "f10dbfc382ab1dbb",
@@ -2257,7 +2482,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O wattímetro é instalado em série com a linha de transmissão, entre o transceptor e a antena. Em paralelo não mede corretamente a potência e pode ser danoso.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "ed14b762a8b430f3",
@@ -2267,7 +2493,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A Yagi-Uda tem polarização linear, que depende da orientação dos elementos: horizontal ou vertical.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "eb58854a9581a582",
@@ -2277,7 +2504,8 @@
     "resposta_correta": false,
     "explicacao_curta": "No RLC série, em ressonância (XL = XC) a impedância é minimizada, não maximizada.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "3201dbe827baed8e",
@@ -2287,7 +2515,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Ondas em fase somam amplitudes; a condição de máxima soma ocorre quando a diferença de caminho é n·λ.",
     "pagina": 61,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "1b4e57882e474673"
   },
   {
     "id": "0fd2d6daff326fe5",
@@ -2297,7 +2526,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para Fernando de Noronha, a primeira letra do sufixo é F, identificando a localidade.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "02e3f63140ea8fac",
@@ -2307,7 +2537,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nas classes A e B na Antártica o prefixo é PY0; PU0 é usado para a classe C.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "592bb046ec8a1a1e",
@@ -2317,7 +2548,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para a classe C na Antártica, usa-se PU0 e o agrupamento de 2 ou 3 letras deve começar com A.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "f827e752f78a0b09",
@@ -2327,7 +2559,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Estrangeiros A e B nesses locais usam PY0 mais três letras, com a primeira Z e a segunda indicando a localidade.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "2b0d16033c8e70e8",
@@ -2337,7 +2570,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Para estrangeiros classe C o formato é PU0 seguido de três letras (não duas), com a primeira Z e a segunda identificando o local.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "cf9d5c8f70b7d08c",
@@ -2347,7 +2581,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O formato previsto é PY0 e um agrupamento de 2 ou 3 letras, com exclusão das combinações reservadas.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "9b56ed5463f55fa7",
@@ -2357,7 +2592,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O dígito é 1 a 9 para unidades da federação e 0 para ilhas, arquipélagos, penedos, atóis ou a Região Antártica.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "2bc714eb5b2ffbf3",
@@ -2367,7 +2603,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O limite é de até 10 caracteres alfanuméricos para indicativos especiais.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "43fcba27c88ce6d5"
   },
   {
     "id": "a252dafaaa21a174",
@@ -2377,7 +2614,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse trecho é reservado exclusivamente às entradas de repetidoras na faixa de 70 cm, com deslocamento de +5 MHz nas saídas.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "f003d3dcc77a597d",
@@ -2387,7 +2625,8 @@
     "resposta_correta": false,
     "explicacao_curta": "As saídas das repetidoras estão em 439,000–440,000 MHz, com entradas a −5 MHz. O intervalo 438,000–439,000 MHz não é exclusivo para saídas.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "a6f0caaa284a344d",
@@ -2397,7 +2636,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Esse segmento é de uso exclusivo para satélites, não para entradas de repetidoras.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "88e9db7a555397ba",
@@ -2407,7 +2647,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há indicação de chamada de DX em 432,100 MHz dentro do segmento de DX na faixa de 70 cm.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "246c3055d7288072",
@@ -2417,7 +2658,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Esse intervalo é destinado a ACDS, não a DV.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "d721b7ff2a5a8b47",
@@ -2427,7 +2669,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nesse intervalo são permitidos todos os modos listados (CW, SSB, AM, FM, DV, modos digitais e demais modos), não apenas CW e SSB.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "e20ee11c010e4922",
@@ -2437,7 +2680,8 @@
     "resposta_correta": true,
     "explicacao_curta": "As entradas de repetidoras nessa faixa ocupam 902,125–903,000 MHz, com saídas a +25 MHz e uso exclusivo.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "46e256804dec0bda",
@@ -2447,7 +2691,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O segmento 927,125–928,000 MHz é reservado exclusivamente às saídas de repetidoras, com entradas a −25 MHz.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "763bcdc7414c5ba4"
   },
   {
     "id": "ff007fee41a7c3b8",
@@ -2457,7 +2702,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O Ato expressamente aprova tais requisitos, na forma do Anexo.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "d5efe3bd6c6c62ac",
@@ -2467,7 +2713,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A vigência ocorre na data da publicação no Diário Oficial da União.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "ddeb597338493765",
@@ -2477,7 +2724,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Ele revoga explicitamente o Ato nº 9.106/2018 sobre requisitos do Serviço de Radioamador.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "3701e847bbabc983",
@@ -2487,7 +2735,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A competência está prevista no inciso VIII do art. 19 da Lei nº 9.472/1997.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "75a8c8ebd4bed51c",
@@ -2497,7 +2746,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O dispositivo legal autoriza tais alterações a qualquer tempo nessas condições.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "9f689a5d5a4b4451",
@@ -2507,7 +2757,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O Modelo de Gestão do Espectro prevê o tratamento por Atos de Requisitos Técnicos no âmbito da Superintendência de Outorga e Recursos à Prestação.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "3aec39b95c1b186e",
@@ -2517,7 +2768,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A retificação corrigiu a referência de Ato nº 826 para Ato nº 926.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "fec92de704c757ac",
@@ -2527,7 +2779,8 @@
     "resposta_correta": false,
     "explicacao_curta": "As contribuições vieram da Consulta Pública nº 66, de 14 de novembro de 2023.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0d4a4b763a81ec13"
   },
   {
     "id": "cfac6caa3a9e5882",
@@ -2537,7 +2790,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para 135,7–137,8 kHz, o limite máximo estabelecido é 1 W e.i.r.p.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "9944dcd9061cd8a1",
@@ -2547,7 +2801,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O limite correto nessa subfaixa é 5 W e.i.r.p., não 1 W.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "924dae490e36b2b5",
@@ -2557,7 +2812,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A indicação é USB acima de 10 MHz e LSB abaixo de 10 MHz para Fonia SSB.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "61a6b5014c5521b4",
@@ -2567,7 +2823,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na faixa de 60 m é indicada a operação em USB, não em LSB.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "60b591a86565e9f0",
@@ -2577,7 +2834,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em emergências, essas comunicações são prioritárias frente às demais aplicações do Serviço de Radioamador.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "93d84e82abc3c2ca",
@@ -2587,7 +2845,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nessa subfaixa, não há direito a proteção contra interferência do Serviço de Radionavegação Aeronáutica e não se pode causar interferência prejudicial a ele.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "aee78599044102ff",
@@ -2597,7 +2856,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há vedação ao uso de salto em frequência e espalhamento espectral abaixo de 440 MHz.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "9df41132ea74a50b",
@@ -2607,7 +2867,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O limite para enlaces terrestres nessas subfaixas é de 100 W e.i.r.p., não 200 W.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "92a1ce8fb534e7d9"
   },
   {
     "id": "dcb98a42c8ad2b8c",
@@ -2617,7 +2878,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A alocação é 430–440 MHz e o uso é para todas as classes de radioamador.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "306ee3c64041f987",
@@ -2627,7 +2889,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na faixa de 33 cm há dois segmentos: 902–907,5 MHz e 915–928 MHz; não há alocação entre 907,5 e 915 MHz.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "7e841998df85e2b5",
@@ -2637,7 +2900,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O intervalo é 1.240–1.300 MHz e o uso é para todas as classes.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "f09d72d2fe571f30",
@@ -2647,7 +2911,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na Classe B o limite é 1.000 W; 1.500 W é o limite da Classe A.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "2de364b11e4c37a7",
@@ -2657,7 +2922,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Os limites são de potência média e levam em conta o duty cycle.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "f8509ccbf2c61459",
@@ -2667,7 +2933,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse intervalo está definido para uso por todas as classes.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "14ff47e5dee71b42",
@@ -2677,7 +2944,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O limite para a Classe C é 100 W de potência média no duty cycle.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "71221c2032adb542",
@@ -2687,7 +2955,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Essas subfaixas são destinadas a todas as classes.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d1abbbcc36dcf973"
   },
   {
     "id": "7cd1c3fe05ef433a",
@@ -2697,7 +2966,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse intervalo está marcado como IBP (exclusivo) na faixa de 20 metros.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "43eccebc82758ca2",
@@ -2707,7 +2977,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em 60 m, o ACDS aparece apenas de 5.366 a 5.366,5 kHz; de 5.354 a 5.366 kHz não há indicação de ACDS.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "c35983a1b482eeaa",
@@ -2717,7 +2988,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esse trecho está designado a satélites na faixa de 2 metros.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "34ff211b5fe7152e",
@@ -2727,7 +2999,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O trecho com ACDS próximo dali é 28.120–28.150 kHz; de 28.150 a 28.190 kHz não está indicado como ACDS exclusivo.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "8e84b9899eb72fe7",
@@ -2737,7 +3010,8 @@
     "resposta_correta": true,
     "explicacao_curta": "No segmento 50,100–50,125 MHz consta a observação: “DX. Frequência de chamada: 50,110 MHz”.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "44c91f5bbacdd06b",
@@ -2747,7 +3021,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nesse intervalo a observação é “DX em SSB”, não CW.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "20f6a7be28022946",
@@ -2757,7 +3032,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há indicação de compartilhamento do uso satelital (uplink) com as demais aplicações nesse intervalo.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "a6a7cff14ce4b132",
@@ -2767,7 +3043,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Além de 144,300 MHz, também há indicação de frequência de chamada em 144,2 MHz.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "475a2bdfde0a1ced"
   },
   {
     "id": "4c8a3532846b24ea",
@@ -2777,7 +3054,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O intervalo 145,200–145,500 MHz é destinado exclusivamente às saídas de repetidoras, com entradas deslocadas em -600 kHz.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "d7e2e4812048ad48",
@@ -2787,7 +3065,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O trecho destina 145,565–145,575 MHz a ACDS (APRS).",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "58f4f9e629eb50e7",
@@ -2797,7 +3076,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Dentro de 146,390–146,600 MHz está indicada a frequência de chamada em FM de 146,520 MHz.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "16b51bf8b254b83b",
@@ -2807,7 +3087,8 @@
     "resposta_correta": true,
     "explicacao_curta": "144,490 MHz é prevista para uplink com a ISS, permitindo todos os modos requeridos.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "e6d3a9f7f5109815",
@@ -2817,7 +3098,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em 70 cm, 438–440 MHz é exclusivo para saídas de repetidoras (entradas -5 MHz); o segmento exclusivo de satélites é 435–438 MHz.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "d79753a55af658fa",
@@ -2827,7 +3109,8 @@
     "resposta_correta": false,
     "explicacao_curta": "222,250–223,400 MHz abriga as entradas de repetidoras (saídas +1600 kHz), com exclusividade; as saídas exclusivas estão em 223,850–225,000 MHz (entradas -1600 kHz).",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "d4838711373458d3",
@@ -2837,7 +3120,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O deslocamento indicado é de 25 MHz: entradas em 902,125–903,000 MHz (saídas +25 MHz) e saídas em 927,125–928,000 MHz (entradas -25 MHz).",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "6ec9e4b5e08eb58d",
@@ -2847,7 +3131,8 @@
     "resposta_correta": false,
     "explicacao_curta": "433,000–433,050 MHz é destinado a ACDS; IVG está em 433,050–433,150 MHz.",
     "pagina": 13,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5bd95437b4852b06"
   },
   {
     "id": "740d3ab5a84534d0",
@@ -2857,7 +3142,8 @@
     "resposta_correta": true,
     "explicacao_curta": "J3E é telefonia analógica em SSB com portadora suprimida e canal único.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "611f875eafbdc891",
@@ -2867,7 +3153,8 @@
     "resposta_correta": false,
     "explicacao_curta": "H3E é faixa lateral única com portadora completa para telefonia analógica; a faixa lateral dupla é A3E.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "7f90fe99bdcf3ed5",
@@ -2877,7 +3164,8 @@
     "resposta_correta": true,
     "explicacao_curta": "F2A usa modulação de frequência, canal único e subportadora moduladora para telegrafia com recepção auditiva.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "3914c684ce947837",
@@ -2887,7 +3175,8 @@
     "resposta_correta": false,
     "explicacao_curta": "F1D é dados em modulação de frequência sem subportadora moduladora.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "7e625be89f6ca71a",
@@ -2897,7 +3186,8 @@
     "resposta_correta": true,
     "explicacao_curta": "G7E emprega modulação de fase e múltiplos canais para telefonia digital.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "a6de7c43c23b9b43",
@@ -2907,7 +3197,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A2A é telegrafia para recepção auditiva em AM e é tratada como fonia AM, não como dados.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "4eac0ef424d56ad5",
@@ -2917,7 +3208,8 @@
     "resposta_correta": true,
     "explicacao_curta": "J2D é dados em SSB com portadora suprimida, canal único e uso de subportadora moduladora.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "770c8303e88ad816",
@@ -2927,7 +3219,8 @@
     "resposta_correta": false,
     "explicacao_curta": "R3C é fac-símile analógico em SSB com portadora reduzida ou de nível variável, não portadora suprimida.",
     "pagina": 22,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "bddd988eac93e3fc"
   },
   {
     "id": "0d39ca8da6b4b0bb",
@@ -2937,7 +3230,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O trecho indica explicitamente 5.650–5.670 MHz como satélites (subida).",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "f20182ec1b246170",
@@ -2947,7 +3241,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A frequência de chamada é 5.760,1 MHz; 5.760,3–5.761 MHz é destinado a emissões piloto.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "7bb861f1cf867a7d",
@@ -2957,7 +3252,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Consta como Frequência de Chamada 10.364 MHz para o segmento 10.000–10.368 MHz.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "d5d5437e9508e98b",
@@ -2967,7 +3263,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Esse segmento pode também ser utilizado para modos de banda estreita e Reflexão Lunar, conforme a nota aplicável.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "16f4c37b6bcc45bd",
@@ -2977,7 +3274,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O trecho aponta 24,125 GHz como frequência preferencial para operação em banda larga nessa faixa.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "0d2ee3e71e8b29a7",
@@ -2987,7 +3285,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A recomendação de uso preferencial é para o segmento de 77,5 GHz a 78 GHz.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "75e02ede34d5572c",
@@ -2997,7 +3296,8 @@
     "resposta_correta": true,
     "explicacao_curta": "N0N é definida como portadora pura, sem modulação e sem conteúdo de informação.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "78a97f726874379c",
@@ -3007,7 +3307,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A2B é faixa lateral dupla com subportadora moduladora, não faixa lateral única.",
     "pagina": 18,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7592d85cabc4425c"
   },
   {
     "id": "b88768712536db27",
@@ -3017,7 +3318,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A designação A3F corresponde à transmissão de FSTV em AM com faixa lateral dupla, canal único e vídeo analógico.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "333743cdccd188bf",
@@ -3027,7 +3329,8 @@
     "resposta_correta": false,
     "explicacao_curta": "No FSTV em FM a emissão correta é F3F; J3F é SSB com portadora suprimida.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "52622fb64124e20c",
@@ -3037,7 +3340,8 @@
     "resposta_correta": true,
     "explicacao_curta": "C3F identifica faixa lateral vestigial para FSTV em SSB, canal único, com informação de vídeo analógica.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "c792eb1ac1061b20",
@@ -3047,7 +3351,8 @@
     "resposta_correta": true,
     "explicacao_curta": "J3C corresponde a SSB com portadora suprimida, canal único, levando fac-símile analógico.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "1e3d4f8ee1b6c7d2",
@@ -3057,7 +3362,8 @@
     "resposta_correta": false,
     "explicacao_curta": "R3F usa portadora reduzida ou de nível variável; a portadora suprimida é identificada por J3F.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "efa8a2a721c8764d",
@@ -3067,7 +3373,8 @@
     "resposta_correta": true,
     "explicacao_curta": "W7D é uma combinação de modos com dois canais e informação quantificada/digital para dados.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "88cc13f48f1916ba",
@@ -3077,7 +3384,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O espaçamento duplex correto nessa faixa é de 5 MHz.",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "4ac3981812ffbdcb",
@@ -3087,7 +3395,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em IVG 430–440 MHz, F1 é 433,065 MHz; o cálculo usa Fn = F1 + BW × (n−1).",
     "pagina": 25,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "16f5a7fd162f606a"
   },
   {
     "id": "754091ba1363608a",
@@ -3097,7 +3406,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A operação é condicionada à classe do COER do operador, que define as permissões de uso das faixas.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "3f462822e8c9c45e",
@@ -3107,7 +3417,8 @@
     "resposta_correta": true,
     "explicacao_curta": "DV identifica voz transmitida digitalmente, distinta dos modos analógicos.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "8fc2bf74fba20020",
@@ -3117,7 +3428,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Na faixa de 60 m, somente radioamadores de Classe A podem operar.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "6f91d9c3eecfe36e",
@@ -3127,7 +3439,8 @@
     "resposta_correta": true,
     "explicacao_curta": "É a potência radiada equivalente à de uma antena isotrópica, usada para caracterizar emissões.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "e4a19e1790a868ba",
@@ -3137,7 +3450,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nesse segmento só as classes A e B podem operar; todas as classes têm acesso apenas a 7.000–7.047 kHz.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "0f442b5859ba407c",
@@ -3147,7 +3461,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Essa é a definição de IVG; IBP designa subfaixa para operação das estações do International Beacon Project.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "8393e5077a7ebf20",
@@ -3157,7 +3472,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Em LSB suprime-se a banda lateral superior e transmite-se a inferior.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "a5e40fb580cb1633",
@@ -3167,7 +3483,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Esse segmento é exclusivo da Classe A; as classes A e B compartilham apenas 21.150–21.300 kHz na faixa de 15 m.",
     "pagina": 2,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7096718561a418cf"
   },
   {
     "id": "759787ff21e5e36b",
@@ -3177,7 +3494,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A elevação à Classe A exige o prazo de um ano do COER Classe B e a aprovação nos três testes específicos citados.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "c4fde4bff46f28b4",
@@ -3187,7 +3505,8 @@
     "resposta_correta": false,
     "explicacao_curta": "As inscrições só podem ser realizadas após encerrados os prazos estabelecidos para a mudança de classe.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "25c46f0735b0c3c8",
@@ -3197,7 +3516,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A aprovação exige acertar a maioria das questões em cada um dos testes individualmente.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "75e4c2f92410aed3",
@@ -3207,7 +3527,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A permissão se aplica aos Estados membros da CITEL que sejam signatários da Convenção Interamericana sobre a Permissão Internacional de Radioamador, de 1995.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "75bbc0c952ed0589",
@@ -3217,7 +3538,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A solicitação é não onerosa e pode ser feita por qualquer radioamador devidamente autorizado a executar o serviço no Brasil.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "bbc06ef33183c58c",
@@ -3227,7 +3549,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Cabe à Superintendência definir, por Ato, a caracterização operacional dos tipos de estação do serviço.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "4361888b39775dc5",
@@ -3237,7 +3560,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O uso e a validade de indicativos especiais ficam limitados ao período de duração do evento.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "afc4c95556017151",
@@ -3247,7 +3571,8 @@
     "resposta_correta": true,
     "explicacao_curta": "É permitido operar o Serviço de Rádio do Cidadão com a própria estação e indicativo, observando as condições desse serviço e usando limites maiores da classe apenas em emergências.",
     "pagina": 5,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "57f950d5365d6f2f"
   },
   {
     "id": "a7b6d67f511860a1",
@@ -3257,7 +3582,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O Serviço de Radioamador é de interesse restrito, em regime privado, voltado a fins pessoais como treinamento, intercomunicação e investigações técnicas, vedado o objetivo comercial.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "75526d4dc3231936",
@@ -3267,7 +3593,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O Serviço Rádio do Cidadão possibilita comunicação apenas entre estações terrestres e em radiotelefonia, não contemplando comunicações marítimas nem radiotelegrafia.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "6d3c384fb0dc0d78",
@@ -3277,7 +3604,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Nessa hipótese, o documento de identificação a constar no Ato é o passaporte ou a carteira de estrangeiro em vigor.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "233045b9af5215af",
@@ -3287,7 +3615,8 @@
     "resposta_correta": false,
     "explicacao_curta": "No regime público, a exploração depende de concessão, que implica o direito de uso das radiofrequências necessárias.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "0add63a45610d331",
@@ -3297,7 +3626,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A norma lista taxativamente os autorizados, restringindo a expedição apenas a essas pessoas e entidades.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "454ae59495afbc7e",
@@ -3307,7 +3637,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O COER é intransferível e tem prazo de validade indeterminado.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "760734ed36f0a1d0",
@@ -3317,7 +3648,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há dispensa possível do COER para estrangeiro, com a exigência de operar conforme sua habilitação original e as regras brasileiras; ao expirar a habilitação original e permanecendo no país, deve atualizá-la ou obter COER.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "38e2aadc03143ca5",
@@ -3327,7 +3659,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Maiores de 18 anos podem obter diretamente a Classe B se aprovados nos testes específicos; a exigência de já ter Classe C e aguardar dois anos aplica-se aos menores de 18 anos, além da aprovação nas provas.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "0f44f7c30b663977"
   },
   {
     "id": "99b16b1736acb33f",
@@ -3337,7 +3670,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Repetidoras podem interligar-se a outras redes e podem utilizar uma ou mais frequências.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "8674fe7b7aa550ad",
@@ -3347,7 +3681,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O uso para fruição de tráfego entre redes é vedado, exceto em caso de emergência.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "7720ea1aec61fc7d",
@@ -3357,7 +3692,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A definição de estação móvel contempla operação em movimento ou em paradas não previamente determinadas.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "6d7e9bef181a99e9",
@@ -3367,7 +3703,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A definição exige operação em plataformas espaciais, com capacidade de transmissão e em altitudes acima da mesosfera.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "153d53fe9611a9ef",
@@ -3377,7 +3714,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O prazo é de um ano a partir da data de licenciamento; usar seis meses está incorreto.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "77f8e7d9e03d46fc",
@@ -3387,7 +3725,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A revogação ocorre quando a repetidora fica inativa por período maior que um ano.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "e12dea85c085ed5a",
@@ -3397,7 +3736,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nesses casos, deve ser indicado um radioamador Classe A responsável pela operação da estação.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "f5542552d34610b6",
@@ -3407,7 +3747,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Essas organizações estão previstas entre os possíveis titulares da licença de repetidora.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "a99222b0fe7dc1fe"
   },
   {
     "id": "57c54867500152f0",
@@ -3417,7 +3758,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A prioridade às comunicações de emergência é obrigatória em todas as faixas e deve-se deixar espaço entre transmissões para que pedidos de socorro possam ser feitos.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "62edf61be27f47a7",
@@ -3427,7 +3769,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O prazo para adaptação das outorgas do SMGS ao SMP é de até 24 meses, não 12 meses.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "9f492523e06f2f34",
@@ -3437,7 +3780,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Há discricionariedade para alterar a designação de indicativos e a gestão é feita pela Superintendência competente, observando as faixas designadas por organismos internacionais.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "2dcbae54365e9d9e",
@@ -3447,7 +3791,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A alteração da designação de indicativos pode ocorrer a qualquer tempo, mesmo com outorgas vigentes.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "8b44651d0bb1c9e8",
@@ -3457,7 +3802,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Serviços descontinuados não recebem novas autorizações nem novas autorizações de uso de radiofrequências associadas.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "4cb1c0b5cd466517",
@@ -3467,7 +3813,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Tais autorizações permanecem válidas até o fim do prazo previsto, sendo vedada a prorrogação.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "03465aed789fa624",
@@ -3477,7 +3824,8 @@
     "resposta_correta": true,
     "explicacao_curta": "As licenças vigentes seguem válidas até o término do prazo, mas não podem ser prorrogadas.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "04244770f93844bf",
@@ -3487,7 +3835,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Não serão licenciadas novas estações associadas a serviços descontinuados, sem exceção transitória.",
     "pagina": 7,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "352af9f2d1461ab0"
   },
   {
     "id": "16b0488dbab1a618",
@@ -3497,7 +3846,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O indicativo identifica a estação e deve ser anunciado no início, ao longo e no fim das transmissões ou comunicados.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "f4424df9cd7983b6",
@@ -3507,7 +3857,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É vedado o uso de palavras obscenas e ofensivas, sem exceções de concordância entre participantes.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "b6e0f0540127ccdd",
@@ -3517,7 +3868,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A operação por terceiro sem COER é permitida, mas exige supervisão do responsável com COER e respeito às regras.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "9afb78d2c7bef80e",
@@ -3527,7 +3879,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Há exceções: é permitida em situações de emergência, desastre ou quando houver acordo específico com reciprocidade.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "221638fbf450e372",
@@ -3537,7 +3890,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A utilização deve respeitar as faixas associadas à classe do operador e o Ato de requisitos técnicos e operacionais.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "4ae76af17c146b00",
@@ -3547,7 +3901,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O prazo de vigência é de 20 anos, não de 10 anos.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "047509b10bf1d3d8",
@@ -3557,7 +3912,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A alteração de classe implica nova licença e pagamento do Preço Público por Direito de Uso de Radiofrequência e da Taxa de Fiscalização de Instalação.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "3fe37261cbed15bb",
@@ -3567,7 +3923,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Estações móveis não possuem endereço; deve ser informado o endereço da sede da entidade.",
     "pagina": 1,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "889c4c6f7629b2dd"
   },
   {
     "id": "528978052493efe3",
@@ -3577,7 +3934,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Pessoa jurídica deve indicar o radioamador habilitado responsável pelas operações da estação ao solicitar a licença.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "ae41676d32347516",
@@ -3587,7 +3945,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A instalação deve atender às normas da Anatel sobre exposição a campos elétricos, magnéticos e eletromagnéticos associados a estações transmissoras.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "61b70128d56c9857",
@@ -3597,7 +3956,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O direito de instalar existe, mas deve observar zonas de proteção e as normas federais, estaduais e municipais aplicáveis.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "8d25d6e1fd21ef0c",
@@ -3607,7 +3967,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Com IARP, o estrangeiro deve cumprir as normas operacionais brasileiras, inclusive faixas, classes e potências máximas.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "6faf0453e6dd0bda",
@@ -3617,7 +3978,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É exigida carta de coordenação de frequências da IARU ao respectivo satélite, além de seguir os procedimentos da Anatel.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "ac88c5765f86b424",
@@ -3627,7 +3989,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Para requerer a IARP é necessário ser titular do COER e também possuir licença para estação móvel de radioamador regular perante a Anatel.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "a4debe2151e9f6f6",
@@ -3637,7 +4000,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A concessão do indicativo especial depende da apresentação de informações sobre o evento.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "7437b66ab6300fca",
@@ -3647,7 +4011,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A IARP vale por um ano, ou até a data de expiração da autorização de uso de radiofrequência do titular, o que ocorrer primeiro.",
     "pagina": 3,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "d6064c3495efa840"
   },
   {
     "id": "4501bd32ff5b283b",
@@ -3657,7 +4022,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A multiplicidade de faixas só é autorizada nesses quatro casos específicos.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "41610b79c8660fec",
@@ -3667,7 +4033,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Transmissões simultâneas em várias faixas são restritas a casos específicos; conversas rotineiras não se enquadram.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "2685b0ab606ca6c8",
@@ -3677,7 +4044,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Toda estação deve se identificar; operar sem identificação é proibido.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "e8ce42d4dc2cd99b",
@@ -3687,7 +4055,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Repetidoras precisam identificar-se automaticamente até a cada 1 hora e ter capacidade de controle e desligamento remoto.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "c4ff1bff17a8c8ad",
@@ -3697,7 +4066,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O tempo máximo de cauda é de 5 segundos, não 15.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "b2688a400ce4e3e5",
@@ -3707,7 +4077,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O uso continuado não deve exceder 10 minutos e é obrigatório desligamento automático após esse período, com temporização reiniciada a cada pausa no sinal recebido.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "85536efb5a32ae6f",
@@ -3717,7 +4088,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O Código Q permitido se limita às séries QRA a QUZ e o alfabeto fonético aceito é o da UIT.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "961bd40eb6b14068",
@@ -3727,7 +4099,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Devem ser mencionados os indicativos de chamada de ambas as estações, completos e sem acréscimos ou supressões.",
     "pagina": 4,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "7f67f65bd17aba4e"
   },
   {
     "id": "6319422647bfb4e0",
@@ -3737,7 +4110,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O indicativo efetivo pode ser escolhido pelo radioamador, desde que o indicativo pretendido esteja disponível.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "6a86be7033c5c236",
@@ -3747,7 +4121,8 @@
     "resposta_correta": false,
     "explicacao_curta": "A vacância só ocorre após um ano da exclusão; dentro desse período o antigo autorizado pode solicitá-lo em novo licenciamento.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "dd10ebb75321290c",
@@ -3757,7 +4132,8 @@
     "resposta_correta": true,
     "explicacao_curta": "No óbito do titular, não há período de carência: a vacância ocorre no dia do processamento da baixa no BDTA.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "775e5bf2bc10ba6b",
@@ -3767,7 +4143,8 @@
     "resposta_correta": false,
     "explicacao_curta": "É vedado o compartilhamento ou uso simultâneo do mesmo indicativo entre estações.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "0e3c4771cb0158ee",
@@ -3777,7 +4154,8 @@
     "resposta_correta": true,
     "explicacao_curta": "A autorização do indicativo especial tem validade restrita ao período do evento.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "432da1dacda46b26",
@@ -3787,7 +4165,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Concede-se um único indicativo especial por vez a cada estação de radioamador.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "d14571b7f4b5c200",
@@ -3797,7 +4176,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O prefixo precisa ser compatível com as designações internacionais aplicáveis ao Brasil.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "342634656873d3fd",
@@ -3807,7 +4187,8 @@
     "resposta_correta": false,
     "explicacao_curta": "São vedados, entre outros, DDD, SNM, SOS, SVH, TTT, XXX, PAN, RRR e a série QAA a QZZ; \"SSB\" não consta dessa lista.",
     "pagina": 8,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "5125a2f5748c66e6"
   },
   {
     "id": "3d26ab49549141ee",
@@ -3817,7 +4198,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Para as classes A e B, o agrupamento pode ter duas ou três letras, não necessariamente três.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "b1404146ab5ac0ad",
@@ -3827,7 +4209,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na classe C, o prefixo é PU, seguido do número da região e de três letras.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "d84034af97ecf9e2",
@@ -3837,7 +4220,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Em ilhas para a classe C, usa-se PU0 e a primeira letra do sufixo identifica a localidade.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "8c488ec4a5ba37ae",
@@ -3847,7 +4231,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para a classe C na Antártica, o sufixo pode ter duas ou três letras e deve iniciar com A.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "b141633a7d376a29",
@@ -3857,7 +4242,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nessas condições, o prefixo é PY0, e o agrupamento de três letras começa com Z.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "a33b9034f4753d45",
@@ -3867,7 +4253,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para a Ilha de Trindade, a letra identificadora é T.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "fe7b9946e77c902f",
@@ -3877,7 +4264,8 @@
     "resposta_correta": false,
     "explicacao_curta": "O indicativo especial pode ter até 10 caracteres alfanuméricos.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "1c555b6878e2a00a",
@@ -3887,7 +4275,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para Estação Espacial, usa-se PY0 com duas ou três letras, excetuadas combinações reservadas.",
     "pagina": 10,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "18651e3e03f6e6e9"
   },
   {
     "id": "0ae7560b28267289",
@@ -3897,7 +4286,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Esses prefixos são abertos às três classes; o dígito é 0 para ilhas/Antártica e 1 a 9 para Unidades da Federação.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "ceab81d448d53f49",
@@ -3907,7 +4297,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Somente radioamadores da classe A podem solicitá-los, com comprovação de participação em pelo menos dois concursos internacionais.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "b8701f755dfbcedb",
@@ -3917,7 +4308,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na classe C, a primeira letra do sufixo identifica a ilha ou a Região Antártica e a segunda é W.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "d7f2f8c5f6444b8e",
@@ -3927,7 +4319,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Para A e B, a letra inicial (ou única) do sufixo é a que identifica a ilha.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "c727af07caa4bcdf",
@@ -3937,7 +4330,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Nesses casos, usa-se obrigatoriamente o dígito da Unidade da Federação; o uso do dígito 0 é proibido.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "d0b0f69df957d640",
@@ -3947,7 +4341,8 @@
     "resposta_correta": true,
     "explicacao_curta": "Encerrado o prazo previsto, o indicativo pode ser atribuído a outra estação sem intervalo.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "afd69ffdf4cafccf",
@@ -3957,7 +4352,8 @@
     "resposta_correta": false,
     "explicacao_curta": "Na Antártica, a primeira ou única letra do sufixo, para A e B, deve ser A.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "6034fe360b12ca0f",
@@ -3967,7 +4363,8 @@
     "resposta_correta": true,
     "explicacao_curta": "O dígito identificador é 0 nesses casos e de 1 a 9 quando se referir a Unidade da Federação.",
     "pagina": 12,
-    "origem": "documento"
+    "origem": "documento",
+    "trecho_id": "f297431d2f25d40e"
   },
   {
     "id": "9f57acbca1a621db",
