@@ -7,7 +7,8 @@ import TelaResultado from "@/components/TelaResultado";
 import Dashboard from "@/components/Dashboard";
 import { useHistorico } from "@/hooks/useHistorico";
 import { sortearSimulado } from "@/lib/questoes";
-import type { EscolhaTema, Questao, Resposta } from "@/lib/tipos";
+import type { Classe, EscolhaTema, Questao, Resposta } from "@/lib/tipos";
+import { CLASSE_PADRAO } from "@/lib/constantes";
 
 type Etapa = "inicio" | "simulado" | "resultado";
 
@@ -24,14 +25,17 @@ export default function Home() {
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [respostas, setRespostas] = useState<Resposta[]>([]);
   const [escolhaAtual, setEscolhaAtual] = useState<EscolhaTema>("todos");
+  const [classeAtual, setClasseAtual] = useState<Classe>(CLASSE_PADRAO);
   const { historico, carregado, registrar, limpar } = useHistorico();
 
-  function iniciar(escolha: EscolhaTema, quantidade: number) {
+  function iniciar(escolha: EscolhaTema, quantidade: number, classe: Classe) {
     // O histórico entra no sorteio: o que você errou volta antes, o que já
-    // domina rareia. Sem histórico, o sorteio é uniforme.
-    setQuestoes(sortearSimulado(escolha, quantidade, historico));
+    // domina rareia. Sem histórico, o sorteio é uniforme. A classe define o
+    // acervo elegível — o acréscimo técnico da Classe A não cai em B nem em C.
+    setQuestoes(sortearSimulado(escolha, quantidade, historico, classe));
     setRespostas([]);
     setEscolhaAtual(escolha);
+    setClasseAtual(classe);
     setEtapa("simulado");
   }
 
@@ -76,6 +80,7 @@ export default function Home() {
         <TelaResultado
           respostas={respostas}
           onReiniciar={() => setEtapa("inicio")}
+          classe={classeAtual}
         />
       )}
     </main>

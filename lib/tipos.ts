@@ -15,6 +15,25 @@ export type Tema =
  */
 export type Origem = "documento" | "ementa";
 
+/** As três classes de radioamador, do Ato nº 3448/2026. */
+export type Classe = "A" | "B" | "C";
+
+/**
+ * Menor classe cujo programa já cobre o conteúdo da questão, entre as que o
+ * banco distingue.
+ *
+ * A ementa do item 11.4 é cumulativa: a de Eletrônica da Classe B inclui "todo
+ * o conteúdo" da Classe C, e a da Classe A inclui "todo o conteúdo" da B. Já
+ * Legislação e Técnica e Ética têm uma única ementa para as três classes.
+ *
+ * - `B`: está no programa até a Classe B — logo vale também para a Classe C,
+ *   que cobra um subconjunto disso.
+ * - `A`: é o acréscimo exclusivo da Classe A (análise de circuitos CA,
+ *   eletrônica de RF, teoria técnica de antenas, fenômenos de propagação).
+ *   Não pode cair num simulado de Classe B ou C.
+ */
+export type Nivel = "B" | "A";
+
 /** Formato de cada item de public/banco_questoes.json. */
 export interface Questao {
   id: string;
@@ -26,6 +45,7 @@ export interface Questao {
   /** Página do PDF, usada pelo visualizador da Fase 4. */
   pagina: number;
   origem: Origem;
+  nivel: Nivel;
   /**
    * Chave do trecho literal que gerou a afirmação, em public/trechos.json.
    * Ausente quando `origem` é `ementa`: essas questões nascem de um tópico da

@@ -1,5 +1,5 @@
-import { sortearSimulado, disponiveis, contarPorTema, BANCO } from "@/lib/questoes";
-import { TEMAS, QUESTOES_POR_MATERIA } from "@/lib/constantes";
+import { sortearSimulado, disponiveis, contarPorTema, acervo, BANCO } from "@/lib/questoes";
+import { TEMAS, FORMATO } from "@/lib/constantes";
 import type { Tema } from "@/lib/tipos";
 
 let falhas = 0;
@@ -34,7 +34,7 @@ for (let i = 0; i < 200; i++) {
   const porTema = TEMAS.map((t) => s.filter((q) => q.tema === t).length);
   checar(
     "bateria de 60 traz 20 de cada matéria (espelha a prova real)",
-    porTema.every((n) => n === QUESTOES_POR_MATERIA),
+    porTema.every((n) => n === FORMATO.B.questoes),
     porTema.join("/"),
   );
 }
@@ -86,8 +86,10 @@ for (const tema of TEMAS) {
   checar("temas vêm intercalados, não em blocos", agrupadas === 0, `${agrupadas}/100 agrupadas`);
 }
 
-// 9. disponiveis() bate com o banco
-checar("disponiveis('todos')", disponiveis("todos") === BANCO.length);
+// 9. disponiveis() bate com o acervo da classe padrão (B), que exclui o
+// acréscimo técnico exclusivo da Classe A.
+checar("disponiveis('todos')", disponiveis("todos") === acervo("B").length,
+  `${disponiveis("todos")} de ${BANCO.length} no banco inteiro`);
 for (const t of TEMAS) checar(`disponiveis("${t.slice(0, 18)}")`, disponiveis(t) === contagem[t]);
 
 // 10. Integridade do banco consumido pelo app
@@ -101,7 +103,8 @@ for (const t of TEMAS) checar(`disponiveis("${t.slice(0, 18)}")`, disponiveis(t)
       q.explicacao_curta.length > 0 &&
       Number.isInteger(q.pagina) &&
       q.pagina >= 1 &&
-      (q.origem === "documento" || q.origem === "ementa"),
+      (q.origem === "documento" || q.origem === "ementa") &&
+      (q.nivel === "B" || q.nivel === "A"),
   );
   checar("todas as questões do banco têm formato válido", ok);
 

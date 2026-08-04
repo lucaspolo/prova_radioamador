@@ -5,7 +5,7 @@ import {
   type Desempenho,
 } from "@/lib/prioridade";
 import { VERSAO_HISTORICO, type Historico, type SimuladoSalvo } from "@/lib/historico";
-import { sortearSimulado, BANCO } from "@/lib/questoes";
+import { sortearSimulado, acervo } from "@/lib/questoes";
 import type { Tema } from "@/lib/tipos";
 
 let falhas = 0;
@@ -15,7 +15,9 @@ function checar(nome: string, ok: boolean, detalhe = "") {
 }
 
 const TEMA: Tema = "Conhecimentos de Eletrônica e Eletricidade";
-const doTema = BANCO.filter((q) => q.tema === TEMA);
+// O acervo da classe padrão (B), que é o que `sortearSimulado` sorteia sem
+// classe explícita — o acréscimo técnico da Classe A fica de fora.
+const doTema = acervo("B").filter((q) => q.tema === TEMA);
 
 /** Média de quantas questões de `alvo` aparecem numa bateria de 20. */
 function mediaDe(h: Historico, alvo: string[], rodadas = 400): number {

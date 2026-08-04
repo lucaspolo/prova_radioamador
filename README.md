@@ -1,7 +1,7 @@
-# Simulados — Radioamador Classe B (Anatel)
+# Simulados — Radioamador (Anatel)
 
 Plataforma de simulados de Verdadeiro/Falso para o exame de certificação de
-radioamador **Classe B** da Anatel.
+radioamador da Anatel, nas classes **A**, **B** e **C**.
 
 O banco de questões é gerado por um script Python que lê os PDFs oficiais de
 estudo e os estrutura com um LLM. O app é um site estático em Next.js que sorteia
@@ -10,16 +10,37 @@ baterias a partir desse banco.
 ## A prova real
 
 Conforme o **Ato nº 3448, de 11 de março de 2026** (item 11.2 e 11.3), o exame é
-composto de questões objetivas na modalidade *"certo ou errado"*. Para a Classe B:
+composto de questões objetivas na modalidade *"certo ou errado"*. As três
+matérias são as mesmas nas três classes; muda o quantitativo:
 
-| Matéria | Questões | Mínimo para aprovação | Tempo |
+| Classe | Questões por matéria | Mínimo para aprovação | Tempo |
 | --- | --- | --- | --- |
-| Legislação de Telecomunicações | 20 | 11 | 30 min |
-| Técnica e Ética Operacional | 20 | 11 | 30 min |
-| Conhecimentos de Eletrônica e Eletricidade | 20 | 11 | 30 min |
+| C | 15 | 8 | 20 min |
+| B | 20 | 11 | 30 min |
+| A | 30 | 16 | 40 min |
 
-O app espelha essa estrutura: a bateria padrão tem 20 questões e o veredito usa
-o corte oficial de 11 acertos.
+O app espelha essa estrutura: escolhida a classe, a bateria padrão passa a ter o
+tamanho da prova real e o veredito usa o corte oficial correspondente.
+
+### O que muda entre as classes
+
+A ementa do item 11.4 traz **uma única lista** de Legislação de Telecomunicações
+e outra de Técnica e Ética Operacional, válidas para as três classes. Só
+Eletrônica é escalonada, e de forma cumulativa: a Classe B é "todo o conteúdo"
+da C mais dez tópicos, e a Classe A é todo o conteúdo da B mais quatro.
+
+Por isso cada questão carrega um campo `nivel`:
+
+- `B` — está no programa até a Classe B. Vale também para a Classe C, cuja
+  ementa é um subconjunto. É o acervo padrão.
+- `A` — o acréscimo exclusivo da Classe A: análise de circuitos RLC série e
+  paralelo, fator de qualidade, impedância de ponto de alimentação, ganho em
+  dBi/dBd, classes de operação de amplificadores de RF, superposição de ondas.
+  Só entra em simulados de Classe A.
+
+Quem estuda para a Classe C vê mais do que cai: o banco inclui cálculos
+(código de cores, Kirchhoff, associação de resistores) que só são cobrados a
+partir da Classe B. A tela inicial avisa.
 
 ## Estrutura
 
@@ -30,16 +51,19 @@ hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
-testes/       sorteio, histórico, PDFs e renderização
-public/       banco_questoes.json e pdfs/
+testes/       sorteio, histórico, prioridade, PDFs, trechos, classes e render
+public/       banco_questoes.json, trechos.json e pdfs/
 ```
 
 ## Funcionalidades
 
+- Escolha da classe (A, B ou C), que define o acervo elegível, o tamanho da
+  bateria padrão e o critério de aprovação.
 - Bateria por matéria ou com os três temas misturados. Em "Todos os Temas" as
-  vagas são divididas igualmente, então 60 questões reproduzem a prova real
-  (20 de cada) em vez de refletir o desequilíbrio do banco.
-- Feedback imediato a cada questão, com explicação e indicação da fonte.
+  vagas são divididas igualmente, então uma bateria de três matérias reproduz a
+  prova real em vez de refletir o desequilíbrio do banco.
+- Feedback imediato a cada questão, com explicação e indicação da fonte, mais o
+  **trecho literal do PDF** que originou a afirmação, com a passagem destacada.
 - Atalhos de teclado: `V` / `F` para responder, `Enter` para avançar.
 - Histórico no navegador (`localStorage`) e dashboard com o percentual de
   acerto por matéria contra a linha de corte oficial de 55%.

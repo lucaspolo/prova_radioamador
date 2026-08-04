@@ -127,6 +127,21 @@ CONHECIMENTOS DE ELETRÔNICA E ELETRICIDADE (CLASSE B)
 - COMUNICAÇÕES DIGITAIS: Conceitos sobre modulações ASK, FSK e PSK."""
 
 
+# Acrescimo da Classe A sobre a Classe B, transcrito do mesmo item 11.4. A
+# ementa e cumulativa: a Classe A e' definida como "todo o conteudo especificado
+# nos Conhecimentos de Eletronica e Eletricidade" (o da Classe B) mais os quatro
+# topicos abaixo. Legislacao e Tecnica e Etica nao tem ementa por classe — o Ato
+# traz uma unica lista para as tres —, entao so' Eletronica ganha um passe
+# proprio. O que muda para a Classe A e' o formato: 30 questoes, minimo 16, 40
+# minutos por materia.
+EMENTA_CLASSE_A = """\
+CONHECIMENTOS TÉCNICOS DE ELETRÔNICA E ELETRICIDADE (CLASSE A)
+- TEORIA DE CIRCUITOS: Análise de circuitos CA série e paralelo. Conhecimentos técnicos de impedância, reatância, capacitância e indutância em componentes eletrônicos.
+- TEORIA DE ONDAS: Conhecimentos técnicos sobre funcionamento e aplicação dos diversos tipos de antenas.
+- ELETRÔNICA DE RF: Conhecimentos técnicos de funcionamento e aplicação de componentes semicondutores em circuitos de transmissão.
+- FENÔMENOS DE PROPAGAÇÃO: Conceitos técnicos sobre polarização, ondas estacionárias, interferências, superposição e ressonância."""
+
+
 # ---------------------------------------------------------------------------
 # Schema de saida do LLM (Structured Outputs, strict)
 # ---------------------------------------------------------------------------
@@ -311,6 +326,55 @@ EMENTA OFICIAL DE ELETRÔNICA E ELETRICIDADE DA CLASSE B:
 {EMENTA_CLASSE_B.split("CONHECIMENTOS DE ELETRÔNICA E ELETRICIDADE (CLASSE B)")[1].strip()}"""
 
 
+PROMPT_SISTEMA_CLASSE_A = f"""\
+Você é um examinador da Anatel que elabora questões de ELETRÔNICA E ELETRICIDADE \
+para o exame de radioamador CLASSE A, no formato oficial "certo ou errado".
+
+A Classe A é o nível mais alto: a ementa exige CONHECIMENTOS TÉCNICOS, e não \
+noções. Sua tarefa é gerar questões de análise técnica e cálculo sobre o tópico \
+solicitado, no patamar acima do exigido na Classe B.
+
+REGRAS OBRIGATÓRIAS
+
+1. CORREÇÃO ARITMÉTICA: este é o ponto crítico. Calcule o resultado passo a passo \
+antes de decidir `resposta_correta`. Confira a conta uma segunda vez. Uma questão \
+com erro de cálculo é pior do que nenhuma questão. Prefira números que fechem \
+limpos; quando o resultado for irracional (raízes, π), arredonde de forma \
+explícita no enunciado e na explicação.
+
+2. UNIDADES: use unidades corretas e coerentes (V, A, Ω, W, Hz, F, H, dB, dBi, \
+dBd). Atenção a múltiplos e submúltiplos (kΩ, mA, µF, µH, MHz, pF).
+
+3. EQUILÍBRIO: aproximadamente metade das questões com resposta_correta=true e \
+metade false. Nas falsas, apresente o erro que um candidato bem preparado \
+cometeria — somar reatâncias como se fossem resistências, trocar o sinal do \
+ângulo de fase, confundir dBi com dBd, inverter a fórmula da ressonância.
+
+4. TEMA: use sempre exatamente "Conhecimentos de Eletrônica e Eletricidade".
+
+5. AUTOSSUFICIÊNCIA: enuncie todos os dados dentro da própria afirmação, \
+inclusive a frequência de operação quando a resposta depender dela.
+
+6. EXPLICAÇÃO: mostre a fórmula e o resultado correto. \
+Exemplo: "XL = 2πfL = 2π · 7.000.000 · 2,2e-6 ≈ 96,8 Ω."
+
+7. NÍVEL: Classe A. É AQUI que esta tarefa se distingue: exija análise, e não \
+reconhecimento. Circuitos RLC série e paralelo com ângulo de fase e fator de \
+qualidade, impedância de ponto de alimentação de antenas, ganho em dBi/dBd, \
+coeficiente de reflexão e ROE a partir de impedâncias, classes de operação de \
+amplificadores de RF, superposição de ondas. NÃO gere questões de nível Classe B \
+(ler código de cores, aplicar V=RI direto, somar resistores em série): essas já \
+existem no banco e não acrescentam nada ao candidato da Classe A.
+
+8. ESCOPO: atenha-se ao acréscimo da Classe A descrito abaixo. Não invente \
+exigências regulatórias brasileiras nem valores normativos.
+
+9. Escreva em português do Brasil.
+
+ACRÉSCIMO OFICIAL DA CLASSE A SOBRE A CLASSE B:
+{EMENTA_CLASSE_A.split("(CLASSE A)")[1].strip()}"""
+
+
 PROMPT_SISTEMA_TECNICA = f"""\
 Você é um examinador da Anatel que elabora questões de TÉCNICA E ÉTICA \
 OPERACIONAL para o exame de radioamador CLASSE B, no formato oficial "certo ou \
@@ -410,16 +474,45 @@ TOPICOS_ELETRONICA = [
     ("Potência elétrica e Lei de Joule: cálculo de potência e dissipação", 8, 54),
     ("Código de cores de resistores: leitura do valor e da tolerância", 8, 55),
     ("Associação de resistores em série e em paralelo: resistência equivalente", 8, 55),
-    ("Leis de Kirchhoff das correntes e das tensões", 6, 54),
+    ("Leis de Kirchhoff das correntes e das tensões", 6, 55),
     ("Múltiplos e submúltiplos de unidades elétricas e conversões", 6, 54),
     ("Capacitância, indutância, reatância e impedância em circuitos CA", 8, 58),
-    ("Ondulatória: frequência, período, amplitude e comprimento de onda", 8, 57),
-    ("Espectro eletromagnético e as faixas VLF, LF, MF, HF, VHF, UHF e SHF", 6, 57),
-    ("Condutores, semicondutores e isolantes; diodos e transistores", 6, 55),
+    ("Ondulatória: frequência, período, amplitude e comprimento de onda", 8, 58),
+    ("Espectro eletromagnético e as faixas VLF, LF, MF, HF, VHF, UHF e SHF", 6, 29),
+    ("Condutores, semicondutores e isolantes; diodos e transistores", 6, 56),
     ("Instrumentos de medição: multímetro, wattímetro e medidor de ROE (SWR)", 6, 60),
     ("Teoria de antenas: dipolo, ganho, polarização, ROE e casamento de impedância", 8, 61),
     ("Modulações digitais ASK, FSK e PSK; modulação e demodulação", 6, 63),
     ("Proteção elétrica: fusíveis, disjuntores e aterramento", 5, 59),
+]
+
+# Acrescimo da Classe A. As paginas foram conferidas contra o sumario real da
+# Cartilha: 5.3-5.6 (impedancia, fase, RLC, potencia CA) na 59; 8.1-8.3 (antenas)
+# na 61; 9.1-9.5 (ressonancia, superposicao, ondas estacionarias, polarizacao) na
+# 62; 10.1-10.2 (diodos e transistores em RF) na 63.
+TOPICOS_CLASSE_A = [
+    ("Análise de circuitos RLC em série: impedância, ângulo de fase entre tensão "
+     "e corrente, e comportamento indutivo ou capacitivo", 8, 59),
+    ("Análise de circuitos RLC em paralelo: impedância equivalente, correntes nos "
+     "ramos e comportamento na ressonância", 8, 59),
+    ("Frequência de ressonância, fator de qualidade (Q), largura de banda e "
+     "seletividade em circuitos sintonizados", 8, 59),
+    ("Cálculo de reatância indutiva e capacitiva em função da frequência, e "
+     "potência real, aparente e fator de potência em CA", 8, 59),
+    ("Teoria técnica de antenas: impedância de ponto de alimentação, ganho em "
+     "dBi e dBd, diagrama de irradiação e relação frente-costas", 8, 61),
+    ("Antenas Yagi-Uda, dipolo de meia onda, vertical de quarto de onda e plano "
+     "de terra: dimensionamento em função do comprimento de onda", 8, 61),
+    ("Linhas de transmissão: impedância característica, coeficiente de reflexão, "
+     "ROE calculada a partir das impedâncias e perda de retorno", 8, 61),
+    ("Eletrônica de RF: transistores bipolares e FET em amplificadores de "
+     "potência, classes de operação A, AB, B e C, rendimento e linearidade", 8, 63),
+    ("Eletrônica de RF: diodos em misturadores, detectores e multiplicadores; "
+     "osciladores e estabilidade de frequência em transmissores", 6, 63),
+    ("Fenômenos de propagação: polarização de ondas, superposição, interferência "
+     "construtiva e destrutiva, e ressonância", 8, 62),
+    ("Ondas estacionárias: formação, nós e ventres, relação com o descasamento "
+     "de impedância e efeito sobre a potência transferida", 6, 62),
 ]
 
 # Tecnica e Etica e o tema mais escasso nos PDFs, que sao majoritariamente
@@ -932,6 +1025,7 @@ def gerar_complementar(
     topico: str,
     quantidade: int,
     pagina: int,
+    classe: str,
     forcar: bool,
 ) -> list[dict[str, Any]]:
     """Gera questoes de um topico da ementa, sem partir de um trecho de PDF."""
@@ -947,7 +1041,7 @@ def gerar_complementar(
         prompt = (
             f"TÓPICO: {topico}\n\n"
             f"Gere exatamente {quantidade} questões Verdadeiro/Falso sobre este "
-            f"tópico, no nível da Classe B. {instrucao}"
+            f"tópico, no nível da Classe {classe}. {instrucao}"
         )
         bruto = chamar_llm(
             cliente,
@@ -973,6 +1067,7 @@ def gerar_complementar(
         # Marca interna: estas nao vem de um trecho de PDF, entao passam pela
         # verificacao independentemente de conterem numeros. Removida na escrita.
         q["_complementar"] = True
+        q["_nivel"] = classe
     return questoes
 
 
@@ -1142,6 +1237,11 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 # capitulo que trata do assunto — material de estudo, nao a
                 # origem da frase. A interface precisa dizer isso ao usuario.
                 "origem": "ementa" if q.get("_complementar") else "documento",
+                # Menor classe cujo programa ja cobre este conteudo, entre as
+                # que o banco distingue. "B" abrange tambem a Classe C, cuja
+                # ementa e' um subconjunto da de B. "A" e' o acrescimo exclusivo
+                # da Classe A: essas questoes nao podem cair num simulado de B.
+                "nivel": q.get("_nivel", "B"),
                 # Presente so' quando a questao veio de um trecho de PDF.
                 # Questoes da ementa nascem de um topico, e nao de um texto:
                 # inventar um trecho para elas seria mentir sobre a origem.
@@ -1178,6 +1278,12 @@ def relatorio(questoes: list[dict[str, Any]]) -> None:
     log(
         f"\n  Procedência: {len(questoes) - da_ementa} extraídas dos documentos, "
         f"{da_ementa} geradas a partir da ementa"
+    )
+
+    de_a = sum(1 for q in questoes if q.get("nivel") == "A")
+    log(
+        f"  Nível: {len(questoes) - de_a} do programa até a Classe B "
+        f"(vale para B e C), {de_a} exclusivas da Classe A"
     )
 
     log("\n  Por arquivo de origem:")
@@ -1329,13 +1435,20 @@ def main() -> int:
     # --- Passes complementares guiados pela ementa ---------------------------
     passes = [
         ("elet", "eletrônica", PROMPT_SISTEMA_ELETRONICA, TEMAS[2], TOPICOS_ELETRONICA,
-         "Verifique cada conta antes de definir `resposta_correta`."),
+         "Verifique cada conta antes de definir `resposta_correta`.", "B"),
         ("tec", "técnica e ética", PROMPT_SISTEMA_TECNICA, TEMAS[0], TOPICOS_TECNICA,
          "Baseie-se em conhecimento consolidado; não invente valores regulatórios "
-         "brasileiros."),
+         "brasileiros.", "B"),
+        # Acrescimo da Classe A. So' Eletronica: a ementa de Legislacao e de
+        # Tecnica e Etica e' a mesma para as tres classes no item 11.4, e gerar
+        # questoes "mais dificeis" nelas seria inventar uma exigencia que a
+        # norma nao faz.
+        ("clsa", "Classe A", PROMPT_SISTEMA_CLASSE_A, TEMAS[2], TOPICOS_CLASSE_A,
+         "Verifique cada conta antes de definir `resposta_correta`. Exija "
+         "análise, não reconhecimento.", "A"),
     ]
     if not args.sem_complementos and not args.limite_chunks:
-        for prefixo, rotulo, prompt_sis, tema, topicos, instrucao in passes:
+        for prefixo, rotulo, prompt_sis, tema, topicos, instrucao, classe in passes:
             total = sum(n for _, n, _ in topicos)
             log(f"\n=== Passe de {rotulo}: {len(topicos)} tópicos, "
                 f"~{total} questões ===")
@@ -1343,7 +1456,7 @@ def main() -> int:
                 futuros = {
                     pool.submit(
                         gerar_complementar, cliente, modelo, prefixo, prompt_sis,
-                        instrucao, tema, t, n, pag, args.forcar
+                        instrucao, tema, t, n, pag, classe, args.forcar
                     ): t
                     for t, n, pag in topicos
                 }

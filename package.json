@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/prioridade.test.ts && tsx testes/pdfs.test.ts && tsx testes/trechos.test.ts && tsx testes/render.test.tsx",
+    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/prioridade.test.ts && tsx testes/pdfs.test.ts && tsx testes/trechos.test.ts && tsx testes/classes.test.ts && tsx testes/render.test.tsx",
     "predev": "node scripts/preparar_worker.mjs",
     "prebuild": "node scripts/preparar_worker.mjs",
     "pdfs": "node scripts/copiar_pdfs.mjs"

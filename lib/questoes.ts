@@ -1,6 +1,6 @@
 import bancoBruto from "@/public/banco_questoes.json";
-import type { EscolhaTema, Questao, Tema } from "./tipos";
-import { TEMAS } from "./constantes";
+import type { Classe, EscolhaTema, Questao, Tema } from "./tipos";
+import { CLASSE_PADRAO, FORMATO, TEMAS } from "./constantes";
 import type { Historico } from "./historico";
 import {
   amostrarPonderado,
@@ -17,13 +17,25 @@ import {
  */
 export const BANCO = bancoBruto as Questao[];
 
-/** Quantas questões existem em cada tema. */
-export function contarPorTema(): Record<Tema, number> {
+/**
+ * O acervo elegível para uma classe.
+ *
+ * Questões de nível "A" cobrem o acréscimo exclusivo da Classe A (análise de
+ * circuitos CA, eletrônica de RF, antenas técnicas). Deixá-las entrar num
+ * simulado de B ou C cobraria um conteúdo que a norma não exige dessas classes.
+ */
+export function acervo(classe: Classe = CLASSE_PADRAO): Questao[] {
+  const niveis = FORMATO[classe].niveis;
+  return BANCO.filter((q) => niveis.includes(q.nivel));
+}
+
+/** Quantas questões existem em cada tema, para a classe escolhida. */
+export function contarPorTema(classe: Classe = CLASSE_PADRAO): Record<Tema, number> {
   const contagem = Object.fromEntries(TEMAS.map((t) => [t, 0])) as Record<
     Tema,
     number
   >;
-  for (const q of BANCO) contagem[q.tema] += 1;
+  for (const q of acervo(classe)) contagem[q.tema] += 1;
   return contagem;
 }
 
@@ -43,7 +55,9 @@ export function sortearSimulado(
   escolha: EscolhaTema,
   quantidade: number,
   historico?: Historico,
+  classe: Classe = CLASSE_PADRAO,
 ): Questao[] {
+  const elegiveis = acervo(classe);
   const desempenho = historico
     ? desempenhoPorQuestao(historico)
     : new Map<string, Desempenho>();
@@ -56,7 +70,7 @@ export function sortearSimulado(
 
   if (escolha !== "todos") {
     return sortear(
-      BANCO.filter((q) => q.tema === escolha),
+      elegiveis.filter((q) => q.tema === escolha),
       quantidade,
     );
   }
@@ -66,7 +80,7 @@ export function sortearSimulado(
 
   const selecionadas = TEMAS.flatMap((tema, i) =>
     sortear(
-      BANCO.filter((q) => q.tema === tema),
+      elegiveis.filter((q) => q.tema === tema),
       base + (i < sobra ? 1 : 0),
     ),
   );
@@ -75,8 +89,12 @@ export function sortearSimulado(
   return embaralharSimples(selecionadas);
 }
 
-/** Quantas questões estão disponíveis para uma escolha de tema. */
-export function disponiveis(escolha: EscolhaTema): number {
-  if (escolha === "todos") return BANCO.length;
-  return BANCO.filter((q) => q.tema === escolha).length;
+/** Quantas questões estão disponíveis para uma escolha de tema, na classe. */
+export function disponiveis(
+  escolha: EscolhaTema,
+  classe: Classe = CLASSE_PADRAO,
+): number {
+  const elegiveis = acervo(classe);
+  if (escolha === "todos") return elegiveis.length;
+  return elegiveis.filter((q) => q.tema === escolha).length;
 }

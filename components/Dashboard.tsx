@@ -3,9 +3,7 @@
 import { useState } from "react";
 import {
   COR_TEMA,
-  MINIMO_APROVACAO,
-  PERCENTUAL_APROVACAO,
-  QUESTOES_POR_MATERIA,
+  PERCENTUAL_CORTE,
   ROTULO_CURTO,
 } from "@/lib/constantes";
 import {
@@ -38,7 +36,7 @@ export default function Dashboard({ historico, carregado, onLimpar }: Props) {
 
   const estatisticas = estatisticasPorTema(historico);
   const atencao = estatisticas
-    .filter((e) => e.respondidas > 0 && e.percentual < PERCENTUAL_APROVACAO)
+    .filter((e) => e.respondidas > 0 && e.percentual < PERCENTUAL_CORTE)
     .sort((a, b) => a.percentual - b.percentual);
 
   return (
@@ -55,7 +53,7 @@ export default function Dashboard({ historico, carregado, onLimpar }: Props) {
 
       <div className="space-y-4">
         {estatisticas.map((e) => {
-          const aprovando = e.percentual >= PERCENTUAL_APROVACAO;
+          const aprovando = e.percentual >= PERCENTUAL_CORTE;
           return (
             <div key={e.tema}>
               <div className="mb-1 flex items-baseline justify-between text-sm">
@@ -85,7 +83,7 @@ export default function Dashboard({ historico, carregado, onLimpar }: Props) {
                 />
                 <div
                   className="absolute inset-y-0 w-px bg-slate-900/60 dark:bg-white/70"
-                  style={{ left: `${PERCENTUAL_APROVACAO}%` }}
+                  style={{ left: `${PERCENTUAL_CORTE}%` }}
                   aria-hidden
                 />
               </div>
@@ -95,8 +93,8 @@ export default function Dashboard({ historico, carregado, onLimpar }: Props) {
       </div>
 
       <p className="text-xs text-slate-500 dark:text-slate-400">
-        A marca vertical é a linha de corte oficial: {PERCENTUAL_APROVACAO}% (
-        {MINIMO_APROVACAO} de {QUESTOES_POR_MATERIA} acertos por matéria).
+        A marca vertical é a linha de corte mais exigente das três classes:{" "}
+        {PERCENTUAL_CORTE}% (11 de 20 na Classe B; A e C aprovam com 53%).
       </p>
 
       {atencao.length > 0 && (

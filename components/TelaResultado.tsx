@@ -1,11 +1,11 @@
 "use client";
 
-import type { Resposta, Tema } from "@/lib/tipos";
+import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import {
+  CLASSE_PADRAO,
   COR_TEMA,
-  MINIMO_APROVACAO,
-  PERCENTUAL_APROVACAO,
-  QUESTOES_POR_MATERIA,
+  FORMATO,
+  percentualAprovacao,
   ROTULO_CURTO,
   TEMAS,
 } from "@/lib/constantes";
@@ -15,17 +15,25 @@ import TrechoOrigem from "./TrechoOrigem";
 interface Props {
   respostas: Resposta[];
   onReiniciar: () => void;
+  classe?: Classe;
 }
 
-export default function TelaResultado({ respostas, onReiniciar }: Props) {
+export default function TelaResultado({
+  respostas,
+  onReiniciar,
+  classe = CLASSE_PADRAO,
+}: Props) {
+  const formato = FORMATO[classe];
+  const corte = percentualAprovacao(classe);
   const total = respostas.length;
   const acertos = respostas.filter((r) => r.acertou).length;
   const percentual = total > 0 ? Math.round((acertos / total) * 100) : 0;
-  const aprovado = percentual >= PERCENTUAL_APROVACAO;
+  const aprovado = percentual >= corte;
 
-  // O critério oficial é 11 de 20 por matéria. Numa bateria de outro tamanho o
-  // número absoluto não se aplica, então comparamos pelo percentual (55%).
-  const bateriaOficial = total === QUESTOES_POR_MATERIA;
+  // O critério oficial é um número absoluto de acertos por matéria (11 de 20 na
+  // Classe B). Numa bateria de outro tamanho ele não se aplica, então
+  // comparamos pelo percentual equivalente.
+  const bateriaOficial = total === formato.questoes;
   const erradas = respostas.filter((r) => !r.acertou);
 
   return (
@@ -53,8 +61,8 @@ export default function TelaResultado({ respostas, onReiniciar }: Props) {
         </div>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           {bateriaOficial
-            ? `Critério oficial: ${MINIMO_APROVACAO} de ${QUESTOES_POR_MATERIA} acertos.`
-            : `Critério oficial: ${PERCENTUAL_APROVACAO}% (${MINIMO_APROVACAO} de ${QUESTOES_POR_MATERIA} na prova real).`}
+            ? `Classe ${classe} — critério oficial: ${formato.minimo} de ${formato.questoes} acertos.`
+            : `Classe ${classe} — critério oficial: ${corte}% (${formato.minimo} de ${formato.questoes} na prova real).`}
         </p>
       </div>
 

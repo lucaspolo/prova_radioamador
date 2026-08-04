@@ -1,9 +1,8 @@
-import type { Tema } from "./tipos";
+import type { Classe, Nivel, Tema } from "./tipos";
 
 /**
- * Parâmetros oficiais da prova, conforme o Ato nº 3448, de 11 de março de 2026
- * (item 11.3). Para a Classe B, cada matéria tem 20 questões "certo ou errado",
- * exige 11 acertos e dispõe de 30 minutos.
+ * As três matérias. São as mesmas para as três classes: o item 11.3 do Ato
+ * nº 3448/2026 repete a distribuição para A, B e C, mudando só o quantitativo.
  */
 export const TEMAS: Tema[] = [
   "Legislação de Telecomunicações",
@@ -11,12 +10,49 @@ export const TEMAS: Tema[] = [
   "Conhecimentos de Eletrônica e Eletricidade",
 ];
 
-export const QUESTOES_POR_MATERIA = 20;
-export const MINIMO_APROVACAO = 11;
-export const MINUTOS_POR_MATERIA = 30;
+export interface FormatoProva {
+  /** Questões por matéria na prova real. */
+  questoes: number;
+  minimo: number;
+  minutos: number;
+  /** Níveis de conteúdo elegíveis no sorteio desta classe. */
+  niveis: Nivel[];
+}
 
-/** Opções de tamanho de bateria oferecidas na tela inicial. */
-export const TAMANHOS = [10, 20, 40, 60];
+/**
+ * Formato oficial de cada classe, do item 11.3 do Ato nº 3448/2026.
+ *
+ * A Classe A é a única que sorteia o nível "A": a ementa dela é a da Classe B
+ * mais quatro tópicos técnicos de Eletrônica. A Classe C usa o mesmo acervo da
+ * B porque a ementa básica é um subconjunto da dela — o banco cobre mais do que
+ * a C exige, e a tela inicial diz isso.
+ */
+export const FORMATO: Record<Classe, FormatoProva> = {
+  C: { questoes: 15, minimo: 8, minutos: 20, niveis: ["B"] },
+  B: { questoes: 20, minimo: 11, minutos: 30, niveis: ["B"] },
+  A: { questoes: 30, minimo: 16, minutos: 40, niveis: ["B", "A"] },
+};
+
+/** A classe padrão do app; é a prova para a qual ele foi construído. */
+export const CLASSE_PADRAO: Classe = "B";
+
+export const CLASSES: Classe[] = ["C", "B", "A"];
+
+/** Percentual mínimo para aprovação na classe. */
+export function percentualAprovacao(classe: Classe): number {
+  const f = FORMATO[classe];
+  return Math.round((f.minimo / f.questoes) * 100);
+}
+
+/**
+ * Opções de tamanho de bateria, ancoradas no formato da classe: uma bateria
+ * curta, a prova de uma matéria, e os múltiplos até as três matérias. Para a
+ * Classe B dá 10/20/40/60, como antes.
+ */
+export function tamanhos(classe: Classe): number[] {
+  const q = FORMATO[classe].questoes;
+  return [10, q, q * 2, q * 3];
+}
 
 /** Rótulos curtos, para caber nos cartões e nas barras do dashboard. */
 export const ROTULO_CURTO: Record<Tema, string> = {
@@ -61,9 +97,10 @@ export const COR_TEMA: Record<Tema, EstiloTema> = {
 };
 
 /**
- * Percentual mínimo para aprovação (11 de 20). Serve de linha de corte no
- * dashboard: abaixo disso, a matéria precisa de estudo.
+ * Linha de corte usada no dashboard, que agrega simulados de todas as classes.
+ *
+ * É o percentual da Classe B (55%), o mais exigente dos três — A e C aprovam
+ * com 53%. Usar o mais alto mantém o alerta conservador: quem passa dele passa
+ * em qualquer classe.
  */
-export const PERCENTUAL_APROVACAO = Math.round(
-  (MINIMO_APROVACAO / QUESTOES_POR_MATERIA) * 100,
-);
+export const PERCENTUAL_CORTE = percentualAprovacao("B");

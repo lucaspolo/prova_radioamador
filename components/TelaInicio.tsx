@@ -1,32 +1,82 @@
 "use client";
 
 import { useState } from "react";
-import type { EscolhaTema } from "@/lib/tipos";
+import type { Classe, EscolhaTema } from "@/lib/tipos";
 import {
+  CLASSES,
+  CLASSE_PADRAO,
   COR_TEMA,
-  MINIMO_APROVACAO,
-  QUESTOES_POR_MATERIA,
+  FORMATO,
   ROTULO_CURTO,
-  TAMANHOS,
+  tamanhos,
   TEMAS,
 } from "@/lib/constantes";
 import { contarPorTema, disponiveis } from "@/lib/questoes";
 
 interface Props {
-  onIniciar: (escolha: EscolhaTema, quantidade: number) => void;
+  onIniciar: (escolha: EscolhaTema, quantidade: number, classe: Classe) => void;
 }
 
 export default function TelaInicio({ onIniciar }: Props) {
+  const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const [escolha, setEscolha] = useState<EscolhaTema>("todos");
-  const [quantidade, setQuantidade] = useState(QUESTOES_POR_MATERIA);
-  const contagem = contarPorTema();
-  const total = disponiveis(escolha);
+  const formato = FORMATO[classe];
+  const [quantidade, setQuantidade] = useState(formato.questoes);
+  const contagem = contarPorTema(classe);
+  const total = disponiveis(escolha, classe);
+  const opcoes = tamanhos(classe);
 
   // Não dá para sortear mais questões do que existem no tema escolhido.
   const limite = Math.min(quantidade, total);
 
+  // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
+  // ficaria selecionado um número que nem aparece mais entre as opções.
+  function trocarClasse(nova: Classe) {
+    setClasse(nova);
+    setQuantidade(FORMATO[nova].questoes);
+  }
+
   return (
     <div className="space-y-8">
+      <section>
+        <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          Classe
+        </h2>
+        <div className="flex gap-2">
+          {CLASSES.map((c) => (
+            <button
+              key={c}
+              onClick={() => trocarClasse(c)}
+              className={`flex-1 rounded-xl border-2 px-3 py-3 transition ${
+                classe === c
+                  ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+                  : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+              }`}
+            >
+              <div className="text-base font-bold">Classe {c}</div>
+              <div className="mt-0.5 text-xs opacity-70">
+                {FORMATO[c].questoes} questões · mín. {FORMATO[c].minimo}
+              </div>
+            </button>
+          ))}
+        </div>
+        {classe === "C" && (
+          <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-500">
+            A ementa da Classe C é um subconjunto da Classe B, então o banco
+            cobre mais do que cai — há questões de cálculo (código de cores,
+            Kirchhoff, associação de resistores) que só são cobradas a partir da
+            Classe B.
+          </p>
+        )}
+        {classe === "A" && (
+          <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-500">
+            Inclui o acréscimo técnico da Classe A em Eletrônica. Legislação e
+            Técnica e Ética têm a mesma ementa nas três classes — o que muda é o
+            número de questões.
+          </p>
+        )}
+      </section>
+
       <section>
         <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
           Matéria
@@ -57,7 +107,7 @@ export default function TelaInicio({ onIniciar }: Props) {
           Quantidade de questões
         </h2>
         <div className="flex flex-wrap gap-2">
-          {TAMANHOS.map((n) => (
+          {opcoes.map((n) => (
             <button
               key={n}
               onClick={() => setQuantidade(n)}
@@ -69,20 +119,21 @@ export default function TelaInicio({ onIniciar }: Props) {
               }`}
             >
               {n}
-              {n === QUESTOES_POR_MATERIA && (
+              {n === formato.questoes && (
                 <span className="ml-1.5 text-xs opacity-70">prova real</span>
               )}
             </button>
           ))}
         </div>
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          A prova da Anatel tem {QUESTOES_POR_MATERIA} questões por matéria e
-          exige {MINIMO_APROVACAO} acertos para aprovação.
+          A prova da Anatel para a Classe {classe} tem {formato.questoes}{" "}
+          questões por matéria, exige {formato.minimo} acertos e dá{" "}
+          {formato.minutos} minutos.
         </p>
       </section>
 
       <button
-        onClick={() => onIniciar(escolha, limite)}
+        onClick={() => onIniciar(escolha, limite, classe)}
         className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Iniciar simulado · {limite} questões
