@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { caminhoPdf } from "@/lib/pdfs";
+import type { Origem } from "@/lib/tipos";
 
 /**
  * O visualizador entra por import dinâmico com `ssr: false` porque o pdf.js
@@ -22,11 +23,13 @@ const VisualizadorPdf = dynamic(() => import("./VisualizadorPdf"), {
 interface Props {
   arquivoOrigem: string;
   pagina: number;
+  origem: Origem;
 }
 
 export default function BotaoConsultarMaterial({
   arquivoOrigem,
   pagina,
+  origem,
 }: Props) {
   const [aberto, setAberto] = useState(false);
   const caminho = caminhoPdf(arquivoOrigem);
@@ -44,11 +47,19 @@ export default function BotaoConsultarMaterial({
         <span className="ml-1.5 opacity-60">· página {pagina}</span>
       </button>
 
+      {origem === "ementa" && (
+        <p className="mt-2 text-xs text-slate-500 italic dark:text-slate-500">
+          Esta questão foi elaborada a partir da ementa oficial; a página
+          indicada explica o tema, mas não traz este enunciado.
+        </p>
+      )}
+
       {aberto && (
         <VisualizadorPdf
           caminho={caminho}
           nomeExibicao={arquivoOrigem}
           paginaInicial={pagina}
+          origem={origem}
           onFechar={() => setAberto(false)}
         />
       )}

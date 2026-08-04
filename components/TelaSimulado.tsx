@@ -149,13 +149,22 @@ export default function TelaSimulado({ questoes, onConcluir, onSair }: Props) {
             <p className="mt-3 leading-relaxed">{questao.explicacao_curta}</p>
 
             <div className="mt-4 border-t border-current/15 pt-3 text-sm text-slate-600 dark:text-slate-400">
-              <span className="font-medium">Fonte:</span>{" "}
+              {/* Para questões geradas a partir da ementa, a página é o
+                  capítulo que trata do tema, e não a origem da afirmação.
+                  Chamá-la de "Fonte" faria o leitor procurar no PDF uma frase
+                  que não está lá, e duvidar do banco inteiro. */}
+              <span className="font-medium">
+                {questao.origem === "documento"
+                  ? "Fonte:"
+                  : "Estude o tema em:"}
+              </span>{" "}
               {questao.arquivo_origem}
               <span className="opacity-70"> · página {questao.pagina}</span>
               <div>
                 <BotaoConsultarMaterial
                   arquivoOrigem={questao.arquivo_origem}
                   pagina={questao.pagina}
+                  origem={questao.origem}
                 />
               </div>
             </div>

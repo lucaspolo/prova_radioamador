@@ -27,7 +27,9 @@ export default function Home() {
   const { historico, carregado, registrar, limpar } = useHistorico();
 
   function iniciar(escolha: EscolhaTema, quantidade: number) {
-    setQuestoes(sortearSimulado(escolha, quantidade));
+    // O histórico entra no sorteio: o que você errou volta antes, o que já
+    // domina rareia. Sem histórico, o sorteio é uniforme.
+    setQuestoes(sortearSimulado(escolha, quantidade, historico));
     setRespostas([]);
     setEscolhaAtual(escolha);
     setEtapa("simulado");

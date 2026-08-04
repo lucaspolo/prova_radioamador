@@ -3,7 +3,7 @@ import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaResultado from "@/components/TelaResultado";
 import Dashboard from "@/components/Dashboard";
-import { sortearSimulado } from "@/lib/questoes";
+import { sortearSimulado, BANCO } from "@/lib/questoes";
 import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
 import type { Resposta } from "@/lib/tipos";
 
@@ -38,6 +38,33 @@ function checar(nome: string, ok: boolean, detalhe = "") {
     !html.includes(questoes[0].explicacao_curta.slice(0, 40)),
   );
   checar("permite abandonar", html.includes("Abandonar simulado"));
+}
+
+// --- Rótulo de procedência ------------------------------------------------
+// 207 das 604 questões vieram da ementa, não de um trecho. Chamar a página de
+// "Fonte" nesses casos mandaria o leitor procurar no PDF uma frase que não
+// está lá — e duvidar do banco inteiro ao não encontrá-la.
+{
+  const daEmenta = BANCO.find((q) => q.origem === "ementa")!;
+  const doDocumento = BANCO.find((q) => q.origem === "documento")!;
+
+  const render = (q: typeof daEmenta) => {
+    const html = renderToStaticMarkup(
+      <TelaResultado
+        respostas={[{ questao: q, respondeu: !q.resposta_correta, acertou: false }]}
+        onReiniciar={() => {}}
+      />,
+    );
+    return html;
+  };
+
+  const hE = render(daEmenta);
+  checar("questão da ementa não é rotulada como Fonte", !hE.includes("Fonte:"));
+  checar("questão da ementa convida a estudar o tema", hE.includes("Estude o tema em:"));
+
+  const hD = render(doDocumento);
+  checar("questão extraída do documento é rotulada como Fonte", hD.includes("Fonte:"));
+  checar("questão do documento não usa o rótulo de tema", !hD.includes("Estude o tema em:"));
 }
 
 // --- Tela de resultado ----------------------------------------------------

@@ -93,11 +93,15 @@ export default function TelaResultado({ respostas, onReiniciar }: Props) {
                   {r.questao.explicacao_curta}
                 </p>
                 <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+                  {r.questao.origem === "documento"
+                    ? "Fonte: "
+                    : "Estude o tema em: "}
                   {r.questao.arquivo_origem} · página {r.questao.pagina}
                 </p>
                 <BotaoConsultarMaterial
                   arquivoOrigem={r.questao.arquivo_origem}
                   pagina={r.questao.pagina}
+                  origem={r.questao.origem}
                 />
               </div>
             ))}

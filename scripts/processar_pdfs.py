@@ -1044,7 +1044,7 @@ def executar_verificacao(
         i
         for i, q in enumerate(questoes)
         if (q["tema"] == TEMAS[2] and tem_numero.search(q["afirmacao"]))
-        or q.get("_complementar")
+        or q.get("origem") == "ementa"
     ]
     if not alvos:
         return questoes
@@ -1112,14 +1112,23 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
         finais.append(
             {
-                "id": str(uuid.uuid4()),
+                # Id deterministico, derivado da propria afirmacao: regerar o
+                # banco preserva os ids, e o historico de acertos guardado no
+                # navegador continua apontando para as mesmas questoes. Com
+                # uuid4 toda reexecucao zeraria esse histórico.
+                "id": hashlib.sha1(chave.encode("utf-8")).hexdigest()[:16],
                 "tema": tema,
                 "arquivo_origem": q.get("arquivo_origem", ""),
                 "afirmacao": afirmacao,
                 "resposta_correta": q["resposta_correta"],
                 "explicacao_curta": explicacao,
                 "pagina": q.get("pagina", 1),
-                "_complementar": q.get("_complementar", False),
+                # "documento": a afirmacao saiu de um trecho do PDF, e a pagina
+                # e a fonte literal. "ementa": foi gerada a partir da ementa
+                # oficial num passe complementar, e a pagina e apenas o
+                # capitulo que trata do assunto — material de estudo, nao a
+                # origem da frase. A interface precisa dizer isso ao usuario.
+                "origem": "ementa" if q.get("_complementar") else "documento",
             }
         )
 
@@ -1147,6 +1156,12 @@ def relatorio(questoes: list[dict[str, Any]]) -> None:
         pct = 100 * verdadeiras / len(do_tema)
         alerta = "  <-- desequilibrado" if not 35 <= pct <= 65 else ""
         log(f"  {tema:<45} {len(do_tema):>4}   V/F: {pct:.0f}%/{100-pct:.0f}%{alerta}")
+
+    da_ementa = sum(1 for q in questoes if q.get("origem") == "ementa")
+    log(
+        f"\n  Procedência: {len(questoes) - da_ementa} extraídas dos documentos, "
+        f"{da_ementa} geradas a partir da ementa"
+    )
 
     log("\n  Por arquivo de origem:")
     por_arquivo: dict[str, int] = {}
@@ -1334,10 +1349,6 @@ def main() -> int:
     if not finais:
         log("ERRO: nenhuma questão válida foi gerada.")
         return 1
-
-    # A marca interna nao faz parte do formato consumido pelo frontend.
-    for q in finais:
-        q.pop("_complementar", None)
 
     args.saida.parent.mkdir(parents=True, exist_ok=True)
     args.saida.write_text(

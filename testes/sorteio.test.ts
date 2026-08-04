@@ -100,9 +100,25 @@ for (const t of TEMAS) checar(`disponiveis("${t.slice(0, 18)}")`, disponiveis(t)
       q.afirmacao.length > 0 &&
       q.explicacao_curta.length > 0 &&
       Number.isInteger(q.pagina) &&
-      q.pagina >= 1,
+      q.pagina >= 1 &&
+      (q.origem === "documento" || q.origem === "ementa"),
   );
   checar("todas as questões do banco têm formato válido", ok);
+
+  // Os ids são derivados da afirmação, e não sorteados: regerar o banco
+  // preserva a ligação com o histórico guardado no navegador.
+  checar("ids são únicos", new Set(BANCO.map((q) => q.id)).size === BANCO.length);
+  checar(
+    "ids são determinísticos (hex de 16 caracteres)",
+    BANCO.every((q) => /^[0-9a-f]{16}$/.test(q.id)),
+  );
+
+  const daEmenta = BANCO.filter((q) => q.origem === "ementa").length;
+  checar(
+    "banco mistura questões dos documentos e da ementa",
+    daEmenta > 0 && daEmenta < BANCO.length,
+    `${BANCO.length - daEmenta} de documentos, ${daEmenta} da ementa`,
+  );
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES PASSARAM" : falhas + " FALHA(S)"}`);

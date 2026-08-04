@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
+import type { Origem } from "@/lib/tipos";
 
 /**
  * O worker é servido pelo próprio site, e não por CDN: assim o visualizador
@@ -16,6 +17,7 @@ interface Props {
   caminho: string;
   nomeExibicao: string;
   paginaInicial: number;
+  origem: Origem;
   onFechar: () => void;
 }
 
@@ -26,6 +28,7 @@ export default function VisualizadorPdf({
   caminho,
   nomeExibicao,
   paginaInicial,
+  origem,
   onFechar,
 }: Props) {
   const [totalPaginas, setTotalPaginas] = useState(0);
@@ -96,6 +99,11 @@ export default function VisualizadorPdf({
             {totalPaginas > 0
               ? `Página ${pagina} de ${totalPaginas}`
               : "Carregando…"}
+            {origem === "ementa" && (
+              <span className="ml-2 text-amber-300/90">
+                · capítulo sobre o tema, não a origem do enunciado
+              </span>
+            )}
           </div>
         </div>
 
