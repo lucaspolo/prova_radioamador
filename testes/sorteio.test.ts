@@ -1,0 +1,109 @@
+import { sortearSimulado, disponiveis, contarPorTema, BANCO } from "@/lib/questoes";
+import { TEMAS, QUESTOES_POR_MATERIA } from "@/lib/constantes";
+import type { Tema } from "@/lib/tipos";
+
+let falhas = 0;
+function checar(nome: string, ok: boolean, detalhe = "") {
+  if (!ok) falhas++;
+  console.log(`${ok ? "  ok  " : "FALHA "} ${nome}${detalhe ? " — " + detalhe : ""}`);
+}
+
+const contagem = contarPorTema();
+console.log("Banco:", BANCO.length, JSON.stringify(contagem, null, 0));
+console.log();
+
+// 1. Tamanho exato pedido
+for (const n of [10, 20, 40, 60]) {
+  const s = sortearSimulado("todos", n);
+  checar(`todos: pede ${n}, recebe ${s.length}`, s.length === n);
+}
+
+// 2. Sem repetição dentro de uma mesma bateria
+for (let i = 0; i < 200; i++) {
+  const s = sortearSimulado("todos", 60);
+  if (new Set(s.map((q) => q.id)).size !== s.length) {
+    checar("sem questões repetidas na bateria", false, `iteração ${i}`);
+    break;
+  }
+  if (i === 199) checar("sem questões repetidas em 200 baterias de 60", true);
+}
+
+// 3. "todos" distribui igualmente entre os três temas
+{
+  const s = sortearSimulado("todos", 60);
+  const porTema = TEMAS.map((t) => s.filter((q) => q.tema === t).length);
+  checar(
+    "bateria de 60 traz 20 de cada matéria (espelha a prova real)",
+    porTema.every((n) => n === QUESTOES_POR_MATERIA),
+    porTema.join("/"),
+  );
+}
+
+// 4. Divisão com sobra: 10 questões -> 4/3/3
+{
+  const s = sortearSimulado("todos", 10);
+  const porTema = TEMAS.map((t) => s.filter((q) => q.tema === t).length).sort(
+    (a, b) => b - a,
+  );
+  checar("10 questões distribuem 4/3/3", JSON.stringify(porTema) === "[4,3,3]", porTema.join("/"));
+}
+
+// 5. Tema único devolve só aquele tema
+for (const tema of TEMAS) {
+  const s = sortearSimulado(tema, 20);
+  checar(
+    `tema único "${tema.slice(0, 22)}" homogêneo`,
+    s.length === 20 && s.every((q) => q.tema === tema),
+  );
+}
+
+// 6. Pedir mais do que existe não estoura nem repete
+{
+  const tema: Tema = "Conhecimentos de Eletrônica e Eletricidade";
+  const s = sortearSimulado(tema, 99999);
+  checar(
+    "pedir além do disponível devolve o máximo, sem repetir",
+    s.length === contagem[tema] && new Set(s.map((q) => q.id)).size === s.length,
+    `${s.length} de ${contagem[tema]}`,
+  );
+}
+
+// 7. Sorteio realmente varia entre chamadas
+{
+  const a = sortearSimulado("todos", 20).map((q) => q.id).join();
+  const b = sortearSimulado("todos", 20).map((q) => q.id).join();
+  checar("duas baterias seguidas diferem", a !== b);
+}
+
+// 8. Embaralhamento não agrupa os temas no início da lista
+{
+  let agrupadas = 0;
+  for (let i = 0; i < 100; i++) {
+    const s = sortearSimulado("todos", 60);
+    const primeiras20 = new Set(s.slice(0, 20).map((q) => q.tema));
+    if (primeiras20.size === 1) agrupadas++;
+  }
+  checar("temas vêm intercalados, não em blocos", agrupadas === 0, `${agrupadas}/100 agrupadas`);
+}
+
+// 9. disponiveis() bate com o banco
+checar("disponiveis('todos')", disponiveis("todos") === BANCO.length);
+for (const t of TEMAS) checar(`disponiveis("${t.slice(0, 18)}")`, disponiveis(t) === contagem[t]);
+
+// 10. Integridade do banco consumido pelo app
+{
+  const ok = BANCO.every(
+    (q) =>
+      typeof q.id === "string" &&
+      TEMAS.includes(q.tema) &&
+      typeof q.resposta_correta === "boolean" &&
+      q.afirmacao.length > 0 &&
+      q.explicacao_curta.length > 0 &&
+      Number.isInteger(q.pagina) &&
+      q.pagina >= 1,
+  );
+  checar("todas as questões do banco têm formato válido", ok);
+}
+
+console.log(`\n${falhas === 0 ? "TODOS OS TESTES PASSARAM" : falhas + " FALHA(S)"}`);
+process.exit(falhas === 0 ? 0 : 1);
