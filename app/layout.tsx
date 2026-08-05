@@ -36,6 +36,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <RegistroSW />
         {children}
+        <footer className="mx-auto w-full max-w-2xl px-4 pb-6 text-center text-xs text-slate-400 dark:text-slate-500">
+          Código aberto sob a licença MIT —{" "}
+          <a
+            href="https://github.com/lucaspolo/prova_radioamador"
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-4 hover:text-slate-600 dark:hover:text-slate-300"
+          >
+            github.com/lucaspolo/prova_radioamador
+          </a>
+        </footer>
       </body>
     </html>
   );

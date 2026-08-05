@@ -161,3 +161,9 @@ Flags úteis: `--dry-run`, `--arquivo <padrão>`, `--limite-chunks N`,
 As questões são geradas por LLM a partir dos documentos oficiais e revisadas por
 amostragem, não uma a uma. Em caso de divergência, **o documento oficial da
 Anatel prevalece** — use o campo `arquivo_origem` para conferir na fonte.
+
+## Licença
+
+Código aberto sob a licença [MIT](LICENSE). Sinta-se à vontade para usar,
+modificar e redistribuir. O código-fonte está em
+[github.com/lucaspolo/prova_radioamador](https://github.com/lucaspolo/prova_radioamador).
