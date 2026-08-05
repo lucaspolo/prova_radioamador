@@ -1,0 +1,380 @@
+[
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra A é soletrada como 'Alfa'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: A = Alfa na tabela do alfabeto fonético internacional.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra B é soletrada como 'Beta'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Bravo'. 'Beta' é letra grega, não pertence ao alfabeto fonético da UIT.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "Ao soletrar um indicativo, a letra C corresponde a 'Charlie'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: C = Charlie no alfabeto fonético internacional.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "A palavra fonética da letra D no padrão da UIT é 'Denver'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Delta'. 'Denver' não faz parte do alfabeto fonético da UIT.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético internacional, a letra E é 'Echo'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: E = Echo.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No padrão da UIT, a letra F é soletrada como 'Fox'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Foxtrot'. 'Fox' é abreviação informal, não a palavra oficial.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "A letra G, no alfabeto fonético da UIT, é 'Golf'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: G = Golf.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra H é soletrada como 'Havana'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Hotel'. 'Havana' pertence a alfabetos antigos de telefonia, não ao padrão da UIT.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra I é soletrada como 'Índia'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: I = Índia na tabela da UIT.",
+  "pagina": 34
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "A palavra fonética da letra J no padrão da UIT é 'Japão'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Juliett' (com dois T). 'Japão' vem de alfabetos antigos de telefonia.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético internacional, a letra K é 'Kilo'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: K = Kilo.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra L é soletrada como 'Londres'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Lima'. 'Londres' pertence a alfabetos antigos de telefonia em português.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "Ao soletrar um indicativo, a letra M corresponde a 'Mike'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: M = Mike.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No padrão da UIT, a letra N é soletrada como 'Noruega'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'November'. 'Noruega' não faz parte do alfabeto fonético da UIT.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra O é 'Oscar'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: O = Oscar.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "A palavra fonética da letra P no padrão da UIT é 'Pedro'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Papa'. 'Pedro' vem dos alfabetos antigos de telefonia em português.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético internacional, a letra Q é 'Quebec'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: Q = Quebec.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra R é soletrada como 'Roberto'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Romeo'. 'Roberto' pertence a alfabetos antigos de telefonia.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "A letra S, no alfabeto fonético da UIT, é 'Sierra'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: S = Sierra.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No padrão da UIT, a letra T é soletrada como 'Tóquio'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Tango'. 'Tóquio' não faz parte do alfabeto fonético da UIT.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético internacional, a letra U é 'Uniform'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: U = Uniform.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "A palavra fonética da letra V no padrão da UIT é 'Vitória'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Victor'. 'Vitória' vem de alfabetos antigos de telefonia em português.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra W é 'Whiskey'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: W = Whiskey.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No alfabeto fonético da UIT, a letra X é soletrada como 'Xadrez'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'X-Ray'. 'Xadrez' pertence a alfabetos antigos de telefonia em português.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "Ao soletrar um indicativo, a letra Y corresponde a 'Yankee'.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: Y = Yankee.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "No padrão da UIT, a letra Z é soletrada como 'Zebra'.",
+  "resposta_correta": false,
+  "explicacao_curta": "O correto é 'Zulu'. 'Zebra' pertence ao antigo alfabeto militar 'Able Baker', anterior ao padrão da UIT.",
+  "pagina": 35
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRA refere-se ao nome ou indicativo da estação.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRA é o indicativo/nome da estação (tabela da Cartilha).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRG refere-se à inteligibilidade dos sinais recebidos.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRG é a frequência exata de transmissão. Inteligibilidade é QRK.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRH pergunta se a estação deve transmitir mais devagar.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRH pergunta se a frequência está variando. Transmitir mais devagar é QRS.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRI refere-se à tonalidade da emissão transmitida.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRI trata da tonalidade (qualidade do tom) da emissão.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRK informa a intensidade dos sinais recebidos.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRK refere-se à inteligibilidade (legibilidade) dos sinais. Intensidade é QSA.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "Pergunta-se QRL antes de transmitir para saber se a frequência está ocupada.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRL pergunta se a frequência está em uso; é boa prática antes de chamar.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRM designa interferência causada por outras estações.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRM é interferência de outras estações (tabela da Cartilha).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRN refere-se à interferência causada por outras estações.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRN é ruído atmosférico (estática). Interferência de outras estações é QRM.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRO significa aumentar a potência de transmissão.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRO = aumentar potência (tabela da Cartilha).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "Como código Q, QRP instrui a aumentar a potência do transmissor.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRP significa diminuir a potência; aumentar é QRO. Como jargão, QRP também designa operação em baixa potência.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRQ pede que a transmissão seja mais rápida.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRQ = transmitir mais depressa.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRS pede que a estação mude de frequência.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRS pede transmissão mais lenta. Mudar de frequência é QSY.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRT refere-se a cessar a transmissão.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRT = cessar a transmissão (tabela da Cartilha).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRU pergunta quem está chamando a estação.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRU pergunta se há algo para mim ('não tenho nada para você'). Quem está chamando é QRZ.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRV indica que o operador está pronto, à disposição.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRV = estou pronto/preparado (tabela da Cartilha).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRX pede que se aguarde: a estação voltará a chamar.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QRX = aguarde/voltarei a chamar em determinado horário.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QRZ solicita a mudança para outra frequência.",
+  "resposta_correta": false,
+  "explicacao_curta": "QRZ pergunta 'quem está me chamando?'. Mudar de frequência é QSY.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSA refere-se à intensidade do sinal recebido.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QSA = intensidade do sinal ('qual a intensidade do meu sinal?', tabela da Cartilha).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSB indica ruído atmosférico forte na recepção.",
+  "resposta_correta": false,
+  "explicacao_curta": "QSB indica desvanecimento (fading) dos sinais. Ruído atmosférico é QRN.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSD indica que a manipulação do transmissor está defeituosa.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QSD = manipulação (keying) defeituosa.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSK indica operação break-in: escuto entre os meus sinais.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QSK = posso escutar entre os meus sinais; operação break-in em CW.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSL confirma a recepção e também designa o cartão de confirmação de contato.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QSL = confirmado/entendido; o cartão QSL confirma formalmente um QSO (Cartilha, 6.4).",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSO designa um comunicado (contato) entre estações.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QSO é o contato/comunicado entre duas estações.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSP informa a hora certa.",
+  "resposta_correta": false,
+  "explicacao_curta": "QSP significa retransmitir uma mensagem a outra estação. Hora certa é QTR.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QSY significa mudar a frequência de transmissão.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QSY = mudar de frequência.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QTC informa a localização da estação.",
+  "resposta_correta": false,
+  "explicacao_curta": "QTC anuncia mensagem a transmitir (tabela da Cartilha). Localização é QTH.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QTH designa a posição (localização) da estação.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto: QTH = localização (cidade, região, coordenadas), tabela da Cartilha.",
+  "pagina": 36
+ },
+ {
+  "tema": "Técnica e ética operacional",
+  "afirmacao": "O código QTR pede a retransmissão de uma mensagem a outra estação.",
+  "resposta_correta": false,
+  "explicacao_curta": "QTR pergunta/informa a hora certa. Retransmitir mensagem é QSP.",
+  "pagina": 36
+ }
+]

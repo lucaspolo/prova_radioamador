@@ -1194,6 +1194,29 @@ def executar_verificacao(
 # ---------------------------------------------------------------------------
 
 
+ARQ_MANUAIS = RAIZ / "scripts" / "questoes_manuais.json"
+
+
+def carregar_questoes_manuais() -> list[dict[str, Any]]:
+    """Questoes escritas a mao, nao geradas pelo LLM.
+
+    Existem para garantias de cobertura que sorteio nenhum da': cada letra do
+    alfabeto fonetico e cada codigo Q usual precisam de ao menos uma questao
+    (testes/cobertura.test.ts trava isso). Sao ancoradas nas tabelas das
+    pp. 34-36 da Cartilha e entram no mesmo funil das demais: deduplicacao,
+    id deterministico, correcoes da auditoria.
+    """
+    if not ARQ_MANUAIS.exists():
+        return []
+    entradas = json.loads(ARQ_MANUAIS.read_text(encoding="utf-8"))
+    for q in entradas:
+        q.setdefault("arquivo_origem", ARQUIVO_COMPLEMENTAR)
+        # Nao vem de um trecho: a pagina indica onde estudar (origem "ementa").
+        q["_complementar"] = True
+        q.setdefault("_nivel", "B")
+    return entradas
+
+
 ARQ_CORRECOES = RAIZ / "scripts" / "correcoes.json"
 
 
@@ -1524,6 +1547,14 @@ def main() -> int:
                         continue
                     questoes.extend(novas)
                     log(f"  {topico[:52]:<52} -> {len(novas)} questões")
+
+    # --- Questoes autorais de cobertura --------------------------------------
+    if not args.sem_complementos and not args.limite_chunks:
+        manuais = carregar_questoes_manuais()
+        if manuais:
+            questoes.extend(manuais)
+            log(f"\n=== {len(manuais)} questões autorais "
+                f"(scripts/questoes_manuais.json) ===")
 
     log(f"\n=== Consolidando {len(questoes)} questões brutas ===")
     finais = consolidar(questoes)
