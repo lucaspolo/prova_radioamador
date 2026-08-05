@@ -563,6 +563,10 @@ class Chunk:
     arquivo_origem: str
     pagina: int
     texto: str
+    # Ultima pagina coberta pelo chunk. Chunks atravessam paginas, e a
+    # auditoria refina a pagina de cada questao para a da passagem especifica;
+    # este limite permite validar que o refinamento fica dentro do chunk.
+    pagina_fim: int = 0
 
     @property
     def chave_cache(self) -> str:
@@ -912,7 +916,8 @@ def montar_chunks(arquivo: str, blocos: list[Bloco]) -> list[Chunk]:
         texto = "\n\n".join(b.texto for b in atual).strip()
         if len(texto) >= MIN_CHARS_CHUNK_UTIL and not parece_ruido(texto):
             chunks.append(
-                Chunk(arquivo_origem=arquivo, pagina=atual[0].pagina, texto=texto)
+                Chunk(arquivo_origem=arquivo, pagina=atual[0].pagina,
+                      texto=texto, pagina_fim=atual[-1].pagina)
             )
         # Mantem o final do chunk como sobreposicao, para nao cortar uma regra
         # exatamente na fronteira e perde-la. So entra o paragrafo que couber
@@ -938,7 +943,8 @@ def montar_chunks(arquivo: str, blocos: list[Bloco]) -> list[Chunk]:
                 fatia = par.texto[i : i + TAMANHO_CHUNK]
                 if len(fatia) >= MIN_CHARS_CHUNK_UTIL and not parece_ruido(fatia):
                     chunks.append(
-                        Chunk(arquivo_origem=arquivo, pagina=par.pagina, texto=fatia)
+                        Chunk(arquivo_origem=arquivo, pagina=par.pagina,
+                              texto=fatia, pagina_fim=par.pagina)
                     )
             continue
 
@@ -1188,6 +1194,55 @@ def executar_verificacao(
 # ---------------------------------------------------------------------------
 
 
+ARQ_CORRECOES = RAIZ / "scripts" / "correcoes.json"
+
+
+def aplicar_correcoes(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Aplica scripts/correcoes.json — o resultado da auditoria humana/LLM.
+
+    O cache devolve as questoes exatamente como foram geradas; sem este passo,
+    cada regeneracao desfaria os consertos feitos no banco publicado. O arquivo
+    mapeia o id deterministico da questao para uma acao:
+
+        {"<id>": {"acao": "remover", "motivo": "..."},
+         "<id>": {"acao": "editar", "campos": {"pagina": 51}, "motivo": "..."}}
+
+    So os campos declarados em "campos" mudam. A afirmacao nunca e editada por
+    aqui: o id deriva dela, e muda-la orfanaria o proprio conserto.
+    """
+    if not ARQ_CORRECOES.exists():
+        return questoes
+
+    correcoes = json.loads(ARQ_CORRECOES.read_text(encoding="utf-8"))
+    finais: list[dict[str, Any]] = []
+    removidas = editadas = 0
+
+    for q in questoes:
+        c = correcoes.get(q["id"])
+        if c is None:
+            finais.append(q)
+        elif c["acao"] == "remover":
+            removidas += 1
+        elif c["acao"] == "editar":
+            campos = dict(c["campos"])
+            if "afirmacao" in campos:
+                raise ValueError(
+                    f"correcao de {q['id']} tenta editar a afirmacao; o id "
+                    f"deriva dela e o conserto se perderia"
+                )
+            q.update(campos)
+            editadas += 1
+            finais.append(q)
+
+    orfas = set(correcoes) - {q["id"] for q in questoes}
+    if removidas or editadas:
+        log(f"  Correções da auditoria: {editadas} editadas, {removidas} removidas")
+    if orfas:
+        log(f"  AVISO: {len(orfas)} correções apontam para ids inexistentes "
+            f"(afirmações mudaram?): {sorted(orfas)[:4]}...")
+    return finais
+
+
 def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Valida, deduplica e atribui um id a cada questao."""
     vistos: set[str] = set()
@@ -1256,7 +1311,7 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
             f"descartadas")
     if descartadas_duplicadas:
         log(f"  {descartadas_duplicadas} questões duplicadas removidas")
-    return finais
+    return aplicar_correcoes(finais)
 
 
 def relatorio(questoes: list[dict[str, Any]]) -> None:
@@ -1495,6 +1550,7 @@ def main() -> int:
         c.id_trecho: {
             "arquivo": c.arquivo_origem,
             "pagina": c.pagina,
+            "fim": max(c.pagina_fim, c.pagina),
             "texto": c.texto,
         }
         for c in chunks

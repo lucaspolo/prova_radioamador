@@ -41,14 +41,24 @@ const doDocumento = BANCO.filter((q) => q.origem === "documento");
     `${Object.keys(TRECHOS).length} trechos, ${referenciados.size} referenciados`,
   );
 
-  // O trecho precisa ser o do mesmo arquivo e da mesma página que a questão
-  // declara; divergir aqui exibiria um texto que não é a fonte.
+  // O trecho precisa ser do mesmo arquivo que a questão declara. A página da
+  // questão fica DENTRO do intervalo de páginas do chunk: o trecho registra
+  // onde começa e onde termina, e a auditoria refinou a página de cada questão
+  // para a da passagem específica que a gerou.
   checar(
-    "arquivo e página do trecho batem com os da questão",
+    "arquivo do trecho bate e a página está no intervalo do chunk",
     comTrecho.every((q) => {
       const t = TRECHOS[q.trecho_id!];
-      return t.arquivo === q.arquivo_origem && t.pagina === q.pagina;
+      return (
+        t.arquivo === q.arquivo_origem &&
+        q.pagina >= t.pagina &&
+        q.pagina <= t.fim
+      );
     }),
+  );
+  checar(
+    "todo trecho declara um intervalo válido",
+    Object.values(TRECHOS).every((t) => t.fim >= t.pagina),
   );
 
   checar(

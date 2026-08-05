@@ -102,7 +102,10 @@ function TextoDoTrecho({
     <div className="mt-3">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-          Trecho de origem · página {trecho.pagina}
+          Trecho de origem ·{" "}
+          {trecho.fim > trecho.pagina
+            ? `páginas ${trecho.pagina}–${trecho.fim}`
+            : `página ${trecho.pagina}`}
         </span>
         <button
           onClick={onFechar}

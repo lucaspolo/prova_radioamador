@@ -57,7 +57,10 @@ export interface Questao {
 /** Um trecho de PDF, exatamente como foi enviado ao modelo que gerou as questões. */
 export interface Trecho {
   arquivo: string;
+  /** Página onde o trecho começa. */
   pagina: number;
+  /** Última página que o trecho cobre — chunks atravessam páginas. */
+  fim: number;
   texto: string;
 }
 
