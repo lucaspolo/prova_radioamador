@@ -73,6 +73,14 @@ public/       banco_questoes.json, trechos.json e pdfs/
 - Instalável como aplicativo (PWA) e utilizável offline: o service worker
   pré-carrega a casca do app e os trechos de origem; os PDFs entram no cache
   na primeira consulta e ficam disponíveis sem rede.
+- **Prova completa**: as três matérias em sequência no formato oficial da
+  classe, cada uma com seu cronômetro e seu mínimo — aprovação exige passar
+  nas três, como no exame.
+- **Revisão de erros**: bateria só com as questões erradas ainda não
+  corrigidas; acertar tira da lista, sem veredito de aprovação.
+- Dashboard com tendência por matéria (últimas baterias contra a linha de
+  corte), exportar/importar do histórico para backup ou troca de aparelho, e
+  lista de questões marcadas como suspeitas durante o estudo.
 - Histórico no navegador (`localStorage`) e dashboard com o percentual de
   acerto por matéria contra a linha de corte oficial de 55%.
 - Botão **Consultar Material**: abre o PDF de origem já na página da questão,

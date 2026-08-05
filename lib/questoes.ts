@@ -72,6 +72,25 @@ export function sortearSimulado(
   );
 }
 
+/**
+ * As questões com erro em aberto: a última resposta dada foi errada.
+ *
+ * É a matéria-prima do modo "revisar erros". Acertar uma delas na revisão a
+ * tira da lista (a revisão também entra no histórico); questões nunca vistas
+ * ou acertadas por último ficam de fora. Mistura os três temas de propósito —
+ * revisão é estudo, não prova, e não recebe veredito de aprovação.
+ */
+export function questoesParaRevisao(
+  historico: Historico,
+  classe: Classe = CLASSE_PADRAO,
+): Questao[] {
+  const desempenho = desempenhoPorQuestao(historico);
+  const abertas = acervo(classe).filter(
+    (q) => desempenho.get(q.id)?.errouNaUltima,
+  );
+  return embaralharSimples(abertas);
+}
+
 /** Quantas questões estão disponíveis numa matéria, para a classe. */
 export function disponiveis(
   tema: Tema,

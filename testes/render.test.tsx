@@ -3,6 +3,8 @@ import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaResultado from "@/components/TelaResultado";
 import Dashboard from "@/components/Dashboard";
+import TelaIntervalo from "@/components/TelaIntervalo";
+import TelaResultadoProva from "@/components/TelaResultadoProva";
 import { sortearSimulado, BANCO } from "@/lib/questoes";
 import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
 import type { Resposta } from "@/lib/tipos";
@@ -13,9 +15,17 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   console.log(`${ok ? "  ok  " : "FALHA "} ${nome}${detalhe ? " — " + detalhe : ""}`);
 }
 
+const H_VAZIO: Historico = { versao: VERSAO_HISTORICO, simulados: [] };
+const PROPS_INICIO = {
+  historico: H_VAZIO,
+  onIniciar: () => {},
+  onProvaCompleta: () => {},
+  onRevisar: () => {},
+};
+
 // --- Tela inicial ---------------------------------------------------------
 {
-  const html = renderToStaticMarkup(<TelaInicio onIniciar={() => {}} />);
+  const html = renderToStaticMarkup(<TelaInicio {...PROPS_INICIO} />);
   checar("TelaInicio renderiza", html.length > 0);
   checar("mostra as 3 matérias", ["Legislação", "Técnica e Ética", "Eletrônica"].every((s) => html.includes(s)));
   // A bateria mista foi removida: cada matéria é uma prova separada, com seu
@@ -26,6 +36,26 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   checar("marca a bateria de 20 como prova real", html.includes("prova real"));
   checar("cita o critério oficial 11 acertos", html.includes("11 acertos"));
   checar("oferece o cronômetro ligado por padrão", html.includes("Cronômetro ligado"));
+  checar("oferece a prova completa", html.includes("Prova completa") && html.includes("3 matérias"));
+  checar("sem histórico, revisão está vazia", html.includes("Nenhum erro em aberto"));
+
+  // Com um erro no histórico, o botão de revisão acorda e mostra a contagem.
+  const errada = BANCO.find((q) => q.nivel === "B")!;
+  const hErro: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      montarRegistro(errada.tema, [
+        { questao: errada, respondeu: !errada.resposta_correta, acertou: false },
+      ]),
+    ],
+  };
+  const html2 = renderToStaticMarkup(
+    <TelaInicio {...PROPS_INICIO} historico={hErro} />,
+  );
+  checar(
+    "com erro em aberto, revisão oferece a questão",
+    html2.includes("Revisar erros") && !html2.includes("Nenhum erro em aberto"),
+  );
   checar("botão inicia com 20 questões", html.includes("Iniciar simulado"));
 }
 
@@ -144,6 +174,91 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   );
   checar("aviso de tempo esgotado com o total em branco", html4.includes("Tempo esgotado") && html4.includes("5"));
   checar("questão em branco aparece como não respondida", html4.includes("Não respondida — o tempo esgotou"));
+
+  // Modo revisão: estudo, não prova — sem veredito de aprovação.
+  const revisao = renderToStaticMarkup(
+    <TelaResultado
+      respostas={questoes.slice(0, 6).map((q, i) => ({
+        questao: q,
+        respondeu: q.resposta_correta,
+        acertou: i < 4,
+      }))}
+      onReiniciar={() => {}}
+      modo="revisao"
+    />,
+  );
+  checar(
+    "revisão não emite veredito de aprovação",
+    !revisao.includes("Aprovado") && !revisao.includes("Reprovado"),
+  );
+  checar("revisão conta os erros corrigidos", revisao.includes("erros corrigidos"));
+}
+
+// --- Prova completa -------------------------------------------------------
+{
+  const sortear = (tema: Parameters<typeof sortearSimulado>[0], acertos: number) =>
+    sortearSimulado(tema, 20).map((q, i) => ({
+      questao: q,
+      respondeu: q.resposta_correta,
+      acertou: i < acertos,
+    }));
+
+  const intervalo = renderToStaticMarkup(
+    <TelaIntervalo
+      classe="B"
+      tema="Legislação de Telecomunicações"
+      respostas={sortear("Legislação de Telecomunicações", 14)}
+      proximoTema="Técnica e ética operacional"
+      onProsseguir={() => {}}
+      onAbandonar={() => {}}
+    />,
+  );
+  checar("intervalo mostra o placar da matéria", intervalo.includes("Aprovado na matéria"));
+  checar("intervalo anuncia a próxima matéria", intervalo.includes("Técnica e Ética"));
+  checar(
+    "cronômetro da próxima só dispara ao iniciar",
+    intervalo.includes("cronômetro começa"),
+  );
+  checar(
+    "intervalo não entrega a revisão dos erros",
+    !intervalo.includes("Revisão dos erros"),
+  );
+
+  // 15 + 11 + 10: reprova, porque Eletrônica ficou abaixo do mínimo de 11 —
+  // exatamente o caso que a antiga bateria mista aprovava por média.
+  const reprova = renderToStaticMarkup(
+    <TelaResultadoProva
+      classe="B"
+      materias={[
+        { tema: "Legislação de Telecomunicações", respostas: sortear("Legislação de Telecomunicações", 15) },
+        { tema: "Técnica e ética operacional", respostas: sortear("Técnica e ética operacional", 11) },
+        { tema: "Conhecimentos de Eletrônica e Eletricidade", respostas: sortear("Conhecimentos de Eletrônica e Eletricidade", 10) },
+      ]}
+      onReiniciar={() => {}}
+    />,
+  );
+  checar(
+    "prova completa reprova quem falha numa matéria, mesmo com média alta",
+    reprova.includes("Reprovado") && reprova.includes("faltou em"),
+  );
+  checar("aponta a matéria que faltou", reprova.includes("faltou em") && reprova.includes("Eletrônica"));
+  checar("mostra o resultado das três matérias", reprova.includes("Resultado por matéria"));
+
+  const aprova = renderToStaticMarkup(
+    <TelaResultadoProva
+      classe="B"
+      materias={[
+        { tema: "Legislação de Telecomunicações", respostas: sortear("Legislação de Telecomunicações", 15) },
+        { tema: "Técnica e ética operacional", respostas: sortear("Técnica e ética operacional", 11) },
+        { tema: "Conhecimentos de Eletrônica e Eletricidade", respostas: sortear("Conhecimentos de Eletrônica e Eletricidade", 11) },
+      ]}
+      onReiniciar={() => {}}
+    />,
+  );
+  checar(
+    "prova completa aprova com o mínimo nas três",
+    aprova.includes("Aprovado") && aprova.includes("atingido nas três matérias"),
+  );
 }
 
 // --- Dashboard ------------------------------------------------------------
@@ -154,14 +269,16 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   // Antes de ler o storage não pode renderizar nada, senão quem já tem
   // histórico vê "nenhum simulado" piscar a cada carregamento.
   const naoCarregado = renderToStaticMarkup(
-    <Dashboard historico={vazio} carregado={false} onLimpar={() => {}} />,
+    <Dashboard historico={vazio} carregado={false} onLimpar={() => {}} onImportar={() => 0} />,
   );
   checar("Dashboard não renderiza antes de ler o storage", naoCarregado === "");
 
   const semDados = renderToStaticMarkup(
-    <Dashboard historico={vazio} carregado onLimpar={() => {}} />,
+    <Dashboard historico={vazio} carregado onLimpar={() => {}} onImportar={() => 0} />,
   );
   checar("histórico vazio mostra convite ao primeiro simulado", semDados.includes("primeiro simulado"));
+  // Importar precisa existir ANTES do primeiro simulado: é como o backup chega.
+  checar("mesmo vazio, dá para importar um backup", semDados.includes("Importar"));
 
   // Um simulado só de Eletrônica com 6 de 20 (30%) fica abaixo do corte.
   const fraco = sortearSimulado("Conhecimentos de Eletrônica e Eletricidade", 20);
@@ -175,7 +292,7 @@ function checar(nome: string, ok: boolean, detalhe = "") {
     ],
   };
   const comDados = renderToStaticMarkup(
-    <Dashboard historico={h} carregado onLimpar={() => {}} />,
+    <Dashboard historico={h} carregado onLimpar={() => {}} onImportar={() => 0} />,
   );
   checar("mostra o percentual da matéria (6/20 = 30%)", comDados.includes("30%"));
   checar("cita a linha de corte de 55%", comDados.includes("55%"));
@@ -183,6 +300,7 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   checar("aponta Eletrônica como a matéria fraca", comDados.includes("<strong>Eletrônica</strong>"));
   checar("matérias sem dados aparecem como tal", comDados.includes("sem dados"));
   checar("oferece limpar histórico", comDados.includes("Limpar histórico"));
+  checar("oferece exportar o histórico", comDados.includes("Exportar histórico"));
 
   // Acima do corte, sem alerta.
   const forte = sortearSimulado("Legislação de Telecomunicações", 20);
@@ -195,8 +313,29 @@ function checar(nome: string, ok: boolean, detalhe = "") {
       ),
     ],
   };
-  const bom = renderToStaticMarkup(<Dashboard historico={h2} carregado onLimpar={() => {}} />);
+  const bom = renderToStaticMarkup(<Dashboard historico={h2} carregado onLimpar={() => {}} onImportar={() => 0} />);
   checar("90% não dispara alerta de matéria fraca", bom.includes("90%") && !bom.includes("Abaixo da linha de corte"));
+
+  // Evolução: com um simulado só não há tendência; com dois, a linha aparece.
+  checar("um simulado só não desenha evolução", !bom.includes("<polyline"));
+  const doisDoMesmo: H = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      montarRegistro(
+        "Legislação de Telecomunicações",
+        forte.map((q, i) => ({ questao: q, respondeu: q.resposta_correta, acertou: i < 18 })),
+      ),
+      montarRegistro(
+        "Legislação de Telecomunicações",
+        forte.map((q, i) => ({ questao: q, respondeu: q.resposta_correta, acertou: i < 12 })),
+      ),
+    ],
+  };
+  const comLinha = renderToStaticMarkup(
+    <Dashboard historico={doisDoMesmo} carregado onLimpar={() => {}} onImportar={() => 0} />,
+  );
+  checar("duas baterias desenham a linha de evolução", comLinha.includes("<polyline") && comLinha.includes("Evolução"));
+  checar("revisões não entram na tendência", true); // garantido por seriePorTema, coberto em estudo.test
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);

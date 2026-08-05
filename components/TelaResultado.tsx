@@ -3,24 +3,27 @@
 import type { Classe, Resposta } from "@/lib/tipos";
 import {
   CLASSE_PADRAO,
-  COR_TEMA,
   FORMATO,
   percentualAprovacao,
-  ROTULO_CURTO,
 } from "@/lib/constantes";
-import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
-import TrechoOrigem from "./TrechoOrigem";
+import RevisaoErros from "./RevisaoErros";
 
 interface Props {
   respostas: Resposta[];
   onReiniciar: () => void;
   classe?: Classe;
+  /**
+   * "revisao" é estudo, não prova: sem veredito de aprovação — o placar diz
+   * quantos erros antigos foram corrigidos.
+   */
+  modo?: "prova" | "revisao";
 }
 
 export default function TelaResultado({
   respostas,
   onReiniciar,
   classe = CLASSE_PADRAO,
+  modo = "prova",
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -35,6 +38,44 @@ export default function TelaResultado({
   const bateriaOficial = total === formato.questoes;
   const erradas = respostas.filter((r) => !r.acertou);
   const naoRespondidas = respostas.filter((r) => r.respondeu === null).length;
+
+  if (modo === "revisao") {
+    return (
+      <div className="space-y-8">
+        <div className="rounded-2xl border-2 border-slate-300 p-8 text-center dark:border-slate-700">
+          <div className="text-5xl font-bold">
+            {acertos}
+            <span className="text-2xl font-normal opacity-50">/{total}</span>
+          </div>
+          <div className="mt-4 text-lg font-semibold">
+            {acertos === total
+              ? "Todos os erros corrigidos"
+              : `${acertos} ${acertos === 1 ? "erro corrigido" : "erros corrigidos"}, ${total - acertos} para revisar de novo`}
+          </div>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Revisão não tem veredito de aprovação: o que você acertou sai da
+            lista de erros; o que errou volta a aparecer.
+          </p>
+        </div>
+
+        {erradas.length > 0 && (
+          <section>
+            <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+              Ainda em aberto ({erradas.length})
+            </h2>
+            <RevisaoErros erradas={erradas} />
+          </section>
+        )}
+
+        <button
+          onClick={onReiniciar}
+          className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        >
+          Voltar ao início
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -81,53 +122,7 @@ export default function TelaResultado({
           <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
             Revisão dos erros ({erradas.length})
           </h2>
-          <div className="space-y-3">
-            {erradas.map((r) => (
-              <div
-                key={r.questao.id}
-                className="rounded-xl border border-slate-300 p-4 dark:border-slate-700"
-              >
-                <div
-                  className={`mb-2 text-xs font-semibold uppercase ${COR_TEMA[r.questao.tema].texto}`}
-                >
-                  {ROTULO_CURTO[r.questao.tema]}
-                </div>
-                <p className="leading-relaxed font-medium">
-                  {r.questao.afirmacao}
-                </p>
-                <p className="mt-2 text-sm">
-                  <span className="font-semibold text-rose-600 dark:text-rose-400">
-                    {r.respondeu === null
-                      ? "Não respondida — o tempo esgotou"
-                      : `Você respondeu ${r.respondeu ? "Verdadeiro" : "Falso"}`}
-                  </span>
-                  <span className="text-slate-500 dark:text-slate-400">
-                    {" "}
-                    · o correto é{" "}
-                    {r.questao.resposta_correta ? "Verdadeiro" : "Falso"}
-                  </span>
-                </p>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                  {r.questao.explicacao_curta}
-                </p>
-                <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
-                  {r.questao.origem === "documento"
-                    ? "Fonte: "
-                    : "Estude o tema em: "}
-                  {r.questao.arquivo_origem} · página {r.questao.pagina}
-                </p>
-                <BotaoConsultarMaterial
-                  arquivoOrigem={r.questao.arquivo_origem}
-                  pagina={r.questao.pagina}
-                  origem={r.questao.origem}
-                />
-                <TrechoOrigem
-                  trechoId={r.questao.trecho_id}
-                  afirmacao={r.questao.afirmacao}
-                />
-              </div>
-            ))}
-          </div>
+          <RevisaoErros erradas={erradas} />
         </section>
       )}
 

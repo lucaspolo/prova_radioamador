@@ -12,18 +12,27 @@ import {
   tempoDaBateria,
   TEMAS,
 } from "@/lib/constantes";
-import { contarPorTema, disponiveis } from "@/lib/questoes";
+import { contarPorTema, disponiveis, questoesParaRevisao } from "@/lib/questoes";
+import type { Historico } from "@/lib/historico";
 
 interface Props {
+  historico: Historico;
   onIniciar: (
     tema: Tema,
     quantidade: number,
     classe: Classe,
     cronometrar: boolean,
   ) => void;
+  onProvaCompleta: (classe: Classe) => void;
+  onRevisar: (classe: Classe) => void;
 }
 
-export default function TelaInicio({ onIniciar }: Props) {
+export default function TelaInicio({
+  historico,
+  onIniciar,
+  onProvaCompleta,
+  onRevisar,
+}: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
   const formato = FORMATO[classe];
@@ -35,6 +44,7 @@ export default function TelaInicio({ onIniciar }: Props) {
 
   // Não dá para sortear mais questões do que existem no tema escolhido.
   const limite = Math.min(quantidade, total);
+  const errosAbertos = questoesParaRevisao(historico, classe).length;
 
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
   // ficaria selecionado um número que nem aparece mais entre as opções.
@@ -172,6 +182,40 @@ export default function TelaInicio({ onIniciar }: Props) {
       >
         Iniciar simulado · {limite} questões
       </button>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/* A prova completa é sempre cronometrada e no formato oficial:
+            simular o dia do exame é exatamente o ponto dela. */}
+        <button
+          onClick={() => onProvaCompleta(classe)}
+          className="rounded-xl border-2 border-slate-900 px-4 py-3 text-left transition hover:bg-slate-900/5 dark:border-slate-100 dark:hover:bg-white/5"
+        >
+          <div className="font-semibold">Prova completa</div>
+          <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+            As 3 matérias em sequência, {FORMATO[classe].questoes} questões e{" "}
+            {FORMATO[classe].minutos} min cada, como no dia do exame.
+          </div>
+        </button>
+        <button
+          onClick={() => onRevisar(classe)}
+          disabled={errosAbertos === 0}
+          className="rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-slate-500"
+        >
+          <div className="font-semibold">
+            Revisar erros
+            {errosAbertos > 0 && (
+              <span className="ml-2 rounded-full bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                {errosAbertos}
+              </span>
+            )}
+          </div>
+          <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+            {errosAbertos === 0
+              ? "Nenhum erro em aberto — errou, aparece aqui."
+              : "Só as questões que você errou e ainda não corrigiu."}
+          </div>
+        </button>
+      </div>
     </div>
   );
 }

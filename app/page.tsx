@@ -4,30 +4,44 @@ import { useState } from "react";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaResultado from "@/components/TelaResultado";
+import TelaIntervalo from "@/components/TelaIntervalo";
+import TelaResultadoProva, {
+  type MateriaConcluida,
+} from "@/components/TelaResultadoProva";
 import Dashboard from "@/components/Dashboard";
 import { useHistorico } from "@/hooks/useHistorico";
-import { sortearSimulado } from "@/lib/questoes";
+import { questoesParaRevisao, sortearSimulado } from "@/lib/questoes";
+import { CLASSE_PADRAO, FORMATO, TEMAS, tempoDaBateria } from "@/lib/constantes";
 import type { Classe, Questao, Resposta, Tema } from "@/lib/tipos";
-import { CLASSE_PADRAO, TEMAS, tempoDaBateria } from "@/lib/constantes";
 
-type Etapa = "inicio" | "simulado" | "resultado";
+type Etapa = "inicio" | "simulado" | "resultado" | "intervalo" | "resultadoProva";
 
 /**
- * O app é uma máquina de estados numa única rota, e não três rotas.
+ * O que está sendo jogado agora. "avulso" é a bateria de uma matéria;
+ * "revisao" recruta só os erros em aberto e não recebe veredito; "prova"
+ * encadeia as três matérias no formato oficial, cada uma com seu cronômetro
+ * e seu mínimo — aprovação só com as três.
+ */
+type Modo = "avulso" | "revisao" | "prova";
+
+/**
+ * O app é uma máquina de estados numa única rota, e não várias.
  *
- * A alternativa seria passar tema e quantidade por query string, mas num
- * export estático isso exigiria `useSearchParams` com Suspense, e sair da
- * página perderia o simulado em andamento. Manter o estado aqui é mais simples
- * e evita perder progresso com o botão voltar.
+ * A alternativa seria passar o estado por query string, mas num export
+ * estático isso exigiria `useSearchParams` com Suspense, e sair da página
+ * perderia o simulado em andamento. Manter o estado aqui é mais simples e
+ * evita perder progresso com o botão voltar.
  */
 export default function Home() {
   const [etapa, setEtapa] = useState<Etapa>("inicio");
+  const [modo, setModo] = useState<Modo>("avulso");
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [respostas, setRespostas] = useState<Resposta[]>([]);
   const [temaAtual, setTemaAtual] = useState<Tema>(TEMAS[0]);
   const [classeAtual, setClasseAtual] = useState<Classe>(CLASSE_PADRAO);
   const [tempoSegundos, setTempoSegundos] = useState<number | null>(null);
-  const { historico, carregado, registrar, limpar } = useHistorico();
+  const [materiasProva, setMateriasProva] = useState<MateriaConcluida[]>([]);
+  const { historico, carregado, registrar, importar, limpar } = useHistorico();
 
   function iniciar(
     tema: Tema,
@@ -38,26 +52,64 @@ export default function Home() {
     // O histórico entra no sorteio: o que você errou volta antes, o que já
     // domina rareia. Sem histórico, o sorteio é uniforme. A classe define o
     // acervo elegível — o acréscimo técnico da Classe A não cai em B nem em C.
+    setModo("avulso");
     setQuestoes(sortearSimulado(tema, quantidade, historico, classe));
-    setTempoSegundos(cronometrar ? tempoDaBateria(classe, quantidade) : null);
     setRespostas([]);
     setTemaAtual(tema);
     setClasseAtual(classe);
+    setTempoSegundos(cronometrar ? tempoDaBateria(classe, quantidade) : null);
     setEtapa("simulado");
+  }
+
+  function iniciarRevisao(classe: Classe) {
+    // Revisão é estudo dirigido: sem cronômetro, sem veredito.
+    setModo("revisao");
+    setQuestoes(questoesParaRevisao(historico, classe));
+    setRespostas([]);
+    setClasseAtual(classe);
+    setTempoSegundos(null);
+    setEtapa("simulado");
+  }
+
+  function iniciarMateriaDaProva(classe: Classe, indice: number) {
+    const tema = TEMAS[indice];
+    setQuestoes(
+      sortearSimulado(tema, FORMATO[classe].questoes, historico, classe),
+    );
+    setRespostas([]);
+    setTemaAtual(tema);
+    // Prova completa é sempre cronometrada: simular o exame é o ponto dela.
+    setTempoSegundos(tempoDaBateria(classe, FORMATO[classe].questoes));
+    setEtapa("simulado");
+  }
+
+  function iniciarProva(classe: Classe) {
+    setModo("prova");
+    setClasseAtual(classe);
+    setMateriasProva([]);
+    iniciarMateriaDaProva(classe, 0);
   }
 
   function concluir(finais: Resposta[]) {
     setRespostas(finais);
-    // Só entra no histórico o simulado terminado; abandonar não conta.
-    registrar(temaAtual, finais);
-    setEtapa("resultado");
+    // Só entra no histórico a bateria terminada; abandonar não conta. A
+    // revisão também registra: acertar ali tira a questão da lista de erros.
+    registrar(modo === "revisao" ? "revisao" : temaAtual, finais);
+
+    if (modo !== "prova") {
+      setEtapa("resultado");
+      return;
+    }
+    const concluidas = [...materiasProva, { tema: temaAtual, respostas: finais }];
+    setMateriasProva(concluidas);
+    setEtapa(concluidas.length < TEMAS.length ? "intervalo" : "resultadoProva");
   }
 
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:py-12">
       <header className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">
-          Simulados · Radioamador Classe B
+          Simulados · Radioamador
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Questões de certo ou errado no formato da prova da Anatel.
@@ -70,8 +122,14 @@ export default function Home() {
             historico={historico}
             carregado={carregado}
             onLimpar={limpar}
+            onImportar={importar}
           />
-          <TelaInicio onIniciar={iniciar} />
+          <TelaInicio
+            historico={historico}
+            onIniciar={iniciar}
+            onProvaCompleta={iniciarProva}
+            onRevisar={iniciarRevisao}
+          />
         </div>
       )}
 
@@ -89,6 +147,28 @@ export default function Home() {
           respostas={respostas}
           onReiniciar={() => setEtapa("inicio")}
           classe={classeAtual}
+          modo={modo === "revisao" ? "revisao" : "prova"}
+        />
+      )}
+
+      {etapa === "intervalo" && (
+        <TelaIntervalo
+          classe={classeAtual}
+          tema={temaAtual}
+          respostas={respostas}
+          proximoTema={TEMAS[materiasProva.length]}
+          onProsseguir={() =>
+            iniciarMateriaDaProva(classeAtual, materiasProva.length)
+          }
+          onAbandonar={() => setEtapa("inicio")}
+        />
+      )}
+
+      {etapa === "resultadoProva" && (
+        <TelaResultadoProva
+          classe={classeAtual}
+          materias={materiasProva}
+          onReiniciar={() => setEtapa("inicio")}
         />
       )}
     </main>

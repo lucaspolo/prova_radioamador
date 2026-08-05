@@ -84,6 +84,8 @@ export interface EstiloTema {
   fundo: string;
   borda: string;
   barra: string;
+  /** Stroke de SVG, para o sparkline de evolução. */
+  linha: string;
 }
 
 export const COR_TEMA: Record<Tema, EstiloTema> = {
@@ -92,18 +94,21 @@ export const COR_TEMA: Record<Tema, EstiloTema> = {
     fundo: "bg-sky-50 dark:bg-sky-950/40",
     borda: "border-sky-300 dark:border-sky-800",
     barra: "bg-sky-500",
+    linha: "stroke-sky-500",
   },
   "Técnica e ética operacional": {
     texto: "text-violet-700 dark:text-violet-300",
     fundo: "bg-violet-50 dark:bg-violet-950/40",
     borda: "border-violet-300 dark:border-violet-800",
     barra: "bg-violet-500",
+    linha: "stroke-violet-500",
   },
   "Conhecimentos de Eletrônica e Eletricidade": {
     texto: "text-amber-700 dark:text-amber-300",
     fundo: "bg-amber-50 dark:bg-amber-950/40",
     borda: "border-amber-300 dark:border-amber-800",
     barra: "bg-amber-500",
+    linha: "stroke-amber-500",
   },
 };
 

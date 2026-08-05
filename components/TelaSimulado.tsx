@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
+import BotaoSuspeita from "./BotaoSuspeita";
 import TrechoOrigem from "./TrechoOrigem";
 
 interface Props {
@@ -213,6 +214,9 @@ export default function TelaSimulado({
                   trechoId={questao.trecho_id}
                   afirmacao={questao.afirmacao}
                 />
+                <div>
+                  <BotaoSuspeita questaoId={questao.id} />
+                </div>
               </div>
             </div>
           </div>
