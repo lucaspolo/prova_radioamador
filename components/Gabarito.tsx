@@ -1,0 +1,91 @@
+"use client";
+
+import { useState } from "react";
+import type { Resposta } from "@/lib/tipos";
+import RevisaoErros from "./RevisaoErros";
+
+interface Props {
+  respostas: Resposta[];
+  /**
+   * Numa bateria cega o usuário nunca viu o gabarito de questão nenhuma —
+   * inclusive das que acertou no chute, que são justamente as que vale a pena
+   * conferir. Aí a lista abre completa, com filtro para só os erros.
+   */
+  permitirTodas?: boolean;
+  tituloErros?: string;
+}
+
+export default function Gabarito({
+  respostas,
+  permitirTodas = false,
+  tituloErros = "Revisão dos erros",
+}: Props) {
+  const [soErros, setSoErros] = useState(false);
+  const erradas = respostas.filter((r) => !r.acertou);
+
+  if (!permitirTodas) {
+    if (erradas.length === 0) return null;
+    return (
+      <section>
+        <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          {tituloErros} ({erradas.length})
+        </h2>
+        <RevisaoErros itens={erradas} />
+      </section>
+    );
+  }
+
+  const itens = soErros ? erradas : respostas;
+  return (
+    <section>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          Gabarito
+        </h2>
+        <div className="flex gap-1.5 text-xs">
+          <FiltroBotao
+            ativo={!soErros}
+            onClick={() => setSoErros(false)}
+            rotulo={`Todas (${respostas.length})`}
+          />
+          <FiltroBotao
+            ativo={soErros}
+            onClick={() => setSoErros(true)}
+            rotulo={`Só os erros (${erradas.length})`}
+          />
+        </div>
+      </div>
+      {itens.length > 0 ? (
+        <RevisaoErros itens={itens} />
+      ) : (
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Nenhum erro nesta bateria.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function FiltroBotao({
+  ativo,
+  onClick,
+  rotulo,
+}: {
+  ativo: boolean;
+  onClick: () => void;
+  rotulo: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={ativo}
+      className={`rounded-full border px-3 py-1 font-medium transition ${
+        ativo
+          ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+          : "border-slate-300 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300"
+      }`}
+    >
+      {rotulo}
+    </button>
+  );
+}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
+import TelaProvaCega from "@/components/TelaProvaCega";
 import TelaResultado from "@/components/TelaResultado";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva, {
@@ -12,7 +13,7 @@ import Dashboard from "@/components/Dashboard";
 import { useHistorico } from "@/hooks/useHistorico";
 import { questoesParaRevisao, sortearSimulado } from "@/lib/questoes";
 import { CLASSE_PADRAO, FORMATO, TEMAS, tempoDaBateria } from "@/lib/constantes";
-import type { Classe, Questao, Resposta, Tema } from "@/lib/tipos";
+import type { Classe, MotivoFim, Questao, Resposta, Tema } from "@/lib/tipos";
 
 type Etapa = "inicio" | "simulado" | "resultado" | "intervalo" | "resultadoProva";
 
@@ -25,6 +26,13 @@ type Etapa = "inicio" | "simulado" | "resultado" | "intervalo" | "resultadoProva
 type Modo = "avulso" | "revisao" | "prova";
 
 /**
+ * Como a bateria é conduzida. "treino" dá o gabarito questão a questão, que é
+ * como se aprende; "cego" esconde tudo até o fim e libera a navegação entre as
+ * questões, que é como a Anatel aplica.
+ */
+type Regime = "treino" | "cego";
+
+/**
  * O app é uma máquina de estados numa única rota, e não várias.
  *
  * A alternativa seria passar o estado por query string, mas num export
@@ -35,12 +43,14 @@ type Modo = "avulso" | "revisao" | "prova";
 export default function Home() {
   const [etapa, setEtapa] = useState<Etapa>("inicio");
   const [modo, setModo] = useState<Modo>("avulso");
+  const [regime, setRegime] = useState<Regime>("treino");
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [respostas, setRespostas] = useState<Resposta[]>([]);
   const [temaAtual, setTemaAtual] = useState<Tema>(TEMAS[0]);
   const [classeAtual, setClasseAtual] = useState<Classe>(CLASSE_PADRAO);
   const [tempoSegundos, setTempoSegundos] = useState<number | null>(null);
   const [materiasProva, setMateriasProva] = useState<MateriaConcluida[]>([]);
+  const [motivoFim, setMotivoFim] = useState<MotivoFim>("manual");
   const { historico, carregado, registrar, importar, limpar } = useHistorico();
 
   function iniciar(
@@ -48,11 +58,13 @@ export default function Home() {
     quantidade: number,
     classe: Classe,
     cronometrar: boolean,
+    cego: boolean,
   ) {
     // O histórico entra no sorteio: o que você errou volta antes, o que já
     // domina rareia. Sem histórico, o sorteio é uniforme. A classe define o
     // acervo elegível — o acréscimo técnico da Classe A não cai em B nem em C.
     setModo("avulso");
+    setRegime(cego ? "cego" : "treino");
     setQuestoes(sortearSimulado(tema, quantidade, historico, classe));
     setRespostas([]);
     setTemaAtual(tema);
@@ -62,8 +74,10 @@ export default function Home() {
   }
 
   function iniciarRevisao(classe: Classe) {
-    // Revisão é estudo dirigido: sem cronômetro, sem veredito.
+    // Revisão é estudo dirigido: sem cronômetro, sem veredito e sempre com o
+    // gabarito na hora — esconder a resposta aqui seria esconder o estudo.
     setModo("revisao");
+    setRegime("treino");
     setQuestoes(questoesParaRevisao(historico, classe));
     setRespostas([]);
     setClasseAtual(classe);
@@ -85,13 +99,16 @@ export default function Home() {
 
   function iniciarProva(classe: Classe) {
     setModo("prova");
+    // Simular o exame é o ponto da prova completa, e o exame é cego.
+    setRegime("cego");
     setClasseAtual(classe);
     setMateriasProva([]);
     iniciarMateriaDaProva(classe, 0);
   }
 
-  function concluir(finais: Resposta[]) {
+  function concluir(finais: Resposta[], motivo: MotivoFim) {
     setRespostas(finais);
+    setMotivoFim(motivo);
     // Só entra no histórico a bateria terminada; abandonar não conta. A
     // revisão também registra: acertar ali tira a questão da lista de erros.
     registrar(modo === "revisao" ? "revisao" : temaAtual, finais);
@@ -133,14 +150,28 @@ export default function Home() {
         </div>
       )}
 
-      {etapa === "simulado" && (
-        <TelaSimulado
-          questoes={questoes}
-          tempoSegundos={tempoSegundos}
-          onConcluir={concluir}
-          onSair={() => setEtapa("inicio")}
-        />
-      )}
+      {/* A `key` amarra a tela à bateria: as três matérias da prova completa
+          têm o mesmo `tempoSegundos`, então sem ela um dia em que a etapa de
+          intervalo saia do caminho o cronômetro herdaria o prazo da matéria
+          anterior em vez de recomeçar. */}
+      {etapa === "simulado" &&
+        (regime === "cego" ? (
+          <TelaProvaCega
+            key={`${temaAtual}-${materiasProva.length}`}
+            questoes={questoes}
+            tempoSegundos={tempoSegundos}
+            onConcluir={concluir}
+            onSair={() => setEtapa("inicio")}
+          />
+        ) : (
+          <TelaSimulado
+            key={`${temaAtual}-${materiasProva.length}`}
+            questoes={questoes}
+            tempoSegundos={tempoSegundos}
+            onConcluir={concluir}
+            onSair={() => setEtapa("inicio")}
+          />
+        ))}
 
       {etapa === "resultado" && (
         <TelaResultado
@@ -148,6 +179,8 @@ export default function Home() {
           onReiniciar={() => setEtapa("inicio")}
           classe={classeAtual}
           modo={modo === "revisao" ? "revisao" : "prova"}
+          cega={regime === "cego"}
+          motivoFim={motivoFim}
         />
       )}
 

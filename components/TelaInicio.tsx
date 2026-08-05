@@ -22,6 +22,7 @@ interface Props {
     quantidade: number,
     classe: Classe,
     cronometrar: boolean,
+    cego: boolean,
   ) => void;
   onProvaCompleta: (classe: Classe) => void;
   onRevisar: (classe: Classe) => void;
@@ -38,6 +39,7 @@ export default function TelaInicio({
   const formato = FORMATO[classe];
   const [quantidade, setQuantidade] = useState(FORMATO[CLASSE_PADRAO].questoes);
   const [cronometrar, setCronometrar] = useState(true);
+  const [cego, setCego] = useState(false);
   const contagem = contarPorTema(classe);
   const total = disponiveis(escolha, classe);
   const opcoes = tamanhos(classe);
@@ -46,8 +48,6 @@ export default function TelaInicio({
   const limite = Math.min(quantidade, total);
   const errosAbertos = questoesParaRevisao(historico, classe).length;
 
-  // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
-  // ficaria selecionado um número que nem aparece mais entre as opções.
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
   // ficaria selecionado um número que nem aparece mais entre as opções.
   function trocarClasse(nova: Classe) {
@@ -147,8 +147,26 @@ export default function TelaInicio({
 
       <section>
         <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-          Cronômetro
+          Como conduzir
         </h2>
+        <button
+          onClick={() => setCego((c) => !c)}
+          aria-pressed={cego}
+          className={`mb-3 w-full rounded-xl border-2 p-4 text-left transition ${
+            cego
+              ? "border-slate-900 dark:border-slate-100"
+              : "border-slate-300 opacity-70 hover:opacity-100 dark:border-slate-700"
+          }`}
+        >
+          <div className="font-semibold">
+            {cego ? "Modo prova" : "Modo treino"}
+          </div>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {cego
+              ? "Sem gabarito até o fim, como no exame: dá para pular, voltar, trocar a resposta e deixar em branco."
+              : "Gabarito e explicação a cada questão, na hora — é assim que se aprende o conteúdo."}
+          </p>
+        </button>
         <button
           onClick={() => setCronometrar((c) => !c)}
           aria-pressed={cronometrar}
@@ -177,14 +195,14 @@ export default function TelaInicio({
       </section>
 
       <button
-        onClick={() => onIniciar(escolha, limite, classe, cronometrar)}
+        onClick={() => onIniciar(escolha, limite, classe, cronometrar, cego)}
         className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Iniciar simulado · {limite} questões
       </button>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {/* A prova completa é sempre cronometrada e no formato oficial:
+        {/* A prova completa é sempre cronometrada, cega e no formato oficial:
             simular o dia do exame é exatamente o ponto dela. */}
         <button
           onClick={() => onProvaCompleta(classe)}
@@ -193,7 +211,8 @@ export default function TelaInicio({
           <div className="font-semibold">Prova completa</div>
           <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             As 3 matérias em sequência, {FORMATO[classe].questoes} questões e{" "}
-            {FORMATO[classe].minutos} min cada, como no dia do exame.
+            {FORMATO[classe].minutos} min cada, sem gabarito até o fim — como no
+            dia do exame.
           </div>
         </button>
         <button

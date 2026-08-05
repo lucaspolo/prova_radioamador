@@ -64,6 +64,14 @@ export interface Trecho {
   texto: string;
 }
 
+/**
+ * Por que a bateria terminou.
+ *
+ * O resultado precisa saber: no modo cego dá para encerrar antes da hora com
+ * questões em branco, e aí anunciar "tempo esgotado" seria mentira.
+ */
+export type MotivoFim = "tempo" | "manual";
+
 /** Uma questão de um simulado concluído. */
 export interface Resposta {
   questao: Questao;

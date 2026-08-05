@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
+import TelaProvaCega from "@/components/TelaProvaCega";
 import TelaResultado from "@/components/TelaResultado";
 import Dashboard from "@/components/Dashboard";
 import TelaIntervalo from "@/components/TelaIntervalo";
@@ -86,6 +87,103 @@ const PROPS_INICIO = {
     />,
   );
   checar("cronômetro de 30 min mostra 30:00", comTempo.includes("30:00"));
+}
+
+// --- Prova cega -----------------------------------------------------------
+// O exame da Anatel não devolve gabarito nenhum durante a prova. Esta tela é
+// a que precisa ser vigiada: qualquer vazamento aqui — a explicação, o
+// veredito da questão ou até o placar parcial — descaracteriza o simulado.
+{
+  const questoes = sortearSimulado("Legislação de Telecomunicações", 20);
+  const html = renderToStaticMarkup(
+    <TelaProvaCega questoes={questoes} onConcluir={() => {}} onSair={() => {}} />,
+  );
+  checar("TelaProvaCega renderiza", html.length > 0);
+  checar("mostra posição na bateria", html.includes("Questão 1 de 20"));
+  checar("exibe o enunciado da 1ª questão", html.includes(questoes[0].afirmacao.slice(0, 40)));
+  checar("oferece Verdadeiro e Falso", html.includes("Verdadeiro") && html.includes("Falso"));
+
+  // Os três vazamentos possíveis.
+  checar(
+    "não mostra a explicação de nenhuma questão",
+    questoes.every((q) => !html.includes(q.explicacao_curta.slice(0, 40))),
+  );
+  checar(
+    "não emite veredito por questão",
+    !html.includes("Acertou") && !html.includes("Errou") && !html.includes("a afirmação é"),
+  );
+  // O placar parcial entregaria o gabarito de tudo que já passou.
+  checar("não mostra placar de acertos", !html.includes("acertos"));
+  checar("mostra o quanto já foi respondido", html.includes("0 de 20 respondidas"));
+
+  // Consultar o PDF no meio do exame é justamente o que a prova não permite.
+  checar("não oferece consultar o material", !html.includes("Consultar Material"));
+  checar("não oferece o trecho de origem", !html.includes("Ver trecho de origem"));
+
+  checar("oferece a folha de respostas", html.includes("Folha de respostas"));
+  checar(
+    "a folha tem uma célula por questão, identificada",
+    questoes.every((_, i) => html.includes(`Questão ${i + 1}, em branco`)),
+  );
+  checar("permite navegar entre as questões", html.includes("Anterior") && html.includes("Próxima"));
+  checar("permite marcar para revisar", html.includes("Marcar para revisar"));
+  checar("permite encerrar e ver o gabarito", html.includes("Encerrar e ver o gabarito"));
+  checar("permite abandonar", html.includes("Abandonar a prova"));
+
+  const comTempo = renderToStaticMarkup(
+    <TelaProvaCega
+      questoes={questoes}
+      tempoSegundos={1800}
+      onConcluir={() => {}}
+      onSair={() => {}}
+    />,
+  );
+  checar("o cronômetro continua igual ao do treino", comTempo.includes("30:00"));
+}
+
+// --- Gabarito completo ----------------------------------------------------
+// Depois de uma bateria cega, o que mais vale conferir são as questões
+// acertadas no chute — que a revisão de erros, por definição, esconde.
+{
+  const questoes = sortearSimulado("Legislação de Telecomunicações", 20);
+  const respostas: Resposta[] = questoes.map((q, i) => ({
+    questao: q,
+    respondeu: i < 15 ? q.resposta_correta : !q.resposta_correta,
+    acertou: i < 15,
+  }));
+
+  const cega = renderToStaticMarkup(
+    <TelaResultado respostas={respostas} onReiniciar={() => {}} cega motivoFim="manual" />,
+  );
+  checar("bateria cega abre o gabarito completo", cega.includes("Gabarito"));
+  checar("oferece filtrar só os erros", cega.includes("Só os erros (5)") && cega.includes("Todas (20)"));
+  checar(
+    "mostra a explicação de uma questão acertada",
+    cega.includes(questoes[0].explicacao_curta.slice(0, 40)),
+  );
+  checar("identifica os acertos", cega.includes("Acertou"));
+
+  // No treino o gabarito já apareceu questão a questão: aqui só os erros.
+  const treino = renderToStaticMarkup(
+    <TelaResultado respostas={respostas} onReiniciar={() => {}} />,
+  );
+  checar("bateria de treino continua listando só os erros", treino.includes("Revisão dos erros (5)"));
+  checar(
+    "e não mostra a explicação de uma acertada",
+    !treino.includes(questoes[0].explicacao_curta.slice(0, 40)),
+  );
+
+  // Encerrar cedo à mão deixa questões em branco sem que o tempo tenha acabado.
+  const emBranco: Resposta[] = questoes.map((q, i) => ({
+    questao: q,
+    respondeu: i < 15 ? q.resposta_correta : null,
+    acertou: i < 15,
+  }));
+  const manual = renderToStaticMarkup(
+    <TelaResultado respostas={emBranco} onReiniciar={() => {}} cega motivoFim="manual" />,
+  );
+  checar("encerrar à mão não anuncia tempo esgotado", !manual.includes("Tempo esgotado"));
+  checar("mas continua contando as em branco como erro", manual.includes("como erro"));
 }
 
 // --- Rótulo de procedência ------------------------------------------------

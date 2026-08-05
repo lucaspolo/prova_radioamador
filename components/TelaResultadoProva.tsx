@@ -2,7 +2,7 @@
 
 import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import { COR_TEMA, FORMATO, ROTULO_CURTO } from "@/lib/constantes";
-import RevisaoErros from "./RevisaoErros";
+import Gabarito from "./Gabarito";
 
 export interface MateriaConcluida {
   tema: Tema;
@@ -33,9 +33,9 @@ export default function TelaResultadoProva({
   });
   const aprovadoGeral = porMateria.every((m) => m.aprovado);
   const reprovadas = porMateria.filter((m) => !m.aprovado);
-  const erradas = materias.flatMap((m) =>
-    m.respostas.filter((r) => !r.acertou),
-  );
+  // A prova completa é cega: o gabarito das três matérias só aparece aqui, e
+  // aparece inteiro — inclusive o das questões acertadas no chute.
+  const todas = materias.flatMap((m) => m.respostas);
 
   return (
     <div className="space-y-8">
@@ -104,14 +104,8 @@ export default function TelaResultadoProva({
         </div>
       </section>
 
-      {erradas.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-            Revisão dos erros ({erradas.length})
-          </h2>
-          <RevisaoErros erradas={erradas} />
-        </section>
-      )}
+      <Gabarito respostas={todas} permitirTodas />
+
 
       <button
         onClick={onReiniciar}

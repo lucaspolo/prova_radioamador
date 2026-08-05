@@ -1,12 +1,12 @@
 "use client";
 
-import type { Classe, Resposta } from "@/lib/tipos";
+import type { Classe, MotivoFim, Resposta } from "@/lib/tipos";
 import {
   CLASSE_PADRAO,
   FORMATO,
   percentualAprovacao,
 } from "@/lib/constantes";
-import RevisaoErros from "./RevisaoErros";
+import Gabarito from "./Gabarito";
 
 interface Props {
   respostas: Resposta[];
@@ -17,6 +17,9 @@ interface Props {
    * quantos erros antigos foram corrigidos.
    */
   modo?: "prova" | "revisao";
+  /** Bateria feita no modo cego: o gabarito abre completo. */
+  cega?: boolean;
+  motivoFim?: MotivoFim;
 }
 
 export default function TelaResultado({
@@ -24,6 +27,8 @@ export default function TelaResultado({
   onReiniciar,
   classe = CLASSE_PADRAO,
   modo = "prova",
+  cega = false,
+  motivoFim = "tempo",
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -36,7 +41,6 @@ export default function TelaResultado({
   // Classe B). Numa bateria de outro tamanho ele não se aplica, então
   // comparamos pelo percentual equivalente.
   const bateriaOficial = total === formato.questoes;
-  const erradas = respostas.filter((r) => !r.acertou);
   const naoRespondidas = respostas.filter((r) => r.respondeu === null).length;
 
   if (modo === "revisao") {
@@ -58,14 +62,7 @@ export default function TelaResultado({
           </p>
         </div>
 
-        {erradas.length > 0 && (
-          <section>
-            <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-              Ainda em aberto ({erradas.length})
-            </h2>
-            <RevisaoErros erradas={erradas} />
-          </section>
-        )}
+        <Gabarito respostas={respostas} tituloErros="Ainda em aberto" />
 
         <button
           onClick={onReiniciar}
@@ -105,9 +102,12 @@ export default function TelaResultado({
             ? `Classe ${classe} — critério oficial: ${formato.minimo} de ${formato.questoes} acertos.`
             : `Classe ${classe} — critério oficial: ${corte}% (${formato.minimo} de ${formato.questoes} na prova real).`}
         </p>
+        {/* No modo cego dá para encerrar antes da hora com questões em branco.
+            Anunciar "tempo esgotado" nesse caso seria mentira. */}
         {naoRespondidas > 0 && (
           <p className="mt-2 text-sm font-medium text-rose-600 dark:text-rose-400">
-            Tempo esgotado: {naoRespondidas}{" "}
+            {motivoFim === "tempo" ? "Tempo esgotado: " : ""}
+            {naoRespondidas}{" "}
             {naoRespondidas === 1
               ? "questão ficou sem resposta e conta"
               : "questões ficaram sem resposta e contam"}{" "}
@@ -117,14 +117,7 @@ export default function TelaResultado({
       </div>
 
 
-      {erradas.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-            Revisão dos erros ({erradas.length})
-          </h2>
-          <RevisaoErros erradas={erradas} />
-        </section>
-      )}
+      <Gabarito respostas={respostas} permitirTodas={cega} />
 
       <button
         onClick={onReiniciar}

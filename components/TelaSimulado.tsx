@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Questao, Resposta } from "@/lib/tipos";
+import type { MotivoFim, Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import { folhaVazia, respostasDe } from "@/lib/bateria";
 import { useCronometro } from "@/hooks/useCronometro";
@@ -13,7 +13,7 @@ interface Props {
   questoes: Questao[];
   /** Segundos de prova; null desliga o cronômetro. */
   tempoSegundos?: number | null;
-  onConcluir: (respostas: Resposta[]) => void;
+  onConcluir: (respostas: Resposta[], motivo: MotivoFim) => void;
   onSair: () => void;
 }
 
@@ -55,7 +55,7 @@ export default function TelaSimulado({
   const avancar = useCallback(() => {
     if (escolhida === null) return;
     if (indice + 1 >= questoes.length) {
-      onConcluir(respostasDe(questoes, escolhas));
+      onConcluir(respostasDe(questoes, escolhas), "manual");
       return;
     }
     setIndice((i) => i + 1);
@@ -64,7 +64,7 @@ export default function TelaSimulado({
   // Tempo esgotado: como na prova real, o que não foi respondido conta como
   // erro. A bateria termina na hora, com as faltantes marcadas em branco.
   const restante = useCronometro(tempoSegundos, () => {
-    onConcluir(respostasDe(questoes, escolhas));
+    onConcluir(respostasDe(questoes, escolhas), "tempo");
   });
 
   // Atalhos: V / F para responder, Enter ou espaço para avançar. Numa bateria
