@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
+import { folhaVazia, respostasDe } from "@/lib/bateria";
+import { useCronometro } from "@/hooks/useCronometro";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import BotaoSuspeita from "./BotaoSuspeita";
 import TrechoOrigem from "./TrechoOrigem";
@@ -26,65 +28,44 @@ export default function TelaSimulado({
   onSair,
 }: Props) {
   const [indice, setIndice] = useState(0);
-  const [respostas, setRespostas] = useState<Resposta[]>([]);
-  const [escolhida, setEscolhida] = useState<boolean | null>(null);
-  const [restante, setRestante] = useState(tempoSegundos ?? 0);
-  const fimRef = useRef<number | null>(null);
+  const [escolhas, setEscolhas] = useState(() => folhaVazia(questoes.length));
 
   const questao = questoes[indice];
-  const acertos = respostas.filter((r) => r.acertou).length;
+  const escolhida = escolhas[indice];
   const respondida = escolhida !== null;
+  const acertos = respostasDe(questoes, escolhas).filter(
+    (r) => r.respondeu !== null && r.acertou,
+  ).length;
 
   const responder = useCallback(
     (valor: boolean) => {
-      // Ignora cliques repetidos depois que a questão já foi respondida.
-      if (escolhida !== null) return;
-      setEscolhida(valor);
-      setRespostas((anteriores) => [
-        ...anteriores,
-        {
-          questao,
-          respondeu: valor,
-          acertou: valor === questao.resposta_correta,
-        },
-      ]);
+      // Ignora cliques repetidos depois que a questão já foi respondida: aqui
+      // o feedback já apareceu, e trocar a resposta depois de ver o gabarito
+      // não é estudar.
+      setEscolhas((anteriores) => {
+        if (anteriores[indice] !== null) return anteriores;
+        const proximas = [...anteriores];
+        proximas[indice] = valor;
+        return proximas;
+      });
     },
-    [escolhida, questao],
+    [indice],
   );
 
   const avancar = useCallback(() => {
     if (escolhida === null) return;
-    // `respostas` já contém a resposta da questão atual — `responder` é o
-    // único ponto que grava. Reanexá-la aqui duplicava a última questão da
-    // bateria: o resultado saía com 21 respostas em 20 questões.
     if (indice + 1 >= questoes.length) {
-      onConcluir(respostas);
+      onConcluir(respostasDe(questoes, escolhas));
       return;
     }
     setIndice((i) => i + 1);
-    setEscolhida(null);
-  }, [escolhida, indice, questoes.length, onConcluir, respostas]);
-
-  // O prazo é um instante fixo, não um contador decrementado: se o intervalo
-  // atrasar (aba em segundo plano no celular), o relógio continua honesto.
-  useEffect(() => {
-    if (tempoSegundos == null) return;
-    fimRef.current = Date.now() + tempoSegundos * 1000;
-    const timer = setInterval(() => {
-      setRestante(Math.max(0, Math.ceil((fimRef.current! - Date.now()) / 1000)));
-    }, 250);
-    return () => clearInterval(timer);
-  }, [tempoSegundos]);
+  }, [escolhida, indice, questoes, escolhas, onConcluir]);
 
   // Tempo esgotado: como na prova real, o que não foi respondido conta como
   // erro. A bateria termina na hora, com as faltantes marcadas em branco.
-  useEffect(() => {
-    if (tempoSegundos == null || restante > 0) return;
-    const faltantes: Resposta[] = questoes
-      .slice(respostas.length)
-      .map((q) => ({ questao: q, respondeu: null, acertou: false }));
-    onConcluir([...respostas, ...faltantes]);
-  }, [restante, tempoSegundos, questoes, respostas, onConcluir]);
+  const restante = useCronometro(tempoSegundos, () => {
+    onConcluir(respostasDe(questoes, escolhas));
+  });
 
   // Atalhos: V / F para responder, Enter ou espaço para avançar. Numa bateria
   // de 20 questões, a mão não precisa sair do teclado.
@@ -125,8 +106,6 @@ export default function TelaSimulado({
               {formatarTempo(restante)}
             </span>
           )}
-          {/* `respostas` já inclui a questão atual quando respondida; somar
-              a atual de novo dobrava o placar durante a bateria. */}
           <span className="font-medium">{acertos} acertos</span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
