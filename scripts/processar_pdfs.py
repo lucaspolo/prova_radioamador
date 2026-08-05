@@ -484,6 +484,29 @@ TOPICOS_ELETRONICA = [
     ("Teoria de antenas: dipolo, ganho, polarização, ROE e casamento de impedância", 8, 61),
     ("Modulações digitais ASK, FSK e PSK; modulação e demodulação", 6, 63),
     ("Proteção elétrica: fusíveis, disjuntores e aterramento", 5, 59),
+    # -- Expansão (2026-08): buracos da ementa que os 14 tópicos originais nao
+    # cobriam. A ementa da Classe B lista ELETROMAGNETISMO e PROPAGACAO DE
+    # ONDAS explicitamente, e nada aqui cobria os capitulos 3 e 9 da Cartilha.
+    # Topicos novos sao ADITIVOS: mudar um topico existente trocaria a chave de
+    # cache, regeraria as questoes com ids novos e orfanaria o historico.
+    ("Cargas elétricas e campo elétrico: atração e repulsão, unidades e "
+     "conceitos básicos", 6, 57),
+    ("Campo magnético: origem, características e relação com a corrente "
+     "elétrica", 6, 57),
+    ("Valores eficaz (RMS), máximo (pico) e médio de tensões senoidais: "
+     "relações e cálculos", 8, 58),
+    ("Capacitores e indutores como componentes: função, tipos básicos, "
+     "associação e aplicações em rádio", 8, 55),
+    ("Ressonância, interferência e superposição de ondas, no nível de noções "
+     "da Classe B", 8, 62),
+    ("Polarização de ondas eletromagnéticas e o alinhamento entre antenas "
+     "transmissora e receptora", 6, 63),
+    ("Lei de Ohm e potência com múltiplos e submúltiplos: cálculos com mA, "
+     "kΩ, µF e mW", 8, 54),
+    ("Divisor de tensão e queda de tensão em resistores em série: cálculos", 8, 55),
+    ("Comprimento de onda e frequência: cálculos com λ(m) = 300/f(MHz)", 6, 29),
+    ("Semicondutores: junção PN, polarização direta e reversa, diodo zener e "
+     "LED", 8, 56),
 ]
 
 # Acrescimo da Classe A. As paginas foram conferidas contra o sumario real da

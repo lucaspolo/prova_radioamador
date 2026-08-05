@@ -125,12 +125,14 @@ function historicoCom(
 
   const media = mediaDe(h, erradas);
   const uniforme = (20 * erradas.length) / doTema.length;
-  // Alvo: as erradas ocupam pelo menos um quarto da bateria, várias vezes
-  // acima do acaso. Forte o bastante para mudar o estudo, sem estreitar a
-  // bateria a um treino nas mesmas dez questões.
+  // O invariante robusto é a RAZÃO sobre o acaso: o número absoluto de
+  // erradas por bateria dilui naturalmente conforme o banco cresce (10 erros
+  // fixos competindo com mais questões). O piso absoluto garante que a
+  // revisão de erro não desapareça da bateria; a razão garante que o sorteio
+  // continua puxando o que foi errado com força várias vezes acima do acaso.
   checar(
-    "com o banco coberto, erradas ocupam ~1/4 da bateria",
-    media >= 4 && media > uniforme * 3,
+    "com o banco coberto, erradas dominam bem acima do acaso",
+    media >= 3 && media > uniforme * 3,
     `média ${media.toFixed(1)} de 20 (${(media / uniforme).toFixed(1)}× o acaso)`,
   );
   checar(
