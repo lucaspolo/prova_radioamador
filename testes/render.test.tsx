@@ -4,6 +4,7 @@ import TelaSimulado from "@/components/TelaSimulado";
 import TelaProvaCega from "@/components/TelaProvaCega";
 import TelaResultado from "@/components/TelaResultado";
 import Dashboard from "@/components/Dashboard";
+import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
 import { sortearSimulado, BANCO } from "@/lib/questoes";
@@ -22,6 +23,7 @@ const PROPS_INICIO = {
   onIniciar: () => {},
   onProvaCompleta: () => {},
   onRevisar: () => {},
+  onFerramentas: () => {},
 };
 
 // --- Tela inicial ---------------------------------------------------------
@@ -184,6 +186,23 @@ const PROPS_INICIO = {
   );
   checar("encerrar à mão não anuncia tempo esgotado", !manual.includes("Tempo esgotado"));
   checar("mas continua contando as em branco como erro", manual.includes("como erro"));
+}
+
+// --- Ferramentas de consulta ----------------------------------------------
+{
+  const html = renderToStaticMarkup(<TelaFerramentas onVoltar={() => {}} />);
+  checar("TelaFerramentas renderiza", html.length > 0);
+  checar("oferece as duas abas", html.includes("Tabelas") && html.includes("Calculadoras"));
+  checar(
+    "lista as tabelas publicadas",
+    ["Alfabeto fonético", "Código Q", "Plano de bandas", "Prefixos"].every((s) =>
+      html.includes(s),
+    ),
+  );
+  // A ausência declarada precisa continuar visível: some com ela e a próxima
+  // pessoa preenche a escala RST de memória.
+  checar("anuncia o RST como pendente de fonte", html.includes("sem fonte"));
+  checar("permite voltar", html.includes("Voltar ao início"));
 }
 
 // --- Rótulo de procedência ------------------------------------------------

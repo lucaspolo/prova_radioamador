@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/estudo.test.ts && tsx testes/bateria.test.ts && tsx testes/prioridade.test.ts && tsx testes/pdfs.test.ts && tsx testes/trechos.test.ts && tsx testes/classes.test.ts && tsx testes/cobertura.test.ts && tsx testes/render.test.tsx",
+    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/estudo.test.ts && tsx testes/bateria.test.ts && tsx testes/prioridade.test.ts && tsx testes/pdfs.test.ts && tsx testes/trechos.test.ts && tsx testes/classes.test.ts && tsx testes/cobertura.test.ts && tsx testes/calculos.test.ts && tsx testes/referencia.test.ts && tsx testes/render.test.tsx",
     "predev": "node scripts/preparar_worker.mjs",
     "prebuild": "node scripts/preparar_worker.mjs",
     "postbuild": "node scripts/gerar_sw.mjs",
@@ -26,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "pdfjs-dist": "5.4.296",
     "tailwindcss": "^4",
     "tsx": "^4.23.5",
     "typescript": "^5"

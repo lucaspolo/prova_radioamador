@@ -64,8 +64,14 @@ public/       banco_questoes.json, trechos.json e pdfs/
   misturando os três temas não corresponde a prova nenhuma — e o veredito dela
   aprovava quem compensasse uma matéria fraca com duas fortes, o que a norma
   não permite.
-- Feedback imediato a cada questão, com explicação e indicação da fonte, mais o
-  **trecho literal do PDF** que originou a afirmação, com a passagem destacada.
+- Dois regimes de bateria. **Treino** dá feedback imediato a cada questão, com
+  explicação e indicação da fonte, mais o **trecho literal do PDF** que originou
+  a afirmação, com a passagem destacada. **Prova** é cega, como o exame:
+  nenhum gabarito até encerrar, folha de respostas com o estado de cada
+  questão, navegação livre para pular e voltar, marcação para revisar e
+  confirmação ao encerrar com questões em branco. No fim, o gabarito abre
+  completo — depois de uma prova cega, o que mais vale conferir são os acertos
+  no chute, que a revisão de erros esconde por definição.
 - Atalhos de teclado: `V` / `F` para responder, `Enter` para avançar.
 - Cronômetro no ritmo oficial da prova (Classe B: 20 questões em 30 min),
   proporcional em baterias de outros tamanhos. Ao esgotar, as questões em
@@ -75,7 +81,12 @@ public/       banco_questoes.json, trechos.json e pdfs/
   na primeira consulta e ficam disponíveis sem rede.
 - **Prova completa**: as três matérias em sequência no formato oficial da
   classe, cada uma com seu cronômetro e seu mínimo — aprovação exige passar
-  nas três, como no exame.
+  nas três, como no exame. É sempre cega.
+- **Consulta rápida** offline: alfabeto fonético, código Q, plano de bandas com
+  as classes habilitadas, prefixos de indicativo por UF e limites de potência,
+  todos copiados dos PDFs oficiais e a um toque da página de origem; mais as
+  calculadoras da ementa de Eletrônica (lei de Ohm, código de cores,
+  comprimento de onda e antena, dBm e ressonância LC).
 - **Revisão de erros**: bateria só com as questões erradas ainda não
   corrigidas; acertar tira da lista, sem veredito de aprovação.
 - Dashboard com tendência por matéria (últimas baterias contra a linha de
@@ -155,6 +166,28 @@ Flags úteis: `--dry-run`, `--arquivo <padrão>`, `--limite-chunks N`,
   "pagina": 5
 }
 ```
+
+## De onde vem cada tabela de consulta
+
+As questões são geradas por LLM; as tabelas da consulta rápida, não. Cada linha
+é cópia literal de um PDF publicado em `public/pdfs/`, e
+`testes/referencia.test.ts` abre o arquivo e confere que o texto está lá — um
+número trocado derruba o teste.
+
+| Tabela | Fonte |
+| --- | --- |
+| Alfabeto fonético | Cartilha, seção 6.2, pp. 34–35 |
+| Código Q | Cartilha, seção 6.3, p. 36 |
+| Plano de bandas e classes | Ato nº 926/2024, Tabela I, pp. 3–4 |
+| Limites de potência por classe | Ato nº 926/2024, item 5.2, p. 4 |
+| Limites de e.i.r.p. | Ato nº 926/2024, item 5.2.1, p. 5 |
+| Prefixos por unidade da federação | Ato nº 3448/2026, Tabela II, pp. 8–9 |
+| Sufixos vedados | Ato nº 3448/2026, item 12.2, p. 8 |
+
+A escala **RST fica de fora**, e o app diz isso na tela: ela não aparece em
+nenhum dos seis PDFs publicados aqui. Escrevê-la de memória seria fácil e
+provavelmente daria certo — e é justamente por isso que não se faz, já que o
+valor destas tabelas está em serem conferíveis contra a fonte.
 
 ## Aviso
 

@@ -26,6 +26,7 @@ interface Props {
   ) => void;
   onProvaCompleta: (classe: Classe) => void;
   onRevisar: (classe: Classe) => void;
+  onFerramentas: () => void;
 }
 
 export default function TelaInicio({
@@ -33,6 +34,7 @@ export default function TelaInicio({
   onIniciar,
   onProvaCompleta,
   onRevisar,
+  onFerramentas,
 }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
@@ -235,6 +237,18 @@ export default function TelaInicio({
           </div>
         </button>
       </div>
+
+      <button
+        onClick={onFerramentas}
+        className="w-full rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+      >
+        <div className="font-semibold">Consulta rápida</div>
+        <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          Alfabeto fonético, código Q, plano de bandas, prefixos e limites de
+          potência — copiados dos documentos oficiais. Mais as calculadoras da
+          ementa de Eletrônica.
+        </div>
+      </button>
     </div>
   );
 }

@@ -10,12 +10,19 @@ import TelaResultadoProva, {
   type MateriaConcluida,
 } from "@/components/TelaResultadoProva";
 import Dashboard from "@/components/Dashboard";
+import TelaFerramentas from "@/components/TelaFerramentas";
 import { useHistorico } from "@/hooks/useHistorico";
 import { questoesParaRevisao, sortearSimulado } from "@/lib/questoes";
 import { CLASSE_PADRAO, FORMATO, TEMAS, tempoDaBateria } from "@/lib/constantes";
 import type { Classe, MotivoFim, Questao, Resposta, Tema } from "@/lib/tipos";
 
-type Etapa = "inicio" | "simulado" | "resultado" | "intervalo" | "resultadoProva";
+type Etapa =
+  | "inicio"
+  | "simulado"
+  | "resultado"
+  | "intervalo"
+  | "resultadoProva"
+  | "ferramentas";
 
 /**
  * O que está sendo jogado agora. "avulso" é a bateria de uma matéria;
@@ -146,6 +153,7 @@ export default function Home() {
             onIniciar={iniciar}
             onProvaCompleta={iniciarProva}
             onRevisar={iniciarRevisao}
+            onFerramentas={() => setEtapa("ferramentas")}
           />
         </div>
       )}
@@ -195,6 +203,10 @@ export default function Home() {
           }
           onAbandonar={() => setEtapa("inicio")}
         />
+      )}
+
+      {etapa === "ferramentas" && (
+        <TelaFerramentas onVoltar={() => setEtapa("inicio")} />
       )}
 
       {etapa === "resultadoProva" && (
