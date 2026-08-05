@@ -83,7 +83,7 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
               afirmacao={r.questao.afirmacao}
             />
             <div>
-              <BotaoSuspeita questaoId={r.questao.id} />
+              <BotaoSuspeita questao={r.questao} />
             </div>
           </div>
         );

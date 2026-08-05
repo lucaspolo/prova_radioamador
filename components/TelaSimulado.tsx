@@ -194,7 +194,7 @@ export default function TelaSimulado({
                   afirmacao={questao.afirmacao}
                 />
                 <div>
-                  <BotaoSuspeita questaoId={questao.id} />
+                  <BotaoSuspeita questao={questao} />
                 </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ import {
 } from "@/lib/historico";
 import { useSuspeitas } from "@/hooks/useSuspeitas";
 import { BANCO } from "@/lib/questoes";
+import { urlDeReporte } from "@/lib/reportar";
 import type { Tema } from "@/lib/tipos";
 
 interface Props {
@@ -314,6 +315,18 @@ function Suspeitas({
                 >
                   Desmarcar
                 </button>
+                {/* Sem a questão no banco não há o que reportar: ela já saiu
+                    numa atualização, que era o desfecho desejado. */}
+                {q && (
+                  <a
+                    href={urlDeReporte(q)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-0.5 ml-3 text-xs text-slate-500 underline underline-offset-2 dark:text-slate-400"
+                  >
+                    Reportar no GitHub
+                  </a>
+                )}
               </li>
             );
           })}
