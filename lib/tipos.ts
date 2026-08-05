@@ -64,10 +64,14 @@ export interface Trecho {
   texto: string;
 }
 
-/** Uma questão já respondida dentro de um simulado. */
+/** Uma questão de um simulado concluído. */
 export interface Resposta {
   questao: Questao;
-  respondeu: boolean;
+  /**
+   * O que o usuário respondeu. `null` = não respondida: o cronômetro esgotou
+   * antes. Como na prova real, questão em branco conta como erro.
+   */
+  respondeu: boolean | null;
   acertou: boolean;
 }
 

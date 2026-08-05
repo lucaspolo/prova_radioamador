@@ -25,6 +25,7 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   checar("mostra as 3 classes", ["Classe A", "Classe B", "Classe C"].every((s) => html.includes(s)));
   checar("marca a bateria de 20 como prova real", html.includes("prova real"));
   checar("cita o critério oficial 11 acertos", html.includes("11 acertos"));
+  checar("oferece o cronômetro ligado por padrão", html.includes("Cronômetro ligado"));
   checar("botão inicia com 20 questões", html.includes("Iniciar simulado"));
 }
 
@@ -43,6 +44,18 @@ function checar(nome: string, ok: boolean, detalhe = "") {
     !html.includes(questoes[0].explicacao_curta.slice(0, 40)),
   );
   checar("permite abandonar", html.includes("Abandonar simulado"));
+  checar("sem cronômetro, não mostra relógio", !html.includes("30:00"));
+
+  // Com cronômetro, o tempo inicial aparece formatado.
+  const comTempo = renderToStaticMarkup(
+    <TelaSimulado
+      questoes={questoes}
+      tempoSegundos={1800}
+      onConcluir={() => {}}
+      onSair={() => {}}
+    />,
+  );
+  checar("cronômetro de 30 min mostra 30:00", comTempo.includes("30:00"));
 }
 
 // --- Rótulo de procedência ------------------------------------------------
@@ -119,6 +132,18 @@ function checar(nome: string, ok: boolean, detalhe = "") {
     <TelaResultado respostas={corte} onReiniciar={() => {}} />,
   );
   checar("11 de 20 aprova (nota de corte exata)", html3.includes("Aprovado") && !html3.includes("Reprovado"));
+
+  // Tempo esgotado: questões em branco contam como erro e são identificadas.
+  const comBranco: Resposta[] = questoes.map((q, i) => ({
+    questao: q,
+    respondeu: i < 15 ? q.resposta_correta : null,
+    acertou: i < 15,
+  }));
+  const html4 = renderToStaticMarkup(
+    <TelaResultado respostas={comBranco} onReiniciar={() => {}} />,
+  );
+  checar("aviso de tempo esgotado com o total em branco", html4.includes("Tempo esgotado") && html4.includes("5"));
+  checar("questão em branco aparece como não respondida", html4.includes("Não respondida — o tempo esgotou"));
 }
 
 // --- Dashboard ------------------------------------------------------------

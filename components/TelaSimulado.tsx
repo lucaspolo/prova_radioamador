@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
@@ -8,14 +8,27 @@ import TrechoOrigem from "./TrechoOrigem";
 
 interface Props {
   questoes: Questao[];
+  /** Segundos de prova; null desliga o cronômetro. */
+  tempoSegundos?: number | null;
   onConcluir: (respostas: Resposta[]) => void;
   onSair: () => void;
 }
 
-export default function TelaSimulado({ questoes, onConcluir, onSair }: Props) {
+function formatarTempo(s: number): string {
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+export default function TelaSimulado({
+  questoes,
+  tempoSegundos = null,
+  onConcluir,
+  onSair,
+}: Props) {
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState<Resposta[]>([]);
   const [escolhida, setEscolhida] = useState<boolean | null>(null);
+  const [restante, setRestante] = useState(tempoSegundos ?? 0);
+  const fimRef = useRef<number | null>(null);
 
   const questao = questoes[indice];
   const acertos = respostas.filter((r) => r.acertou).length;
@@ -40,20 +53,37 @@ export default function TelaSimulado({ questoes, onConcluir, onSair }: Props) {
 
   const avancar = useCallback(() => {
     if (escolhida === null) return;
+    // `respostas` já contém a resposta da questão atual — `responder` é o
+    // único ponto que grava. Reanexá-la aqui duplicava a última questão da
+    // bateria: o resultado saía com 21 respostas em 20 questões.
     if (indice + 1 >= questoes.length) {
-      onConcluir([
-        ...respostas,
-        {
-          questao,
-          respondeu: escolhida,
-          acertou: escolhida === questao.resposta_correta,
-        },
-      ]);
+      onConcluir(respostas);
       return;
     }
     setIndice((i) => i + 1);
     setEscolhida(null);
-  }, [escolhida, indice, questoes.length, onConcluir, questao, respostas]);
+  }, [escolhida, indice, questoes.length, onConcluir, respostas]);
+
+  // O prazo é um instante fixo, não um contador decrementado: se o intervalo
+  // atrasar (aba em segundo plano no celular), o relógio continua honesto.
+  useEffect(() => {
+    if (tempoSegundos == null) return;
+    fimRef.current = Date.now() + tempoSegundos * 1000;
+    const timer = setInterval(() => {
+      setRestante(Math.max(0, Math.ceil((fimRef.current! - Date.now()) / 1000)));
+    }, 250);
+    return () => clearInterval(timer);
+  }, [tempoSegundos]);
+
+  // Tempo esgotado: como na prova real, o que não foi respondido conta como
+  // erro. A bateria termina na hora, com as faltantes marcadas em branco.
+  useEffect(() => {
+    if (tempoSegundos == null || restante > 0) return;
+    const faltantes: Resposta[] = questoes
+      .slice(respostas.length)
+      .map((q) => ({ questao: q, respondeu: null, acertou: false }));
+    onConcluir([...respostas, ...faltantes]);
+  }, [restante, tempoSegundos, questoes, respostas, onConcluir]);
 
   // Atalhos: V / F para responder, Enter ou espaço para avançar. Numa bateria
   // de 20 questões, a mão não precisa sair do teclado.
@@ -82,9 +112,21 @@ export default function TelaSimulado({ questoes, onConcluir, onSair }: Props) {
           <span className="text-slate-500 dark:text-slate-400">
             Questão {indice + 1} de {questoes.length}
           </span>
-          <span className="font-medium">
-            {acertos + (respondida && acertou ? 1 : 0)} acertos
-          </span>
+          {tempoSegundos != null && (
+            <span
+              className={`font-mono font-medium tabular-nums ${
+                restante <= 60
+                  ? "text-rose-600 dark:text-rose-400"
+                  : "text-slate-600 dark:text-slate-300"
+              }`}
+              aria-label="tempo restante"
+            >
+              {formatarTempo(restante)}
+            </span>
+          )}
+          {/* `respostas` já inclui a questão atual quando respondida; somar
+              a atual de novo dobrava o placar durante a bateria. */}
+          <span className="font-medium">{acertos} acertos</span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
           <div

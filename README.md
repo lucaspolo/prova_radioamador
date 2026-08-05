@@ -67,6 +67,12 @@ public/       banco_questoes.json, trechos.json e pdfs/
 - Feedback imediato a cada questão, com explicação e indicação da fonte, mais o
   **trecho literal do PDF** que originou a afirmação, com a passagem destacada.
 - Atalhos de teclado: `V` / `F` para responder, `Enter` para avançar.
+- Cronômetro no ritmo oficial da prova (Classe B: 20 questões em 30 min),
+  proporcional em baterias de outros tamanhos. Ao esgotar, as questões em
+  branco contam como erro — igual à prova real. Pode ser desligado.
+- Instalável como aplicativo (PWA) e utilizável offline: o service worker
+  pré-carrega a casca do app e os trechos de origem; os PDFs entram no cache
+  na primeira consulta e ficam disponíveis sem rede.
 - Histórico no navegador (`localStorage`) e dashboard com o percentual de
   acerto por matéria contra a linha de corte oficial de 55%.
 - Botão **Consultar Material**: abre o PDF de origem já na página da questão,

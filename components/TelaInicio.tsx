@@ -9,12 +9,18 @@ import {
   FORMATO,
   ROTULO_CURTO,
   tamanhos,
+  tempoDaBateria,
   TEMAS,
 } from "@/lib/constantes";
 import { contarPorTema, disponiveis } from "@/lib/questoes";
 
 interface Props {
-  onIniciar: (tema: Tema, quantidade: number, classe: Classe) => void;
+  onIniciar: (
+    tema: Tema,
+    quantidade: number,
+    classe: Classe,
+    cronometrar: boolean,
+  ) => void;
 }
 
 export default function TelaInicio({ onIniciar }: Props) {
@@ -22,6 +28,7 @@ export default function TelaInicio({ onIniciar }: Props) {
   const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
   const formato = FORMATO[classe];
   const [quantidade, setQuantidade] = useState(FORMATO[CLASSE_PADRAO].questoes);
+  const [cronometrar, setCronometrar] = useState(true);
   const contagem = contarPorTema(classe);
   const total = disponiveis(escolha, classe);
   const opcoes = tamanhos(classe);
@@ -128,8 +135,39 @@ export default function TelaInicio({ onIniciar }: Props) {
         </p>
       </section>
 
+      <section>
+        <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          Cronômetro
+        </h2>
+        <button
+          onClick={() => setCronometrar((c) => !c)}
+          aria-pressed={cronometrar}
+          className={`w-full rounded-xl border-2 p-4 text-left transition ${
+            cronometrar
+              ? "border-slate-900 dark:border-slate-100"
+              : "border-slate-300 opacity-70 hover:opacity-100 dark:border-slate-700"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">
+              {cronometrar ? "Cronômetro ligado" : "Cronômetro desligado"}
+            </span>
+            {cronometrar && (
+              <span className="font-mono text-lg font-bold tabular-nums">
+                {Math.round(tempoDaBateria(classe, limite) / 60)} min
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {cronometrar
+              ? "No ritmo oficial da prova. Ao esgotar, o que faltar conta como erro — igual à prova real."
+              : "Sem limite de tempo; bom para estudar com calma."}
+          </p>
+        </button>
+      </section>
+
       <button
-        onClick={() => onIniciar(escolha, limite, classe)}
+        onClick={() => onIniciar(escolha, limite, classe, cronometrar)}
         className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Iniciar simulado · {limite} questões

@@ -1,5 +1,5 @@
 import { acervo, sortearSimulado, disponiveis, contarPorTema, BANCO } from "@/lib/questoes";
-import { CLASSES, FORMATO, PERCENTUAL_CORTE, percentualAprovacao, tamanhos } from "@/lib/constantes";
+import { CLASSES, FORMATO, PERCENTUAL_CORTE, percentualAprovacao, tamanhos, tempoDaBateria } from "@/lib/constantes";
 import type { Classe, Tema } from "@/lib/tipos";
 
 let falhas = 0;
@@ -43,6 +43,13 @@ console.log(`Banco: ${BANCO.length} — nível B: ${nivelB.length}, nível A: ${
 
   // A bateria "prova real" precisa estar entre as opções, senão o rótulo
   // apontaria para um botão que não existe.
+  // O cronômetro dá exatamente o tempo oficial na bateria do tamanho da
+  // prova, e mantém o mesmo ritmo por questão nos outros tamanhos.
+  checar("tempo oficial: C 15q=20min, B 20q=30min, A 30q=40min",
+    tempoDaBateria("C", 15) === 1200 && tempoDaBateria("B", 20) === 1800 && tempoDaBateria("A", 30) === 2400);
+  checar("tempo proporcional em baterias fora do formato",
+    tempoDaBateria("B", 10) === 900 && tempoDaBateria("B", 60) === 5400 && tempoDaBateria("A", 90) === 7200);
+
   checar("as opções de tamanho incluem a prova real da classe",
     CLASSES.every((c) => tamanhos(c).includes(FORMATO[c].questoes)),
     CLASSES.map((c) => tamanhos(c).join("/")).join("  "));

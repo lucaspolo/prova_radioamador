@@ -34,6 +34,7 @@ export default function TelaResultado({
   // comparamos pelo percentual equivalente.
   const bateriaOficial = total === formato.questoes;
   const erradas = respostas.filter((r) => !r.acertou);
+  const naoRespondidas = respostas.filter((r) => r.respondeu === null).length;
 
   return (
     <div className="space-y-8">
@@ -63,6 +64,15 @@ export default function TelaResultado({
             ? `Classe ${classe} — critério oficial: ${formato.minimo} de ${formato.questoes} acertos.`
             : `Classe ${classe} — critério oficial: ${corte}% (${formato.minimo} de ${formato.questoes} na prova real).`}
         </p>
+        {naoRespondidas > 0 && (
+          <p className="mt-2 text-sm font-medium text-rose-600 dark:text-rose-400">
+            Tempo esgotado: {naoRespondidas}{" "}
+            {naoRespondidas === 1
+              ? "questão ficou sem resposta e conta"
+              : "questões ficaram sem resposta e contam"}{" "}
+            como erro, igual à prova real.
+          </p>
+        )}
       </div>
 
 
@@ -87,7 +97,9 @@ export default function TelaResultado({
                 </p>
                 <p className="mt-2 text-sm">
                   <span className="font-semibold text-rose-600 dark:text-rose-400">
-                    Você respondeu {r.respondeu ? "Verdadeiro" : "Falso"}
+                    {r.respondeu === null
+                      ? "Não respondida — o tempo esgotou"
+                      : `Você respondeu ${r.respondeu ? "Verdadeiro" : "Falso"}`}
                   </span>
                   <span className="text-slate-500 dark:text-slate-400">
                     {" "}

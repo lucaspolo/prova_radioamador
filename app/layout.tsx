@@ -1,10 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import RegistroSW from "@/components/RegistroSW";
 
 export const metadata: Metadata = {
-  title: "Simulados — Radioamador Classe B",
+  title: "Simulados — Radioamador (Anatel)",
   description:
-    "Simulados de Verdadeiro ou Falso para o exame de radioamador Classe B da Anatel.",
+    "Simulados de certo ou errado para as provas de radioamador da Anatel, classes A, B e C.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icone-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icone-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icone-180.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Radioamador",
+  },
 };
 
 export const viewport: Viewport = {
@@ -19,7 +33,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <RegistroSW />
+        {children}
+      </body>
     </html>
   );
 }

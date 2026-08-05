@@ -45,6 +45,17 @@ export function percentualAprovacao(classe: Classe): number {
 }
 
 /**
+ * Segundos de prova para uma bateria de `n` questões, na proporção oficial da
+ * classe. Na bateria do tamanho da prova real, dá exatamente o tempo oficial
+ * (Classe B: 20 questões em 30 min); nos outros tamanhos, mantém o mesmo
+ * ritmo por questão.
+ */
+export function tempoDaBateria(classe: Classe, n: number): number {
+  const f = FORMATO[classe];
+  return Math.round((f.minutos * 60 * n) / f.questoes);
+}
+
+/**
  * Opções de tamanho de bateria, ancoradas no formato da classe: uma bateria
  * curta, a prova de uma matéria, e os múltiplos até as três matérias. Para a
  * Classe B dá 10/20/40/60, como antes.
