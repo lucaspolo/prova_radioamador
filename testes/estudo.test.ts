@@ -9,6 +9,14 @@ import {
 import { lerSuspeitas, gravarSuspeitas } from "@/lib/suspeitas";
 import { acervo, questoesParaRevisao, BANCO } from "@/lib/questoes";
 import { REPO, urlDeReporte } from "@/lib/reportar";
+import { resumoDeTexto, URL_PROJETO } from "@/lib/compartilhar";
+import {
+  FATOR_ESCALA,
+  gravarPreferencias,
+  lerPreferencias,
+  PREFERENCIAS_PADRAO,
+  validarPreferencias,
+} from "@/lib/preferencias";
 
 let falhas = 0;
 function checar(nome: string, ok: boolean, detalhe = "") {
@@ -127,6 +135,83 @@ function h(...simulados: SimuladoSalvo[]): Historico {
 {
   checar("ler sem navegador devolve lista vazia", lerSuspeitas().length === 0);
   checar("gravar sem navegador só sinaliza", gravarSuspeitas(["x"]) === false);
+}
+
+// --- compartilhar: o resultado em uma linha -------------------------------
+{
+  const avulso = resumoDeTexto({
+    classe: "B",
+    tema: "Legislação de Telecomunicações",
+    acertos: 17,
+    total: 20,
+    aprovado: true,
+  });
+  checar("traz classe, matéria e placar", avulso.includes("Classe B") && avulso.includes("17/20"));
+  checar("calcula o percentual", avulso.includes("(85%)"));
+  checar("dá o veredito", avulso.includes("Aprovado"));
+  checar("leva o link do projeto", avulso.includes(URL_PROJETO));
+
+  const reprovado = resumoDeTexto({ classe: "C", acertos: 5, total: 15, aprovado: false });
+  checar("reprovação também é dita", reprovado.includes("Reprovado") && reprovado.includes("(33%)"));
+
+  // Revisão não tem veredito: dizer "Reprovado" ali seria mentira.
+  const revisao = resumoDeTexto({ classe: "B", acertos: 3, total: 8 });
+  checar(
+    "revisão não emite veredito",
+    !revisao.includes("Aprovado") && !revisao.includes("Reprovado"),
+  );
+
+  const prova = resumoDeTexto({
+    classe: "A",
+    acertos: 60,
+    total: 90,
+    aprovado: false,
+    materias: [
+      { tema: "Legislação de Telecomunicações", acertos: 25, total: 30, aprovado: true },
+      { tema: "Técnica e ética operacional", acertos: 20, total: 30, aprovado: true },
+      { tema: "Conhecimentos de Eletrônica e Eletricidade", acertos: 15, total: 30, aprovado: false },
+    ],
+  });
+  checar("prova completa lista as três matérias", prova.split("\n").length === 5);
+  checar("e o veredito de cada uma", prova.includes("25/30") && prova.includes("reprovado"));
+
+  checar("bateria vazia não divide por zero", resumoDeTexto({ classe: "B", acertos: 0, total: 0 }).includes("(0%)"));
+}
+
+// --- preferências: tema e tamanho de texto --------------------------------
+{
+  checar(
+    "sem navegador, devolve o padrão",
+    lerPreferencias().tema === "automatico" &&
+      lerPreferencias().escala === "normal",
+  );
+  checar("gravar sem navegador só sinaliza", gravarPreferencias(PREFERENCIAS_PADRAO) === false);
+
+  checar(
+    "lixo cai no padrão",
+    validarPreferencias("banana").tema === "automatico" &&
+      validarPreferencias(null).escala === "normal",
+  );
+  checar(
+    "valor desconhecido cai no padrão, campo a campo",
+    validarPreferencias({ tema: "roxo", escala: "grande" }).tema === "automatico" &&
+      validarPreferencias({ tema: "roxo", escala: "grande" }).escala === "grande",
+  );
+  checar(
+    "os três temas e as três escalas são aceitos",
+    (["claro", "escuro", "automatico"] as const).every(
+      (t) => validarPreferencias({ tema: t }).tema === t,
+    ) &&
+      (["pequeno", "normal", "grande"] as const).every(
+        (e) => validarPreferencias({ escala: e }).escala === e,
+      ),
+  );
+  checar(
+    "a escala normal não mexe no tamanho",
+    FATOR_ESCALA.normal === 1 &&
+      FATOR_ESCALA.pequeno < 1 &&
+      FATOR_ESCALA.grande > 1,
+  );
 }
 
 // --- reportar: a suspeita vira issue --------------------------------------

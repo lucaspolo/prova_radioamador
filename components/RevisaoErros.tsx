@@ -73,17 +73,21 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
                 : "Estude o tema em: "}
               {r.questao.arquivo_origem} · página {r.questao.pagina}
             </p>
-            <BotaoConsultarMaterial
-              arquivoOrigem={r.questao.arquivo_origem}
-              pagina={r.questao.pagina}
-              origem={r.questao.origem}
-            />
-            <TrechoOrigem
-              trechoId={r.questao.trecho_id}
-              afirmacao={r.questao.afirmacao}
-            />
-            <div>
-              <BotaoSuspeita questao={r.questao} />
+            {/* No papel, botão não clica: a folha impressa fica com a
+                afirmação, o gabarito, a explicação e a fonte. */}
+            <div className="nao-imprimir">
+              <BotaoConsultarMaterial
+                arquivoOrigem={r.questao.arquivo_origem}
+                pagina={r.questao.pagina}
+                origem={r.questao.origem}
+              />
+              <TrechoOrigem
+                trechoId={r.questao.trecho_id}
+                afirmacao={r.questao.afirmacao}
+              />
+              <div>
+                <BotaoSuspeita questao={r.questao} />
+              </div>
             </div>
           </div>
         );

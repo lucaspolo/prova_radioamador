@@ -30,13 +30,29 @@ export const viewport: Viewport = {
   ],
 };
 
+/**
+ * Aplica tema e escala antes da primeira pintura.
+ *
+ * Sem isto o app pinta com o tema do sistema e salta para o escolhido só na
+ * hidratação — um flash branco na cara de quem estuda no escuro. Precisa ser
+ * inline e síncrono, e tolerar `localStorage` bloqueado (modo privado, cookies
+ * de terceiros desligados), porque falhar aqui deixaria a página em branco.
+ */
+const ANTI_FLASH = `try{
+var p=JSON.parse(localStorage.getItem("prova-radioamador:preferencias")||"{}");
+if(p.tema==="claro"||p.tema==="escuro")document.documentElement.setAttribute("data-tema",p.tema);
+var f={pequeno:.9,normal:1,grande:1.15}[p.escala];
+if(f)document.documentElement.style.setProperty("--escala-fonte",f);
+}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
+        <script dangerouslySetInnerHTML={{ __html: ANTI_FLASH }} />
         <RegistroSW />
         {children}
-        <footer className="mx-auto w-full max-w-2xl px-4 pb-6 text-center text-xs text-slate-400 dark:text-slate-500">
+        <footer className="nao-imprimir mx-auto w-full max-w-2xl px-4 pb-6 text-center text-xs text-slate-400 dark:text-slate-500">
           Código aberto sob a licença MIT —{" "}
           <a
             href="https://github.com/lucaspolo/prova_radioamador"

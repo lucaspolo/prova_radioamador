@@ -1,6 +1,7 @@
 "use client";
 
-import type { Classe, MotivoFim, Resposta } from "@/lib/tipos";
+import type { Classe, MotivoFim, Resposta, Tema } from "@/lib/tipos";
+import AcoesResultado from "./AcoesResultado";
 import {
   CLASSE_PADRAO,
   FORMATO,
@@ -20,6 +21,8 @@ interface Props {
   /** Bateria feita no modo cego: o gabarito abre completo. */
   cega?: boolean;
   motivoFim?: MotivoFim;
+  /** Matéria da bateria, para o texto de compartilhamento. */
+  tema?: Tema;
 }
 
 export default function TelaResultado({
@@ -29,6 +32,7 @@ export default function TelaResultado({
   modo = "prova",
   cega = false,
   motivoFim = "tempo",
+  tema,
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -62,11 +66,15 @@ export default function TelaResultado({
           </p>
         </div>
 
+        <AcoesResultado
+          resumo={{ classe, tema, acertos, total }}
+        />
+
         <Gabarito respostas={respostas} tituloErros="Ainda em aberto" />
 
         <button
           onClick={onReiniciar}
-          className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+          className="nao-imprimir w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
         >
           Voltar ao início
         </button>
@@ -117,11 +125,15 @@ export default function TelaResultado({
       </div>
 
 
+      <AcoesResultado
+        resumo={{ classe, tema, acertos, total, aprovado }}
+      />
+
       <Gabarito respostas={respostas} permitirTodas={cega} />
 
       <button
         onClick={onReiniciar}
-        className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        className="nao-imprimir w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Novo simulado
       </button>

@@ -186,6 +186,13 @@ const PROPS_INICIO = {
   );
   checar("encerrar à mão não anuncia tempo esgotado", !manual.includes("Tempo esgotado"));
   checar("mas continua contando as em branco como erro", manual.includes("como erro"));
+
+  checar(
+    "oferece compartilhar e imprimir",
+    cega.includes("Compartilhar resultado") && cega.includes("Imprimir revisão"),
+  );
+  // Botão em papel não clica: o que é ação sai da folha impressa.
+  checar("as ações ficam fora da impressão", cega.includes("nao-imprimir"));
 }
 
 // --- Ferramentas de consulta ----------------------------------------------

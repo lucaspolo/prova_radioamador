@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+/* O `dark:` do Tailwind v4 segue só o `prefers-color-scheme`, o que não deixa
+   espaço para um botão de tema. A variante passa a valer em dois casos:
+   sistema no escuro sem ninguém ter forçado claro, ou escuro escolhido à mão.
+
+   Os dois ramos são necessários. Só o atributo quebraria o modo automático —
+   os utilitários `dark:` deixariam de aplicar e o app ficaria com fundo
+   escuro e componentes claros. Só o `@media` não deixaria forçar claro num
+   sistema escuro. */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-tema="claro"], [data-tema="claro"] *)) {
+      @slot;
+    }
+  }
+  &:where([data-tema="escuro"], [data-tema="escuro"] *) {
+    @slot;
+  }
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -12,9 +31,26 @@
   }
 }
 
+/* A escolha explícita vence a do sistema, nas duas direções. */
+:root[data-tema="claro"] {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+:root[data-tema="escuro"] {
+  --background: #0b1120;
+  --foreground: #e2e8f0;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+}
+
+/* Todo o app usa unidades relativas do Tailwind, então mexer na raiz escala a
+   interface inteira sem tocar em componente nenhum. */
+html {
+  font-size: calc(100% * var(--escala-fonte, 1));
 }
 
 body {
@@ -31,4 +67,34 @@ body {
 :focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* Impressão: a folha de erros no papel é material de estudo, e o que vale ali
+   é o texto — botões, navegação e rodapé só gastam tinta. */
+@media print {
+  .nao-imprimir {
+    display: none !important;
+  }
+
+  html {
+    font-size: 90%;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* Um item de revisão partido entre duas páginas fica ilegível. */
+  article,
+  li,
+  table {
+    break-inside: avoid;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    word-break: break-all;
+  }
 }

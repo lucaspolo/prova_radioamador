@@ -189,6 +189,7 @@ export default function Home() {
           modo={modo === "revisao" ? "revisao" : "prova"}
           cega={regime === "cego"}
           motivoFim={motivoFim}
+          tema={modo === "revisao" ? undefined : temaAtual}
         />
       )}
 

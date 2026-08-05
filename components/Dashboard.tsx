@@ -11,6 +11,14 @@ import {
 import { useSuspeitas } from "@/hooks/useSuspeitas";
 import { BANCO } from "@/lib/questoes";
 import { urlDeReporte } from "@/lib/reportar";
+import {
+  aplicarPreferencias,
+  gravarPreferencias,
+  lerPreferencias,
+  validarPreferencias,
+  type Preferencias,
+} from "@/lib/preferencias";
+import PainelPreferencias from "./Preferencias";
 import type { Tema } from "@/lib/tipos";
 
 interface Props {
@@ -42,8 +50,12 @@ export default function Dashboard({
           Seu desempenho por matéria aparece aqui depois do primeiro simulado.
         </div>
         {/* Quem chega num aparelho novo precisa do importar ANTES do primeiro
-            simulado — é justamente o momento de trazer o backup. */}
+            simulado — é justamente o momento de trazer o backup. E ajustar
+            tema e tamanho de texto não deveria exigir ter estudado antes. */}
         <ExportarImportar historico={historico} onImportar={onImportar} />
+        <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
+          <PainelPreferencias />
+        </div>
       </section>
     );
   }
@@ -121,6 +133,10 @@ export default function Dashboard({
 
       <Evolucao historico={historico} />
       <Suspeitas suspeitas={suspeitas} />
+
+      <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
+        <PainelPreferencias />
+      </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-200 pt-3 dark:border-slate-800">
         <ExportarImportar historico={historico} onImportar={onImportar} />
@@ -344,6 +360,8 @@ interface Envelope {
   exportadoEm: string;
   historico: Historico;
   suspeitas: string[];
+  /** Opcional: backups feitos antes das preferências continuam válidos. */
+  preferencias?: Preferencias;
 }
 
 function ExportarImportar({
@@ -364,6 +382,7 @@ function ExportarImportar({
       exportadoEm: new Date().toISOString(),
       historico,
       suspeitas: suspeitas.ids,
+      preferencias: lerPreferencias(),
     };
     const blob = new Blob([JSON.stringify(envelope, null, 1)], {
       type: "application/json",
@@ -400,6 +419,15 @@ function ExportarImportar({
             (x): x is string => typeof x === "string",
           ),
         );
+      }
+      if (
+        typeof dados === "object" &&
+        dados !== null &&
+        "preferencias" in dados
+      ) {
+        const prefs = validarPreferencias((dados as Envelope).preferencias);
+        gravarPreferencias(prefs);
+        aplicarPreferencias(prefs);
       }
       setMensagem(
         novos === 0

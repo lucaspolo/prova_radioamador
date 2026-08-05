@@ -3,6 +3,7 @@
 import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import { COR_TEMA, FORMATO, ROTULO_CURTO } from "@/lib/constantes";
 import Gabarito from "./Gabarito";
+import AcoesResultado from "./AcoesResultado";
 
 export interface MateriaConcluida {
   tema: Tema;
@@ -104,12 +105,26 @@ export default function TelaResultadoProva({
         </div>
       </section>
 
-      <Gabarito respostas={todas} permitirTodas />
+      <AcoesResultado
+        resumo={{
+          classe,
+          acertos: porMateria.reduce((s, m) => s + m.acertos, 0),
+          total: todas.length,
+          aprovado: aprovadoGeral,
+          materias: porMateria.map((m) => ({
+            tema: m.tema,
+            acertos: m.acertos,
+            total: m.respostas.length,
+            aprovado: m.aprovado,
+          })),
+        }}
+      />
 
+      <Gabarito respostas={todas} permitirTodas />
 
       <button
         onClick={onReiniciar}
-        className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        className="nao-imprimir w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Voltar ao início
       </button>

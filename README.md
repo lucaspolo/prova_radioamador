@@ -91,7 +91,13 @@ public/       banco_questoes.json, trechos.json e pdfs/
   corrigidas; acertar tira da lista, sem veredito de aprovação.
 - Dashboard com tendência por matéria (últimas baterias contra a linha de
   corte), exportar/importar do histórico para backup ou troca de aparelho, e
-  lista de questões marcadas como suspeitas durante o estudo.
+  lista de questões marcadas como suspeitas durante o estudo. Marcada a
+  suspeita, um link abre no GitHub uma issue já preenchida com id, afirmação,
+  gabarito e fonte — o banco é gerado por LLM, e quem estuda por ele é quem
+  mais olha cada questão de perto.
+- Tema claro/escuro/automático e três tamanhos de texto, persistidos e
+  aplicados antes da primeira pintura.
+- Compartilhar o resultado em texto e imprimir a revisão para estudar no papel.
 - Histórico no navegador (`localStorage`) e dashboard com o percentual de
   acerto por matéria contra a linha de corte oficial de 55%.
 - Botão **Consultar Material**: abre o PDF de origem já na página da questão,
