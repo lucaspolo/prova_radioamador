@@ -98,10 +98,11 @@ public/       banco_questoes.json, trechos.json e pdfs/
   gerado por LLM, e quem estuda por ele é quem mais olha cada questão de
   perto. Na tela inicial fica só uma linha de resumo, com o que é acionável:
   quantos simulados, o percentual e qual matéria está abaixo do corte.
-- **Um menu só** no cabeçalho, para desempenho, consulta rápida, tema
-  (claro/escuro/automático) e três tamanhos de texto — persistidos e aplicados
-  antes da primeira pintura. O menu não existe durante uma bateria nem nas
-  telas de resultado: consulta rápida em prova cega seria cola.
+- **Um menu só** no cabeçalho, com as três telas — simulado, desempenho e
+  consulta rápida, sempre as três, para voltar custar o mesmo que ir — mais o
+  tema (claro/escuro/automático) e os três tamanhos de texto, persistidos e
+  aplicados antes da primeira pintura. O menu não existe durante uma bateria
+  nem nas telas de resultado: consulta rápida em prova cega seria cola.
 - Compartilhar o resultado em texto e imprimir a revisão para estudar no papel.
 - Histórico no navegador (`localStorage`).
 - Botão **Consultar Material**: abre o PDF de origem já na página da questão,

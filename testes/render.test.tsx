@@ -556,7 +556,7 @@ const PROPS_INICIO = {
 // --- Menu principal -------------------------------------------------------
 {
   const fechado = renderToStaticMarkup(
-    <MenuPrincipal onDesempenho={() => {}} onFerramentas={() => {}} />,
+    <MenuPrincipal atual="inicio" onInicio={() => {}} onDesempenho={() => {}} onFerramentas={() => {}} />,
   );
   // Nascer fechado é a invariante do desentulho: se o painel viesse aberto, a
   // tela inicial voltaria a ter tudo à vista.
@@ -569,11 +569,11 @@ const PROPS_INICIO = {
   // O conteúdo do painel só existe depois de um clique, que este harness não
   // dá: por isso `PainelMenu` é export nomeado.
   const painel = renderToStaticMarkup(
-    <PainelMenu onDesempenho={() => {}} onFerramentas={() => {}} />,
+    <PainelMenu onInicio={() => {}} onDesempenho={() => {}} onFerramentas={() => {}} />,
   );
   checar(
-    "o menu leva às duas telas",
-    painel.includes("Desempenho") && painel.includes("Consulta rápida"),
+    "o menu leva às três telas",
+    ["Simulado", "Desempenho", "Consulta rápida"].every((s) => painel.includes(s)),
   );
   checar(
     "o menu traz o tema",
@@ -583,9 +583,12 @@ const PROPS_INICIO = {
   checar("o menu não inicia bateria nenhuma", !painel.includes("Iniciar"));
 
   const emFerramentas = renderToStaticMarkup(
-    <PainelMenu atual="ferramentas" onDesempenho={() => {}} onFerramentas={() => {}} />,
+    <PainelMenu atual="ferramentas" onInicio={() => {}} onDesempenho={() => {}} onFerramentas={() => {}} />,
   );
   checar("o menu marca a tela atual", emFerramentas.includes('aria-current="page"'));
+  // Sem o caminho de volta, sair do desempenho ou da consulta exigia rolar a
+  // tela inteira até o "Voltar ao início" do rodapé.
+  checar("de outra tela, o menu traz a volta ao simulado", emFerramentas.includes("Simulado"));
 }
 
 // --- Tela inicial composta ------------------------------------------------

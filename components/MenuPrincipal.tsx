@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Preferencias from "./Preferencias";
 
-/** As telas que o menu alcança, quando se está numa delas. */
-export type TelaDoMenu = "desempenho" | "ferramentas";
+/** As telas que o menu alcança. */
+export type TelaDoMenu = "inicio" | "desempenho" | "ferramentas";
 
 interface Props {
-  /** Tela atual, quando é uma das que o menu leva. */
-  atual?: TelaDoMenu;
+  /** Tela atual, para marcá-la na lista. */
+  atual: TelaDoMenu;
+  onInicio: () => void;
   onDesempenho: () => void;
   onFerramentas: () => void;
 }
@@ -33,6 +34,7 @@ interface Props {
  */
 export default function MenuPrincipal({
   atual,
+  onInicio,
   onDesempenho,
   onFerramentas,
 }: Props) {
@@ -111,6 +113,10 @@ export default function MenuPrincipal({
           <PainelMenu
             atual={atual}
             refPrimeiro={primeiro}
+            onInicio={() => {
+              setAberto(false);
+              onInicio();
+            }}
             onDesempenho={() => {
               setAberto(false);
               onDesempenho();
@@ -135,21 +141,32 @@ export default function MenuPrincipal({
  * cobertura nenhuma.
  */
 export function PainelMenu({
-  atual,
+  atual = "inicio",
   refPrimeiro,
+  onInicio,
   onDesempenho,
   onFerramentas,
 }: {
   atual?: TelaDoMenu;
   refPrimeiro?: React.Ref<HTMLButtonElement>;
+  onInicio: () => void;
   onDesempenho: () => void;
   onFerramentas: () => void;
 }) {
   return (
     <>
       <div className="space-y-3">
+        {/* O caminho de volta. Sem ele, sair de Desempenho ou da Consulta
+            rápida exigia rolar duas telas longas até o "Voltar ao início" do
+            rodapé — e o menu, que é a navegação do app, só levava para longe. */}
         <ItemMenu
           ref={refPrimeiro}
+          ativo={atual === "inicio"}
+          titulo="Simulado"
+          detalhe="Escolher a classe e a matéria e começar uma bateria."
+          onClick={onInicio}
+        />
+        <ItemMenu
           ativo={atual === "desempenho"}
           titulo="Desempenho"
           detalhe="Acertos por matéria contra a linha de corte, evolução e backup do histórico."

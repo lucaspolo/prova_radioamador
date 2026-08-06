@@ -155,7 +155,8 @@ export default function Home() {
           etapa === "desempenho" ||
           etapa === "ferramentas") && (
           <MenuPrincipal
-            atual={etapa === "inicio" ? undefined : etapa}
+            atual={etapa}
+            onInicio={() => setEtapa("inicio")}
             onDesempenho={() => setEtapa("desempenho")}
             onFerramentas={() => setEtapa("ferramentas")}
           />
