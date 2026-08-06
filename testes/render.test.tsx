@@ -3,7 +3,8 @@ import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaProvaCega from "@/components/TelaProvaCega";
 import TelaResultado from "@/components/TelaResultado";
-import Dashboard from "@/components/Dashboard";
+import TelaDesempenho from "@/components/TelaDesempenho";
+import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
@@ -401,7 +402,7 @@ const PROPS_INICIO = {
   );
 }
 
-// --- Dashboard ------------------------------------------------------------
+// --- Tela de desempenho ---------------------------------------------------
 {
   type H = Historico;
   const vazio: H = { versao: VERSAO_HISTORICO, simulados: [] };
@@ -409,12 +410,20 @@ const PROPS_INICIO = {
   // Antes de ler o storage não pode renderizar nada, senão quem já tem
   // histórico vê "nenhum simulado" piscar a cada carregamento.
   const naoCarregado = renderToStaticMarkup(
-    <Dashboard historico={vazio} carregado={false} onLimpar={() => {}} onImportar={() => 0} />,
+    <TelaDesempenho onVoltar={() => {}} historico={vazio} carregado={false} onLimpar={() => {}} onImportar={() => 0} />,
   );
-  checar("Dashboard não renderiza antes de ler o storage", naoCarregado === "");
+  // A tela precisa da própria moldura para dar como voltar; o que não pode é
+  // número nenhum antes de ler o storage, senão quem já tem histórico vê
+  // "nenhum simulado" piscar a cada carregamento.
+  checar(
+    "a tela de desempenho não inventa números antes de ler o storage",
+    naoCarregado.includes("Voltar ao início") &&
+      !naoCarregado.includes("%") &&
+      !naoCarregado.includes("primeiro simulado"),
+  );
 
   const semDados = renderToStaticMarkup(
-    <Dashboard historico={vazio} carregado onLimpar={() => {}} onImportar={() => 0} />,
+    <TelaDesempenho onVoltar={() => {}} historico={vazio} carregado onLimpar={() => {}} onImportar={() => 0} />,
   );
   checar("histórico vazio mostra convite ao primeiro simulado", semDados.includes("primeiro simulado"));
   // Importar precisa existir ANTES do primeiro simulado: é como o backup chega.
@@ -432,7 +441,7 @@ const PROPS_INICIO = {
     ],
   };
   const comDados = renderToStaticMarkup(
-    <Dashboard historico={h} carregado onLimpar={() => {}} onImportar={() => 0} />,
+    <TelaDesempenho onVoltar={() => {}} historico={h} carregado onLimpar={() => {}} onImportar={() => 0} />,
   );
   checar("mostra o percentual da matéria (6/20 = 30%)", comDados.includes("30%"));
   checar("cita a linha de corte de 55%", comDados.includes("55%"));
@@ -453,7 +462,7 @@ const PROPS_INICIO = {
       ),
     ],
   };
-  const bom = renderToStaticMarkup(<Dashboard historico={h2} carregado onLimpar={() => {}} onImportar={() => 0} />);
+  const bom = renderToStaticMarkup(<TelaDesempenho onVoltar={() => {}} historico={h2} carregado onLimpar={() => {}} onImportar={() => 0} />);
   checar("90% não dispara alerta de matéria fraca", bom.includes("90%") && !bom.includes("Abaixo da linha de corte"));
 
   // Evolução: com um simulado só não há tendência; com dois, a linha aparece.
@@ -472,10 +481,73 @@ const PROPS_INICIO = {
     ],
   };
   const comLinha = renderToStaticMarkup(
-    <Dashboard historico={doisDoMesmo} carregado onLimpar={() => {}} onImportar={() => 0} />,
+    <TelaDesempenho onVoltar={() => {}} historico={doisDoMesmo} carregado onLimpar={() => {}} onImportar={() => 0} />,
   );
   checar("duas baterias desenham a linha de evolução", comLinha.includes("<polyline") && comLinha.includes("Evolução"));
   checar("revisões não entram na tendência", true); // garantido por seriePorTema, coberto em estudo.test
+
+  // --- O resumo de uma linha que ficou na tela inicial ---------------------
+  const semLer = renderToStaticMarkup(
+    <ResumoDesempenho historico={vazio} carregado={false} onAbrir={() => {}} />,
+  );
+  // Antes de ler o storage a linha existe (some depois seria salto de layout),
+  // mas sem número nenhum: o HTML estático e o primeiro render coincidem.
+  checar(
+    "o resumo não mostra número antes de ler o storage",
+    semLer.includes("Seu desempenho") && !semLer.includes("%"),
+  );
+  // "É uma linha clicável só" é o requisito da mudança; um controle a mais
+  // aqui é exatamente a regressão que ela existe para evitar.
+  checar("o resumo é uma linha clicável só", semLer.split("<button").length === 2);
+
+  const resumoVazio = renderToStaticMarkup(
+    <ResumoDesempenho historico={vazio} carregado onAbrir={() => {}} />,
+  );
+  // Num aparelho novo esta linha é o único caminho até o backup: sem nomeá-lo,
+  // restaurar o histórico fica indescobrível atrás do ícone de menu.
+  checar(
+    "sem histórico, o resumo aponta o caminho do backup",
+    resumoVazio.includes("Nenhum simulado ainda") &&
+      resumoVazio.includes("importar um backup"),
+  );
+
+  const resumoFraco = renderToStaticMarkup(
+    <ResumoDesempenho historico={h} carregado onAbrir={() => {}} />,
+  );
+  checar(
+    "com uma matéria fraca, o resumo a nomeia",
+    resumoFraco.includes("30%") && resumoFraco.includes("Eletrônica abaixo do corte"),
+  );
+
+  const resumoBom = renderToStaticMarkup(
+    <ResumoDesempenho historico={h2} carregado onAbrir={() => {}} />,
+  );
+  checar(
+    "tudo acima do corte não vira alerta",
+    resumoBom.includes("90%") && !resumoBom.includes("abaixo do corte"),
+  );
+
+  // Nomear três matérias estoura a linha num telefone: a partir de duas, conta.
+  const duasFracas: H = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      montarRegistro(
+        "Conhecimentos de Eletrônica e Eletricidade",
+        fraco.map((q, i) => ({ questao: q, respondeu: q.resposta_correta, acertou: i < 6 })),
+      ),
+      montarRegistro(
+        "Legislação de Telecomunicações",
+        forte.map((q, i) => ({ questao: q, respondeu: q.resposta_correta, acertou: i < 8 })),
+      ),
+    ],
+  };
+  const resumoDuas = renderToStaticMarkup(
+    <ResumoDesempenho historico={duasFracas} carregado onAbrir={() => {}} />,
+  );
+  checar(
+    "com duas matérias fracas, o resumo conta em vez de listar",
+    resumoDuas.includes("2 matérias abaixo do corte"),
+  );
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);

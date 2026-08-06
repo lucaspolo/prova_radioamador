@@ -22,14 +22,21 @@ export interface Envelope {
   preferencias?: Preferencias;
 }
 
+/**
+ * As suspeitas chegam por prop, e não de um `useSuspeitas()` daqui: a mesma
+ * tela também as lista, e duas instâncias vivas do hook teriam cada uma o seu
+ * `ids` — importar um backup e depois desmarcar qualquer suspeita gravaria a
+ * lista velha por cima das importadas.
+ */
 export default function ExportarImportar({
   historico,
   onImportar,
+  suspeitas,
 }: {
   historico: Historico;
   onImportar: (outro: Historico) => number;
+  suspeitas: ReturnType<typeof useSuspeitas>;
 }) {
-  const suspeitas = useSuspeitas();
   const arquivoRef = useRef<HTMLInputElement>(null);
   const [mensagem, setMensagem] = useState<string | null>(null);
 

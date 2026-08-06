@@ -9,7 +9,8 @@ import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva, {
   type MateriaConcluida,
 } from "@/components/TelaResultadoProva";
-import Dashboard from "@/components/Dashboard";
+import ResumoDesempenho from "@/components/ResumoDesempenho";
+import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import { useHistorico } from "@/hooks/useHistorico";
 import { questoesParaRevisao, sortearSimulado } from "@/lib/questoes";
@@ -22,7 +23,8 @@ type Etapa =
   | "resultado"
   | "intervalo"
   | "resultadoProva"
-  | "ferramentas";
+  | "ferramentas"
+  | "desempenho";
 
 /**
  * O que está sendo jogado agora. "avulso" é a bateria de uma matéria;
@@ -46,6 +48,10 @@ type Regime = "treino" | "cego";
  * estático isso exigiria `useSearchParams` com Suspense, e sair da página
  * perderia o simulado em andamento. Manter o estado aqui é mais simples e
  * evita perder progresso com o botão voltar.
+ *
+ * `ferramentas` e `desempenho` são telas cheias, e ainda assim etapas e não
+ * rotas: `scripts/gerar_sw.mjs` responde toda navegação com a casca de `/`,
+ * então um deep link para elas sem rede renderizaria a home.
  */
 export default function Home() {
   const [etapa, setEtapa] = useState<Etapa>("inicio");
@@ -142,11 +148,10 @@ export default function Home() {
 
       {etapa === "inicio" && (
         <div className="space-y-8">
-          <Dashboard
+          <ResumoDesempenho
             historico={historico}
             carregado={carregado}
-            onLimpar={limpar}
-            onImportar={importar}
+            onAbrir={() => setEtapa("desempenho")}
           />
           <TelaInicio
             historico={historico}
@@ -208,6 +213,16 @@ export default function Home() {
 
       {etapa === "ferramentas" && (
         <TelaFerramentas onVoltar={() => setEtapa("inicio")} />
+      )}
+
+      {etapa === "desempenho" && (
+        <TelaDesempenho
+          historico={historico}
+          carregado={carregado}
+          onLimpar={limpar}
+          onImportar={importar}
+          onVoltar={() => setEtapa("inicio")}
+        />
       )}
 
       {etapa === "resultadoProva" && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RST_SEM_FONTE, TABELAS, type TabelaReferencia } from "@/lib/referencia";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
@@ -19,11 +19,20 @@ import Calculadoras from "./Calculadoras";
  */
 export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) {
   const [aba, setAba] = useState<"tabelas" | "calculadoras">("tabelas");
+  const titulo = useRef<HTMLHeadingElement>(null);
+
+  // Chegou-se aqui por um item de menu que sumiu da tela; sem isto o foco
+  // volta ao <body> e quem navega por teclado ou leitor recomeça do topo.
+  useEffect(() => {
+    titulo.current?.focus();
+  }, []);
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold">Consulta rápida</h2>
+        <h2 ref={titulo} tabIndex={-1} className="text-xl font-bold">
+          Consulta rápida
+        </h2>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Funciona sem rede, como o resto do app. As tabelas são cópias dos
           documentos oficiais — cada uma diz de qual arquivo e página saiu.
