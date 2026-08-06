@@ -151,24 +151,29 @@ export default function TelaInicio({
         <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
           Como conduzir
         </h2>
-        <button
-          onClick={() => setCego((c) => !c)}
-          aria-pressed={cego}
-          className={`mb-3 w-full rounded-xl border-2 p-4 text-left transition ${
-            cego
-              ? "border-slate-900 dark:border-slate-100"
-              : "border-slate-300 opacity-70 hover:opacity-100 dark:border-slate-700"
-          }`}
+        {/* Dois cartões lado a lado, e não um botão que alterna o próprio
+            rótulo. Num alternador de um botão só, "Modo treino" tanto pode ser
+            o estado atual quanto o que acontece ao clicar — e a descrição do
+            regime não escolhido fica invisível, justamente a que faltava para
+            decidir. Aqui os dois textos aparecem juntos e um está marcado. */}
+        <div
+          role="group"
+          aria-label="Regime da bateria"
+          className="mb-3 grid gap-3 sm:grid-cols-2"
         >
-          <div className="font-semibold">
-            {cego ? "Modo prova" : "Modo treino"}
-          </div>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {cego
-              ? "Sem gabarito até o fim, como no exame: dá para pular, voltar, trocar a resposta e deixar em branco."
-              : "Gabarito e explicação a cada questão, na hora — é assim que se aprende o conteúdo."}
-          </p>
-        </button>
+          <BotaoRegime
+            ativo={!cego}
+            titulo="Modo treino"
+            detalhe="Gabarito e explicação a cada questão, na hora — é assim que se aprende o conteúdo."
+            onClick={() => setCego(false)}
+          />
+          <BotaoRegime
+            ativo={cego}
+            titulo="Modo prova"
+            detalhe="Sem gabarito até o fim, como no exame: dá para pular, voltar, trocar a resposta e deixar em branco."
+            onClick={() => setCego(true)}
+          />
+        </div>
         <button
           onClick={() => setCronometrar((c) => !c)}
           aria-pressed={cronometrar}
@@ -200,7 +205,7 @@ export default function TelaInicio({
         onClick={() => onIniciar(escolha, limite, classe, cronometrar, cego)}
         className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
-        Iniciar simulado · {limite} questões
+        Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões
       </button>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -250,6 +255,54 @@ export default function TelaInicio({
         </div>
       </button>
     </div>
+  );
+}
+
+/**
+ * Escolha de um entre dois regimes. O disco à esquerda repete por forma o que
+ * o preenchimento já diz por cor — o resto da tela segue a mesma regra, e aqui
+ * ela pesa mais: escolher errado só aparece depois, com a bateria em curso.
+ */
+function BotaoRegime({
+  ativo,
+  titulo,
+  detalhe,
+  onClick,
+}: {
+  ativo: boolean;
+  titulo: string;
+  detalhe: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={ativo}
+      className={`rounded-xl border-2 p-4 text-left transition ${
+        ativo
+          ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+          : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+      }`}
+    >
+      <div className="flex items-center gap-2 font-semibold">
+        <span
+          aria-hidden
+          className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border-2 ${
+            ativo ? "border-current" : "border-slate-400 dark:border-slate-600"
+          }`}
+        >
+          {ativo && <span className="h-1.5 w-1.5 rounded-full bg-current" />}
+        </span>
+        {titulo}
+      </div>
+      <p
+        className={`mt-1 text-sm ${
+          ativo ? "opacity-80" : "text-slate-500 dark:text-slate-400"
+        }`}
+      >
+        {detalhe}
+      </p>
+    </button>
   );
 }
 

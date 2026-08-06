@@ -59,7 +59,23 @@ const PROPS_INICIO = {
     "com erro em aberto, revisão oferece a questão",
     html2.includes("Revisar erros") && !html2.includes("Nenhum erro em aberto"),
   );
-  checar("botão inicia com 20 questões", html.includes("Iniciar simulado"));
+  // Os dois regimes ficam visíveis ao mesmo tempo, com treino marcado: um
+  // alternador de um botão só escondia a descrição da opção não escolhida.
+  checar(
+    "mostra os dois regimes lado a lado",
+    html.includes("Modo treino") && html.includes("Modo prova"),
+  );
+  const cartao = (rotulo: string) =>
+    html.split("<button").find((b) => b.includes(rotulo)) ?? "";
+  checar(
+    "treino vem marcado",
+    cartao("Modo treino").includes('aria-pressed="true"'),
+  );
+  checar(
+    "prova aparece como alternativa não escolhida",
+    cartao("Modo prova").includes('aria-pressed="false"'),
+  );
+  checar("botão inicia no regime escolhido", html.includes("Iniciar modo treino"));
 }
 
 // --- Tela de simulado -----------------------------------------------------
