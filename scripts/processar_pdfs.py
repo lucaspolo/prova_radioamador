@@ -468,6 +468,13 @@ def parece_recusa(texto: str) -> bool:
 # Topicos dos passes complementares, derivados da ementa Classe B. A pagina e a
 # da Cartilha onde o assunto e tratado, para o botao "Consultar Material" abrir
 # no capitulo util em vez da capa.
+#
+# A pagina e' a do TEXTO que explica o topico, e nao a do titulo da secao. A
+# distincao importa: varios titulos da Cartilha caem na ultima linha de uma
+# pagina e o conteudo comeca na seguinte — "6.3 Codigo Q" e' a linha final da
+# p.35 e a tabela inteira esta na p.36. Apontar para o titulo abre o material
+# numa pagina onde nao ha nada do assunto, que e' o mesmo que apontar para a
+# pagina anterior. Conferido contra o texto extraido do PDF, topico a topico.
 # (topico, quantidade, pagina)
 TOPICOS_ELETRONICA = [
     ("Lei de Ohm: cálculo de tensão, corrente e resistência", 10, 54),
@@ -476,14 +483,14 @@ TOPICOS_ELETRONICA = [
     ("Associação de resistores em série e em paralelo: resistência equivalente", 8, 55),
     ("Leis de Kirchhoff das correntes e das tensões", 6, 55),
     ("Múltiplos e submúltiplos de unidades elétricas e conversões", 6, 54),
-    ("Capacitância, indutância, reatância e impedância em circuitos CA", 8, 58),
+    ("Capacitância, indutância, reatância e impedância em circuitos CA", 8, 59),
     ("Ondulatória: frequência, período, amplitude e comprimento de onda", 8, 58),
     ("Espectro eletromagnético e as faixas VLF, LF, MF, HF, VHF, UHF e SHF", 6, 29),
     ("Condutores, semicondutores e isolantes; diodos e transistores", 6, 56),
     ("Instrumentos de medição: multímetro, wattímetro e medidor de ROE (SWR)", 6, 60),
-    ("Teoria de antenas: dipolo, ganho, polarização, ROE e casamento de impedância", 8, 61),
-    ("Modulações digitais ASK, FSK e PSK; modulação e demodulação", 6, 63),
-    ("Proteção elétrica: fusíveis, disjuntores e aterramento", 5, 59),
+    ("Teoria de antenas: dipolo, ganho, polarização, ROE e casamento de impedância", 8, 62),
+    ("Modulações digitais ASK, FSK e PSK; modulação e demodulação", 6, 64),
+    ("Proteção elétrica: fusíveis, disjuntores e aterramento", 5, 60),
     # -- Expansão (2026-08): buracos da ementa que os 14 tópicos originais nao
     # cobriam. A ementa da Classe B lista ELETROMAGNETISMO e PROPAGACAO DE
     # ONDAS explicitamente, e nada aqui cobria os capitulos 3 e 9 da Cartilha.
@@ -496,7 +503,7 @@ TOPICOS_ELETRONICA = [
     ("Valores eficaz (RMS), máximo (pico) e médio de tensões senoidais: "
      "relações e cálculos", 8, 58),
     ("Capacitores e indutores como componentes: função, tipos básicos, "
-     "associação e aplicações em rádio", 8, 55),
+     "associação e aplicações em rádio", 8, 56),
     ("Ressonância, interferência e superposição de ondas, no nível de noções "
      "da Classe B", 8, 62),
     ("Polarização de ondas eletromagnéticas e o alinhamento entre antenas "
@@ -525,7 +532,7 @@ TOPICOS_CLASSE_A = [
     ("Teoria técnica de antenas: impedância de ponto de alimentação, ganho em "
      "dBi e dBd, diagrama de irradiação e relação frente-costas", 8, 61),
     ("Antenas Yagi-Uda, dipolo de meia onda, vertical de quarto de onda e plano "
-     "de terra: dimensionamento em função do comprimento de onda", 8, 61),
+     "de terra: dimensionamento em função do comprimento de onda", 8, 62),
     ("Linhas de transmissão: impedância característica, coeficiente de reflexão, "
      "ROE calculada a partir das impedâncias e perda de retorno", 8, 61),
     ("Eletrônica de RF: transistores bipolares e FET em amplificadores de "
@@ -545,22 +552,22 @@ TOPICOS_TECNICA = [
     ("Estação de radioamador: diagrama de blocos de receptores, transmissores, "
      "transceptores e repetidoras", 10, 26),
     ("Repetidoras: operação em shift/split, simplex e duplex, uso de tom "
-     "subaudível e etiqueta de uso", 8, 26),
+     "subaudível e etiqueta de uso", 8, 27),
     ("Linhas de transmissão, onda estacionária (ROE/SWR) e casamento de "
-     "impedância", 8, 27),
+     "impedância", 8, 29),
     ("Antenas: tipos e características, antenas direcionais, ganho e "
      "diretividade, polarização", 10, 28),
-    ("Antena artificial (carga fictícia) e relação sinal/ruído", 6, 28),
+    ("Antena artificial (carga fictícia) e relação sinal/ruído", 6, 29),
     ("Frequência e comprimento de onda: relação entre eles, faixas de "
      "transmissão e batimento de frequências", 8, 29),
     ("Propagação: ondas terrestres e espaciais, camadas da ionosfera, "
-     "comportamento em VLF, LF, MF, HF, VHF, UHF e SHF", 10, 31),
+     "comportamento em VLF, LF, MF, HF, VHF, UHF e SHF", 10, 32),
     ("Interferências: tipos, como detectar, como evitar e como proceder ao "
      "causá-las ou recebê-las", 8, 33),
     ("Comunicados: como estabelecer contato, chamada geral (CQ), relatório de "
      "sinal (RST) e modalidades de operação", 8, 34),
     ("Alfabeto Fonético da UIT: soletração correta de letras", 8, 34),
-    ("Código Q: significado dos códigos usuais no radioamadorismo", 10, 35),
+    ("Código Q: significado dos códigos usuais no radioamadorismo", 10, 36),
     ("Ética do radioamador: conduta no ar, uso racional de potência, "
      "identificação e procedimentos indispensáveis", 8, 37),
     ("Emergências: procedimentos operacionais, prioridade de tráfego e conduta "

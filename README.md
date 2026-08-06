@@ -51,7 +51,8 @@ hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
-testes/       sorteio, histórico, prioridade, PDFs, trechos, classes e render
+testes/       sorteio, histórico, prioridade, PDFs, páginas, trechos, classes
+              e render
 public/       banco_questoes.json, trechos.json e pdfs/
 ```
 
@@ -101,7 +102,11 @@ public/       banco_questoes.json, trechos.json e pdfs/
 - Histórico no navegador (`localStorage`) e dashboard com o percentual de
   acerto por matéria contra a linha de corte oficial de 55%.
 - Botão **Consultar Material**: abre o PDF de origem já na página da questão,
-  sem sair do simulado.
+  sem sair do simulado. A página é a do texto que trata do assunto, e não a do
+  título da seção — vários títulos da Cartilha caem na última linha de uma
+  página e o conteúdo só começa na seguinte. `testes/paginas.test.ts` abre os
+  PDFs e reprova a questão cuja página vizinha fale claramente mais do assunto
+  do que a apontada.
 
 ## Rodando o app
 

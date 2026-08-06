@@ -135,9 +135,9 @@
  "98a52011a8ed56be": {
   "acao": "editar",
   "campos": {
-   "pagina": 17
+   "pagina": 16
   },
-  "motivo": "passagem está na p.17 do chunk que começa na p.16 (verificação mecânica, score 1.0)"
+  "motivo": "revisa a correção anterior (p.17): o chunk cobre as pp.16-17 e é a p.16 que traz o texto que derruba a afirmação — 'documento gratuito' e 'não substitui a habilitação brasileira'. A p.17 só continua o assunto"
  },
  "886bc076f86086df": {
   "acao": "editar",
@@ -1139,5 +1139,17 @@
  "8203f9c2ee87cd50": {
   "acao": "remover",
   "motivo": "descartada pela verificação aritmética na geração original: Em um circuito RC em paralelo, a tensão é comum em todo o circuito e atrasada 90"
+ },
+ "f3afe4727fd66562": {
+  "acao": "remover",
+  "motivo": "só cobra a data de publicação de uma norma. A ementa do item 11.4 lista as normas de Legislação pelo assunto (Lei Geral, RGST, Requisitos Técnicos e Operacionais...), nunca por número ou data — e o distrator troca apenas o ano, então acerta quem decorou 2026, não quem entendeu o Ato. Saiu de uma linha da lista 'ONDE CONFERIR' da p.23, que é bibliografia e não conteúdo"
+ },
+ "fec92de704c757ac": {
+  "acao": "remover",
+  "motivo": "cobra o preâmbulo administrativo do Ato nº 926: qual Consulta Pública o precedeu (65 x 66). Não é conhecimento de radioamador nem está na ementa; é metadado do processo de elaboração da norma"
+ },
+ "ddeb597338493765": {
+  "acao": "remover",
+  "motivo": "cobra o dispositivo de revogação (Art. 2º), e não o conteúdo da norma. A ementa do item 11.4 pede os 'Requisitos Técnicos e Operacionais', que são o Anexo deste Ato — já cobertos por outras 72 questões. O que restava medir era a memória do número e da data de um ato revogado, que não aparece em mais nenhum material de estudo. Mesma família das outras duas removidas: metadado do documento, não matéria"
  }
 }
