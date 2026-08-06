@@ -47,7 +47,13 @@ if(f)document.documentElement.style.setProperty("--escala-fonte",f);
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className="h-full antialiased">
+    // `suppressHydrationWarning` porque o próprio ANTI_FLASH é a divergência:
+    // ele crava `data-tema` e `--escala-fonte` no <html> antes da hidratação,
+    // e o HTML do export estático não tem como trazê-los (são do storage de
+    // cada aparelho). Sem isto o React acusa mismatch a cada carregamento de
+    // quem escolheu tema ou tamanho de texto. O atributo vale só para esta
+    // tag — divergência em qualquer componente continua sendo denunciada.
+    <html lang="pt-BR" className="h-full antialiased" suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <script dangerouslySetInnerHTML={{ __html: ANTI_FLASH }} />
         <RegistroSW />
