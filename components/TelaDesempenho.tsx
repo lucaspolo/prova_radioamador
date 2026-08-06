@@ -6,7 +6,6 @@ import { estatisticasPorTema, resumo, type Historico } from "@/lib/historico";
 import { useSuspeitas } from "@/hooks/useSuspeitas";
 import Evolucao from "./Evolucao";
 import ExportarImportar from "./ExportarImportar";
-import PainelPreferencias from "./Preferencias";
 import Suspeitas from "./Suspeitas";
 
 interface Props {
@@ -197,13 +196,6 @@ export default function TelaDesempenho({
           </div>
         </section>
       )}
-
-      {/* Provisório: tema e tamanho de texto vão para o menu do cabeçalho no
-          passo seguinte. Ficam aqui para este commit não deixar o app sem
-          nenhum jeito de ajustá-los. */}
-      <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
-        <PainelPreferencias />
-      </div>
 
       <button
         onClick={onVoltar}

@@ -46,7 +46,7 @@ partir da Classe B. A tela inicial avisa.
 
 ```
 app/          rotas e layout (Next.js App Router)
-components/   telas, dashboard e visualizador de PDF
+components/   telas, menu, resumo de desempenho e visualizador de PDF
 hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
@@ -90,17 +90,20 @@ public/       banco_questoes.json, trechos.json e pdfs/
   comprimento de onda e antena, dBm e ressonância LC).
 - **Revisão de erros**: bateria só com as questões erradas ainda não
   corrigidas; acertar tira da lista, sem veredito de aprovação.
-- Dashboard com tendência por matéria (últimas baterias contra a linha de
-  corte), exportar/importar do histórico para backup ou troca de aparelho, e
-  lista de questões marcadas como suspeitas durante o estudo. Marcada a
-  suspeita, um link abre no GitHub uma issue já preenchida com id, afirmação,
-  gabarito e fonte — o banco é gerado por LLM, e quem estuda por ele é quem
-  mais olha cada questão de perto.
-- Tema claro/escuro/automático e três tamanhos de texto, persistidos e
-  aplicados antes da primeira pintura.
+- **Tela de desempenho**: percentual por matéria contra a linha de corte
+  oficial de 55%, tendência das últimas baterias, exportar/importar do
+  histórico para backup ou troca de aparelho, e lista de questões marcadas
+  como suspeitas durante o estudo. Marcada a suspeita, um link abre no GitHub
+  uma issue já preenchida com id, afirmação, gabarito e fonte — o banco é
+  gerado por LLM, e quem estuda por ele é quem mais olha cada questão de
+  perto. Na tela inicial fica só uma linha de resumo, com o que é acionável:
+  quantos simulados, o percentual e qual matéria está abaixo do corte.
+- **Um menu só** no cabeçalho, para desempenho, consulta rápida, tema
+  (claro/escuro/automático) e três tamanhos de texto — persistidos e aplicados
+  antes da primeira pintura. O menu não existe durante uma bateria nem nas
+  telas de resultado: consulta rápida em prova cega seria cola.
 - Compartilhar o resultado em texto e imprimir a revisão para estudar no papel.
-- Histórico no navegador (`localStorage`) e dashboard com o percentual de
-  acerto por matéria contra a linha de corte oficial de 55%.
+- Histórico no navegador (`localStorage`).
 - Botão **Consultar Material**: abre o PDF de origem já na página da questão,
   sem sair do simulado. A página é a do texto que trata do assunto, e não a do
   título da seção — vários títulos da Cartilha caem na última linha de uma

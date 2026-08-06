@@ -5,6 +5,8 @@ import TelaProvaCega from "@/components/TelaProvaCega";
 import TelaResultado from "@/components/TelaResultado";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import ResumoDesempenho from "@/components/ResumoDesempenho";
+import MenuPrincipal, { PainelMenu } from "@/components/MenuPrincipal";
+import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
@@ -24,7 +26,6 @@ const PROPS_INICIO = {
   onIniciar: () => {},
   onProvaCompleta: () => {},
   onRevisar: () => {},
-  onFerramentas: () => {},
 };
 
 // --- Tela inicial ---------------------------------------------------------
@@ -77,6 +78,8 @@ const PROPS_INICIO = {
     cartao("Modo prova").includes('aria-pressed="false"'),
   );
   checar("botão inicia no regime escolhido", html.includes("Iniciar modo treino"));
+  // A consulta rápida virou item de menu: a tela inicial é sobre fazer prova.
+  checar("a consulta rápida saiu da tela inicial", !html.includes("Consulta rápida"));
 }
 
 // --- Tela de simulado -----------------------------------------------------
@@ -548,6 +551,60 @@ const PROPS_INICIO = {
     "com duas matérias fracas, o resumo conta em vez de listar",
     resumoDuas.includes("2 matérias abaixo do corte"),
   );
+}
+
+// --- Menu principal -------------------------------------------------------
+{
+  const fechado = renderToStaticMarkup(
+    <MenuPrincipal onDesempenho={() => {}} onFerramentas={() => {}} />,
+  );
+  // Nascer fechado é a invariante do desentulho: se o painel viesse aberto, a
+  // tela inicial voltaria a ter tudo à vista.
+  checar("o menu nasce fechado", !fechado.includes("Consulta rápida"));
+  checar("o gatilho anuncia o estado", fechado.includes('aria-expanded="false"'));
+  checar("o gatilho aponta para o painel", fechado.includes('aria-controls="menu-principal"'));
+  // Hambúrguer sem rótulo é menos descoberto, e a consulta rápida mora aqui.
+  checar("o gatilho é rotulado", fechado.includes("Menu"));
+
+  // O conteúdo do painel só existe depois de um clique, que este harness não
+  // dá: por isso `PainelMenu` é export nomeado.
+  const painel = renderToStaticMarkup(
+    <PainelMenu onDesempenho={() => {}} onFerramentas={() => {}} />,
+  );
+  checar(
+    "o menu leva às duas telas",
+    painel.includes("Desempenho") && painel.includes("Consulta rápida"),
+  );
+  checar(
+    "o menu traz o tema",
+    ["Claro", "Escuro", "Automático"].every((s) => painel.includes(s)),
+  );
+  checar("o menu traz o tamanho de texto", painel.includes("A−") && painel.includes("A+"));
+  checar("o menu não inicia bateria nenhuma", !painel.includes("Iniciar"));
+
+  const emFerramentas = renderToStaticMarkup(
+    <PainelMenu atual="ferramentas" onDesempenho={() => {}} onFerramentas={() => {}} />,
+  );
+  checar("o menu marca a tela atual", emFerramentas.includes('aria-current="page"'));
+}
+
+// --- Tela inicial composta ------------------------------------------------
+// A única asserção que olha o resultado da reorganização inteira, e não um
+// componente isolado. Sem DOM os efeitos não rodam, então isto é exatamente o
+// que alguém vê no primeiro quadro: menu fechado e storage ainda não lido.
+{
+  const home = renderToStaticMarkup(<Home />);
+  checar("a home traz o menu", home.includes('aria-expanded="false"'));
+  checar("a home traz o resumo de desempenho", home.includes("Seu desempenho"));
+  checar(
+    "o painel de desempenho saiu da home",
+    !home.includes("Exportar histórico") &&
+      !home.includes("Limpar histórico") &&
+      !home.includes("Evolução"),
+  );
+  checar("tema e tamanho de texto saíram da home", !home.includes("Automático"));
+  checar("a consulta rápida saiu da home", !home.includes("Consulta rápida"));
+  checar("a escolha da prova continua à vista", home.includes("Iniciar modo treino"));
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);

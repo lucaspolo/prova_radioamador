@@ -9,6 +9,7 @@ import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva, {
   type MateriaConcluida,
 } from "@/components/TelaResultadoProva";
+import MenuPrincipal from "@/components/MenuPrincipal";
 import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
@@ -137,13 +138,28 @@ export default function Home() {
 
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:py-12">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Simulados · Radioamador
-        </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Questões de certo ou errado no formato da prova da Anatel.
-        </p>
+      <header className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Simulados · Radioamador
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Questões de certo ou errado no formato da prova da Anatel.
+          </p>
+        </div>
+        {/* O menu não existe durante uma bateria nem depois dela: consulta
+            rápida em prova cega é cola e em treino é distração, e a partir de
+            uma tela de resultado seria porta de mão única — "Voltar ao início"
+            das telas de consulta descarta o gabarito recém-conquistado. */}
+        {(etapa === "inicio" ||
+          etapa === "desempenho" ||
+          etapa === "ferramentas") && (
+          <MenuPrincipal
+            atual={etapa === "inicio" ? undefined : etapa}
+            onDesempenho={() => setEtapa("desempenho")}
+            onFerramentas={() => setEtapa("ferramentas")}
+          />
+        )}
       </header>
 
       {etapa === "inicio" && (
@@ -158,7 +174,6 @@ export default function Home() {
             onIniciar={iniciar}
             onProvaCompleta={iniciarProva}
             onRevisar={iniciarRevisao}
-            onFerramentas={() => setEtapa("ferramentas")}
           />
         </div>
       )}
