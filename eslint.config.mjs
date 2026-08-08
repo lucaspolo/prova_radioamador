@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Nada aqui é código do projeto, e tudo está no .gitignore. O .venv entra
+    // na lista porque as dependências Python do gerador e da auditoria de OCR
+    // (torch, mpire) trazem JS minificado junto, e sem isto `npm run lint`
+    // reporta milhares de problemas de biblioteca de terceiro.
+    ".venv/**",
+    "public/pdf.worker.min.mjs",
   ]),
 ]);
 

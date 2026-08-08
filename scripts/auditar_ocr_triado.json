@@ -1,0 +1,12 @@
+[
+ {
+  "visao": "dígito",
+  "docling": "número",
+  "motivo": "Falso positivo de alinhamento. O Ato 3445 usa as duas palavras: o item 12.10.6 escreve 'seguido do número \"0\"' e o 12.10.7, 'seguido do dígito \"0\"'. Os dois leitores concordam item a item; o que diverge é o pareamento, porque o docling embaralha o 12.10.9 da p.1 ('1, p o o seguido do número \"O\"') e o diff casa esse fragmento com o item errado."
+ },
+ {
+  "visao": "pertencem",
+  "docling": "pertençam",
+  "motivo": "Erro real do modelo de visão no item 12.12.8 — a fonte diz 'à qual pertençam geograficamente', conferido na imagem e lido assim pelo tesseract e pelo docling. Indicativo por subjuntivo não muda o sentido de nenhuma afirmação, então não vira errata: cada errata muda o texto do chunk e regera as questões dele, e não vale trocar 16 questões conferidas por 16 novas para acertar um modo verbal."
+ }
+]

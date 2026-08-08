@@ -931,6 +931,56 @@ def renderizar_pagina(caminho: Path, pagina: int, dpi: int = DPI_OCR) -> bytes:
         return pngs[0].read_bytes()
 
 
+ARQ_ERRATAS = RAIZ / "scripts" / "erratas_ocr.json"
+
+
+def carregar_erratas() -> dict[str, list[dict[str, Any]]]:
+    """Erratas de transcricao, conferidas na imagem da pagina.
+
+    O modelo de visao erra normalizando: devolve portugues fluente e plausivel
+    que se afastou da fonte. Foi assim que o "W" do item 12.12.4 do Ato 3445
+    virou "Y" e produziu uma questao com gabarito invertido (issue #2). O erro
+    nao tem como aparecer sozinho: o texto continua legivel e a questao gerada
+    dele fica coerente.
+
+    Por que um arquivo versionado e nao um conserto no cache: `scripts/.cache/`
+    e' local e esta no .gitignore. Consertado so' la', o erro volta na proxima
+    maquina que regerar o banco, e ninguem fica sabendo.
+    """
+    if not ARQ_ERRATAS.exists():
+        return {}
+    return json.loads(ARQ_ERRATAS.read_text(encoding="utf-8"))
+
+
+def aplicar_erratas(
+    arquivo: str, pagina: int, texto: str, erratas: dict[str, list[dict[str, Any]]]
+) -> str:
+    """Corrige a transcricao de uma pagina antes que ela vire chunk.
+
+    Aplicada depois do cache, e nao dentro dele: o cache guarda o que o modelo
+    respondeu, a errata e' uma camada separada por cima. Assim `--forcar`
+    tambem sai corrigido, e da' para ver o que foi corrigido de quem.
+
+    Errata que nao encontra o texto que promete corrigir e' erro fatal. O caso
+    ruim e' o silencioso: o prompt de OCR muda, a transcricao sai diferente, a
+    errata deixa de casar e o banco volta a ser gerado com o texto errado sem
+    nenhum aviso.
+    """
+    for e in erratas.get(arquivo, []):
+        if e["pagina"] != pagina:
+            continue
+        ocorrencias = texto.count(e["de"])
+        if ocorrencias != 1:
+            raise ValueError(
+                f"errata de {arquivo} p.{pagina} esperava 1 ocorrência de "
+                f"{e['de']!r} e achou {ocorrencias}. A transcrição mudou; "
+                f"confira a página na imagem e refaça a errata."
+            )
+        texto = texto.replace(e["de"], e["para"])
+        log(f"    página {pagina}: errata aplicada ({e['de']!r} -> {e['para']!r})")
+    return texto
+
+
 def extrair_texto_ocr(
     cliente, modelo: str, caminho: Path, forcar: bool
 ) -> list[Bloco]:
@@ -938,6 +988,7 @@ def extrair_texto_ocr(
     total = contar_paginas(caminho)
     log(f"  PDF digitalizado (sem camada de texto) -> OCR por visão, {total} páginas")
 
+    erratas = carregar_erratas()
     blocos: list[Bloco] = []
     for pagina in range(1, total + 1):
         chave = hashlib.sha1(
@@ -984,6 +1035,7 @@ def extrair_texto_ocr(
                 texto = ""
             gravar_cache(chave, {"texto": texto})
 
+        texto = aplicar_erratas(caminho.name, pagina, texto, erratas)
         limpo = limpar_pagina(texto)
         if limpo and "[PÁGINA SEM TEXTO]" not in limpo:
             blocos.append(Bloco(pagina=pagina, texto=limpo))
@@ -1965,6 +2017,12 @@ def main() -> int:
         return 1
 
     args.saida.parent.mkdir(parents=True, exist_ok=True)
+    # Ordem estavel na gravacao. Os chunks sao processados em paralelo e o
+    # `as_completed` os devolve na ordem em que terminam, entao cada regeracao
+    # embaralhava o arquivo inteiro: 6.363 linhas de diff para 33 questoes
+    # alteradas, e o `git diff` deixava de dizer o que mudou. Agrupar por
+    # documento e pagina mantem junto o que se le junto; o id desempata.
+    finais.sort(key=lambda q: (q["arquivo_origem"], q["pagina"], q["id"]))
     args.saida.write_text(
         json.dumps(finais, ensure_ascii=False, indent=2), encoding="utf-8"
     )
