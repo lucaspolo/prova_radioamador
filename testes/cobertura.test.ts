@@ -180,19 +180,38 @@ const LEGISLACAO = BANCO.filter((q) => q.tema === "Legislação de Telecomunica�
   if (!tabela) throw new Error("tabela de prefixos sumiu de lib/referencia.ts");
 
   // "PY 2 AA a ZZ" e "PU 8 JAA a LZZ": prefixo, dígito da região e a faixa de
-  // sufixos. Tolera o espaço que some na quebra de linha do PDF.
-  const TOKEN = /p[pqrstuvwy] ?\d ?[a-z]{2,3} a [a-z]{2,3}/g;
+  // sufixos. Tolera o espaço que some na quebra de linha do PDF. O "e" no lugar
+  // do "a" é do próprio Ato, na linha de São Paulo.
+  const TOKEN = /p[pqrstuvwy] ?\d ?[a-z]{2,3} [ae] [a-z]{2,3}/g;
+  // Onde a frase deixa de falar das classes A/B e passa a falar da C.
+  const VIRA_C = /classes? ?["'“]?c["'”]?/;
+  const CITA_AB = /classes? ?["'“]?[ab]["'”]?/;
   const achatar = (t: string) => norm(t).replace(/\s+/g, " ");
   const tokens = (t: string) =>
     new Set((achatar(t).match(TOKEN) ?? []).map((x) => x.replace(/\s+/g, " ")));
 
+  // As duas colunas, separadas. Fundi-las era o buraco: todo prefixo da questão
+  // "em São Paulo a Classe C usa PY 2 AAA a YZZ" é de São Paulo, e o teste
+  // passava — mas PY 2 AAA a YZZ é das classes A/B, e a questão estava marcada
+  // como verdadeira. Treze questões assim entraram no banco.
+  // A UF é casada COM acento e com fronteira de palavra. Sem o acento, "Pará"
+  // vira "para" e casa com a preposição de "para a Classe C": quase toda
+  // questão de prefixo aparecia com duas UFs e caía na exceção logo abaixo,
+  // pulada em silêncio. O contador de conferidas é o que denuncia isso.
+  const LETRA = "a-záàâãéêíóôõúüç";
+  const comAcento = (t: string) => t.toLowerCase().replace(/\s+/g, " ");
+  const nomeia = (texto: string, uf: string) =>
+    new RegExp(`(^|[^${LETRA}])${uf}([^${LETRA}]|$)`).test(comAcento(texto));
+
   const porUf = new Map(
     tabela.linhas.map((l) => [
-      achatar(l.celulas[0]),
-      tokens(l.celulas[1] + " " + l.celulas[2]),
+      comAcento(l.celulas[0]),
+      { ab: tokens(l.celulas[1]), c: tokens(l.celulas[2]) },
     ]),
   );
-  const universo = new Set([...porUf.values()].flatMap((s) => [...s]));
+  const universo = new Set(
+    [...porUf.values()].flatMap((x) => [...x.ab, ...x.c]),
+  );
 
   const inventados: string[] = [];
   const alheios: string[] = [];
@@ -208,22 +227,51 @@ const LEGISLACAO = BANCO.filter((q) => q.tema === "Legislação de Telecomunica�
 
     // Com duas UFs na mesma afirmação não dá para saber a quem o prefixo se
     // refere sem interpretar a frase; essas ficam de fora.
-    const nomeadas = [...porUf.keys()].filter((uf) => achatar(q.afirmacao).includes(uf));
+    const afirmacao = achatar(q.afirmacao);
+    const citadas = [...porUf.keys()].filter((uf) => nomeia(q.afirmacao, uf));
+    // "Mato Grosso" é nome inteiro dentro de "Mato Grosso do Sul": vale a mais
+    // específica, senão a única questão sobre o Sul nunca seria conferida.
+    const nomeadas = citadas.filter(
+      (uf) => !citadas.some((outra) => outra !== uf && outra.includes(uf)),
+    );
     if (nomeadas.length !== 1) continue;
     conferidas++;
 
     const daUf = porUf.get(nomeadas[0])!;
-    const fora = [...citados].filter((t) => !daUf.has(t));
+    const fora = [...citados].filter((t) => !daUf.ab.has(t) && !daUf.c.has(t));
+
+    // A que classe a frase atribui cada prefixo. O que vem antes de "classe C"
+    // é reivindicado para A/B; o que vem depois, para a C. Sem a marca da C,
+    // mas com a de A/B, a frase inteira fala de A/B.
+    const corte = afirmacao.search(VIRA_C);
+    const trocados: string[] = [];
+    if (corte >= 0) {
+      for (const t of tokens(afirmacao.slice(0, corte))) {
+        if (daUf.c.has(t)) trocados.push(`${t} é da C`);
+      }
+      for (const t of tokens(afirmacao.slice(corte))) {
+        if (daUf.ab.has(t)) trocados.push(`${t} é de A/B`);
+      }
+    } else if (CITA_AB.test(afirmacao)) {
+      for (const t of citados) {
+        if (daUf.c.has(t)) trocados.push(`${t} é da C`);
+      }
+    }
 
     // Nos dois sentidos. Só cobrar a verdadeira deixaria passar o inverso — a
     // afirmação correta marcada como falsa —, que foi exatamente o erro que
     // entrou no plano de bandas: a falsa era montada trocando o valor por
     // outro da MESMA chave, e o resultado era verdadeiro.
-    if (q.resposta_correta && fora.length) {
-      alheios.push(`V com prefixo alheio — ${nomeadas[0]}: ${fora[0]} (${q.id})`);
+    if (q.resposta_correta && (fora.length || trocados.length)) {
+      alheios.push(
+        `V errada — ${nomeadas[0]}: ${fora[0] ?? trocados[0]} (${q.id})`,
+      );
     }
-    if (!q.resposta_correta && fora.length === 0) {
-      alheios.push(`F sem prefixo alheio — ${nomeadas[0]} (${q.id})`);
+    // Uma falsa precisa errar em alguma coisa: prefixo de outra UF ou prefixo
+    // na classe errada. Sem nenhum dos dois, ela é verdadeira e o gabarito está
+    // invertido.
+    if (!q.resposta_correta && fora.length === 0 && trocados.length === 0) {
+      alheios.push(`F sem erro nenhum — ${nomeadas[0]} (${q.id})`);
     }
   }
 
@@ -233,10 +281,10 @@ const LEGISLACAO = BANCO.filter((q) => q.tema === "Legislação de Telecomunica�
     inventados.length ? inventados.slice(0, 4).join("; ") : "",
   );
   checar(
-    "gabarito de prefixo confere com a Tabela II, nos dois sentidos",
+    "gabarito de prefixo confere com a Tabela II, UF e classe",
     alheios.length === 0,
     alheios.length
-      ? alheios.slice(0, 4).join("; ")
+      ? `${alheios.length}: ` + alheios.slice(0, 4).join("; ")
       : `${conferidas} questões conferidas contra a Tabela II`,
   );
 }

@@ -258,82 +258,94 @@ const EIRP: TabelaReferencia = {
 };
 
 /**
- * Tabela II do Ato 3448. As classes A e B recebem sufixo de duas letras; a
- * classe C, de três. O dígito é o da região do domicílio.
+ * Tabela II do Ato 3448. O que separa as classes é a série do prefixo, e não o
+ * tamanho do sufixo: as classes A e B usam a série da UF (PY, PP, PT...) com
+ * sufixo de duas OU de três letras, e a classe C usa a série PU. O dígito é o
+ * da região do domicílio.
  *
- * A linha do Amazonas atravessa a virada de página, e a de São Paulo é a
- * única com dois prefixos em A/B — as duas estão transcritas como aparecem.
+ * A distinção parece o contrário quando se lê o texto extraído do PDF, porque
+ * a coluna some: "PT 8 AA a ZZ" e "PT 8 AAA a YZZ" ficam em linhas separadas e
+ * a de três letras cai ao lado do PU. Foi assim que a série de três letras
+ * ficou em Classe "C" nas 27 linhas daqui, e o erro se propagou às questões
+ * geradas a partir desta tabela. A ordem verdadeira está nos `trechosFonte`,
+ * que seguem a ordem interna dos itens do PDF: UF, célula A/B inteira, célula
+ * C inteira. `testes/cobertura.test.ts` agora confere a classe, não só a UF.
+ *
+ * A linha do Amazonas atravessa a virada de página, e a de São Paulo é a única
+ * com duas séries em A/B (PY e PR) e duas em C (PU e PV) — as duas estão
+ * transcritas como aparecem, inclusive o "PR 2 AA e ZZ", que o Ato escreve com
+ * "e" onde as demais linhas trazem "a".
  */
 const PREFIXOS: TabelaReferencia = {
   id: "prefixos",
   titulo: "Prefixos de indicativo por unidade da federação",
   descricao:
-    "Formação do indicativo de chamada efetivo. Classes A e B usam sufixo de duas letras; a classe C, de três.",
+    "Formação do indicativo de chamada efetivo. As classes A e B usam a série da própria UF, com sufixo de duas ou três letras; a classe C usa a série PU.",
   colunas: ["Unidade da Federação", 'Classes "A" ou "B"', 'Classe "C"'],
   fonte: { arquivo: ATO_3448, paginas: [8, 9], referencia: "Tabela II" },
   linhas: [
-    { celulas: ["Acre", "PT 8 AA a ZZ", "PT 8 AAA a YZZ · PU 8 JAA a LZZ"],
+    { celulas: ["Acre", "PT 8 AA a ZZ · PT 8 AAA a YZZ", "PU 8 JAA a LZZ"],
       trechosFonte: ["Acre PT 8 AA a ZZ PT 8 AAA a YZZ PU 8 JAA a LZZ"] },
-    { celulas: ["Alagoas", "PP 7 AA a ZZ", "PP 7 AAA a YZZ · PU 7 AAA a DZZ"],
+    { celulas: ["Alagoas", "PP 7 AA a ZZ · PP 7 AAA a YZZ", "PU 7 AAA a DZZ"],
       trechosFonte: ["Alagoas PP 7 AA a ZZ PP 7 AAA a YZZ PU 7 AAA a DZZ"] },
-    { celulas: ["Amapá", "PQ 8 AA a ZZ", "PQ 8 AAA a YZZ · PU 8 GAA a IZZ"],
+    { celulas: ["Amapá", "PQ 8 AA a ZZ · PQ 8 AAA a YZZ", "PU 8 GAA a IZZ"],
       trechosFonte: ["Amapá PQ 8 AA a ZZ PQ 8 AAA a YZZ PU 8 GAA a IZZ"] },
-    { celulas: ["Amazonas", "PP 8 AA a ZZ", "PP 8 AAA a YZZ · PU 8 AAA a CZZ"],
+    { celulas: ["Amazonas", "PP 8 AA a ZZ · PP 8 AAA a YZZ", "PU 8 AAA a CZZ"],
       // A linha é cortada pela virada da página 8 para a 9.
       trechosFonte: ["Amazonas PP 8 AA a ZZ PU 8 AAA a CZZ", "PP 8 AAA a YZZ"] },
-    { celulas: ["Bahia", "PY 6 AA a ZZ", "PY 6 AAA a YZZ · PU 6 JAA a YZZ"],
+    { celulas: ["Bahia", "PY 6 AA a ZZ · PY 6 AAA a YZZ", "PU 6 JAA a YZZ"],
       trechosFonte: ["Bahia PY 6 AA a ZZ PY 6 AAA a YZZ PU 6 JAA a YZZ"] },
-    { celulas: ["Ceará", "PT 7 AA a ZZ", "PT 7 AAA a YZZ · PU 7 MAA a PZZ"],
+    { celulas: ["Ceará", "PT 7 AA a ZZ · PT 7 AAA a YZZ", "PU 7 MAA a PZZ"],
       trechosFonte: ["Ceará PT 7 AA a ZZ PT 7 AAA a YZZ PU 7 MAA a PZZ"] },
-    { celulas: ["Distrito Federal", "PT 2 AA a ZZ", "PT 2 AAA a YZZ · PU 2 AAA a EZZ"],
+    { celulas: ["Distrito Federal", "PT 2 AA a ZZ · PT 2 AAA a YZZ", "PU 2 AAA a EZZ"],
       trechosFonte: ["Distrito Federal PT 2 AA a ZZ PT 2 AAA a YZZ PU 2 AAA a EZZ"] },
-    { celulas: ["Espírito Santo", "PP 1 AA a ZZ", "PP 1 AAA a YZZ · PU 1 AAA a IZZ"],
+    { celulas: ["Espírito Santo", "PP 1 AA a ZZ · PP 1 AAA a YZZ", "PU 1 AAA a IZZ"],
       trechosFonte: ["Espírito Santo PP 1 AA a ZZ PP 1 AAA a YZZ PU 1 AAA a IZZ"] },
-    { celulas: ["Goiás", "PP 2 AA a ZZ", "PP 2 AAA a YZZ · PU 2 FAA a HZZ"],
+    { celulas: ["Goiás", "PP 2 AA a ZZ · PP 2 AAA a YZZ", "PU 2 FAA a HZZ"],
       trechosFonte: ["Goiás PP 2 AA a ZZ PP 2 AAA a YZZ PU 2 FAA a HZZ"] },
-    { celulas: ["Maranhão", "PR 8 AA a ZZ", "PR 8 AAA a YZZ · PU 8 MAA a OZZ"],
+    { celulas: ["Maranhão", "PR 8 AA a ZZ · PR 8 AAA a YZZ", "PU 8 MAA a OZZ"],
       trechosFonte: ["Maranhão PR 8 AA a ZZ PR 8 AAA a YZZ PU 8 MAA a OZZ"] },
-    { celulas: ["Mato Grosso", "PY 9 AA a ZZ", "PY 9 AAA a YZZ · PU 9 OAA a YZZ"],
+    { celulas: ["Mato Grosso", "PY 9 AA a ZZ · PY 9 AAA a YZZ", "PU 9 OAA a YZZ"],
       trechosFonte: ["Mato Grosso PY 9 AA a ZZ PY 9 AAA a YZZ PU 9 OAA a YZZ"] },
-    { celulas: ["Mato Grosso do Sul", "PT 9 AA a ZZ", "PT 9 AAA a YZZ · PU 9 AAA a NZZ"],
+    { celulas: ["Mato Grosso do Sul", "PT 9 AA a ZZ · PT 9 AAA a YZZ", "PU 9 AAA a NZZ"],
       trechosFonte: ["Mato Grosso do Sul PT 9 AA a ZZ PT 9 AAA a YZZ PU 9 AAA a NZZ"] },
-    { celulas: ["Minas Gerais", "PY 4 AA a ZZ", "PY 4 AAA a YZZ · PU 4 AAA a YZZ"],
+    { celulas: ["Minas Gerais", "PY 4 AA a ZZ · PY 4 AAA a YZZ", "PU 4 AAA a YZZ"],
       trechosFonte: ["Minas Gerais PY 4 AA a ZZ PY 4 AAA a YZZ PU 4 AAA a YZZ"] },
-    { celulas: ["Paraíba", "PR 7 AA a ZZ", "PR 7 AAA a YZZ · PU 7 EAA a HZZ"],
+    { celulas: ["Paraíba", "PR 7 AA a ZZ · PR 7 AAA a YZZ", "PU 7 EAA a HZZ"],
       trechosFonte: ["Paraíba PR 7 AA a ZZ PR 7 AAA a YZZ PU 7 EAA a HZZ"] },
-    { celulas: ["Paraná", "PY 5 AA a ZZ", "PY 5 AAA a YZZ · PU 5 MAA a YZZ"],
+    { celulas: ["Paraná", "PY 5 AA a ZZ · PY 5 AAA a YZZ", "PU 5 MAA a YZZ"],
       trechosFonte: ["Paraná PY 5 AA a ZZ PY 5 AAA a YZZ PU 5 MAA a YZZ"] },
-    { celulas: ["Pará", "PY 8 AA a ZZ", "PY 8 AAA a YZZ · PU 8 WAA a YZZ"],
+    { celulas: ["Pará", "PY 8 AA a ZZ · PY 8 AAA a YZZ", "PU 8 WAA a YZZ"],
       trechosFonte: ["Pará PY 8 AA a ZZ PY 8 AAA a YZZ PU 8 WAA a YZZ"] },
-    { celulas: ["Pernambuco", "PY 7 AA a ZZ", "PY 7 AAA a YZZ · PU 7 RAA a YZZ"],
+    { celulas: ["Pernambuco", "PY 7 AA a ZZ · PY 7 AAA a YZZ", "PU 7 RAA a YZZ"],
       trechosFonte: ["Pernambuco PY 7 AA a ZZ PY 7 AAA a YZZ PU 7 RAA a YZZ"] },
-    { celulas: ["Piauí", "PS 8 AA a ZZ", "PS 8 AAA a YZZ · PU 8 PAA a SZZ"],
+    { celulas: ["Piauí", "PS 8 AA a ZZ · PS 8 AAA a YZZ", "PU 8 PAA a SZZ"],
       trechosFonte: ["Piauí PS 8 AA a ZZ PS 8 AAA a YZZ PU 8 PAA a SZZ"] },
-    { celulas: ["Rio de Janeiro", "PY 1 AA a ZZ", "PY 1 AAA a YZZ · PU 1 JAA a YZZ"],
+    { celulas: ["Rio de Janeiro", "PY 1 AA a ZZ · PY 1 AAA a YZZ", "PU 1 JAA a YZZ"],
       trechosFonte: ["Rio de Janeiro PY 1 AA a ZZ PY 1 AAA a YZZ PU 1 JAA a YZZ"] },
-    { celulas: ["Rio Grande do Norte", "PS 7 AA a ZZ", "PS 7 AAA a YZZ · PU 7 IAA a LZZ"],
+    { celulas: ["Rio Grande do Norte", "PS 7 AA a ZZ · PS 7 AAA a YZZ", "PU 7 IAA a LZZ"],
       trechosFonte: ["Rio Grande do Norte PS 7 AA a ZZ PS 7 AAA a YZZ PU 7 IAA a LZZ"] },
-    { celulas: ["Rio Grande do Sul", "PY 3 AA a ZZ", "PY 3 AAA a YZZ · PU 3 AAA a YZZ"],
+    { celulas: ["Rio Grande do Sul", "PY 3 AA a ZZ · PY 3 AAA a YZZ", "PU 3 AAA a YZZ"],
       trechosFonte: ["Rio Grande do Sul PY 3 AA a ZZ PY 3 AAA a YZZ PU 3 AAA a YZZ"] },
-    { celulas: ["Rondônia", "PW 8 AA a ZZ", "PW 8 AAA a YZZ · PU 8 DAA a FZZ"],
+    { celulas: ["Rondônia", "PW 8 AA a ZZ · PW 8 AAA a YZZ", "PU 8 DAA a FZZ"],
       trechosFonte: ["Rondônia PW 8 AA a ZZ PW 8 AAA a YZZ PU 8 DAA a FZZ"] },
-    { celulas: ["Roraima", "PV 8 AA a ZZ", "PV 8 AAA a YZZ · PU 8 TAA a VZZ"],
+    { celulas: ["Roraima", "PV 8 AA a ZZ · PV 8 AAA a YZZ", "PU 8 TAA a VZZ"],
       trechosFonte: ["Roraima PV 8 AA a ZZ PV 8 AAA a YZZ PU 8 TAA a VZZ"] },
-    { celulas: ["Santa Catarina", "PP 5 AA a ZZ", "PP 5 AAA a YZZ · PU 5 AAA a LZZ"],
+    { celulas: ["Santa Catarina", "PP 5 AA a ZZ · PP 5 AAA a YZZ", "PU 5 AAA a LZZ"],
       trechosFonte: ["Santa Catarina PP 5 AA a ZZ PP 5 AAA a YZZ PU 5 AAA a LZZ"] },
     {
       celulas: [
         "São Paulo",
-        "PY 2 AA a ZZ · PR 2 AA e ZZ",
-        "PY 2 AAA a YZZ · PR 2 AAA a YZZ · PU 2 KAA a YZZ · PV 2 KAA a YZZ",
+        "PY 2 AA a ZZ · PR 2 AA e ZZ · PY 2 AAA a YZZ · PR 2 AAA a YZZ",
+        "PU 2 KAA a YZZ · PV 2 KAA a YZZ",
       ],
       trechosFonte: [
         "São Paulo PY 2 AA a ZZ PR 2 AA e ZZ PY 2 AAA a YZZ PR 2 AAA a YZZ PU 2 KAA a YZZ PV 2 KAA a YZZ",
       ],
     },
-    { celulas: ["Sergipe", "PP 6 AA a ZZ", "PP 6 AAA a YZZ · PU 6 AAA a IZZ"],
+    { celulas: ["Sergipe", "PP 6 AA a ZZ · PP 6 AAA a YZZ", "PU 6 AAA a IZZ"],
       trechosFonte: ["Sergipe PP 6 AA a ZZ PP 6 AAA a YZZ PU 6 AAA a IZZ"] },
-    { celulas: ["Tocantins", "PQ 2 AA a ZZ", "PQ 2 AAA a YZZ · PU 2 IAA a JZZ"],
+    { celulas: ["Tocantins", "PQ 2 AA a ZZ · PQ 2 AAA a YZZ", "PU 2 IAA a JZZ"],
       trechosFonte: ["Tocantins PQ 2 AA a ZZ PQ 2 AAA a YZZ PU 2 IAA a JZZ"] },
   ],
 };
