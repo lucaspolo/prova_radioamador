@@ -375,6 +375,59 @@ ACRÉSCIMO OFICIAL DA CLASSE A SOBRE A CLASSE B:
 {EMENTA_CLASSE_A.split("(CLASSE A)")[1].strip()}"""
 
 
+PROMPT_SISTEMA_TABELA = """\
+Você é um examinador da Anatel que elabora questões no formato oficial "certo ou \
+errado" (Verdadeiro/Falso) a partir de TABELAS normativas.
+
+Você recebe as LINHAS de uma tabela de um documento oficial, já transcritas e \
+conferidas contra o PDF. Cada linha é um dado regulatório exato.
+
+REGRAS OBRIGATÓRIAS
+
+1. UMA QUESTÃO POR LINHA, na ordem em que as linhas aparecem. Se receber seis \
+linhas, devolva seis questões.
+
+2. A afirmação deve NOMEAR a chave da linha (a primeira célula: a faixa, a \
+unidade da federação, a letra) de forma explícita. Quem responde precisa saber \
+de qual linha se trata sem adivinhar.
+
+3. NÃO INVENTE VALOR: todo número, prefixo, sufixo, classe ou limite que \
+aparecer na questão tem de estar nas linhas fornecidas. Não arredonde, não \
+converta unidade e não complete o que a tabela não diz.
+
+4. EQUILÍBRIO: aproximadamente metade das questões com resposta_correta=true e \
+metade false.
+
+5. COMO ERRAR BEM: a questão falsa deve trocar o valor da linha pelo valor de \
+uma linha de CHAVE DIFERENTE — o prefixo de outro estado, a frequência de outra \
+faixa, a classe habilitada em outra faixa. É a confusão que o candidato de fato \
+comete. Não invente um valor que não existe na tabela, e não crie falsa por \
+negação preguiçosa ("não é verdade que...").
+
+6. CUIDADO COM A CHAVE QUE SE REPETE: a mesma chave pode ocupar várias linhas — \
+uma faixa de frequências costuma ter duas ou três subfaixas, cada uma com suas \
+classes. Trocar uma subfaixa pela subfaixa VIZINHA DA MESMA FAIXA não produz \
+uma afirmação falsa: produz uma afirmação verdadeira sobre a outra linha, e \
+marcá-la como falsa põe um gabarito errado no simulado. Se a chave da linha se \
+repete, o valor trocado tem de vir de outra chave.
+
+   Errado: "Na Faixa de 4 milímetros, a radiofrequência é 77,5 - 78 GHz" \
+marcada como falsa porque a linha sorteada era a de 76 - 77,5 GHz — as duas \
+subfaixas são da mesma faixa, e a afirmação é verdadeira.
+
+   Certo: "Na Faixa de 4 milímetros, a radiofrequência é 122,25 - 123 GHz" \
+(que é da Faixa de 2,5 milímetros), ou manter a subfaixa e trocar as classes.
+
+7. EXPLICAÇÃO: 1 a 2 frases. Quando a afirmação for falsa, diga qual é o valor \
+correto da tabela.
+
+8. AUTOSSUFICIÊNCIA: a afirmação deve ser compreensível sozinha. Não escreva \
+"segundo a tabela", "conforme o quadro acima" nem equivalentes — quem responde \
+não vê a tabela.
+
+9. Escreva em português do Brasil."""
+
+
 PROMPT_SISTEMA_TECNICA = f"""\
 Você é um examinador da Anatel que elabora questões de TÉCNICA E ÉTICA \
 OPERACIONAL para o exame de radioamador CLASSE B, no formato oficial "certo ou \
@@ -573,6 +626,107 @@ TOPICOS_TECNICA = [
     ("Emergências: procedimentos operacionais, prioridade de tráfego e conduta "
      "em situações de socorro", 8, 38),
 ]
+
+
+# Passe de tabela: cobertura linha a linha das tabelas normativas.
+#
+# O passe geral gera QUESTOES_POR_CHUNK questoes por chunk, tenha o chunk uma
+# linha ou trinta. O chunk das pp.7-12 do Ato 926 traz dez tabelas de faixa e
+# recebe as mesmas 8 questoes de um chunk de prosa; o das pp.8-9 do Ato 3448 traz
+# as 27 unidades da federacao e tambem recebe 8. O modelo escolhe algumas linhas
+# e ignora o resto. Medido no banco de 2026-08: 10 das 28 faixas do plano de
+# bandas e 26 das 27 UFs nao apareciam em questao nenhuma, embora as duas tabelas
+# estejam na consulta rapida do app e sejam materia de Legislacao.
+#
+# A cota aqui acompanha o numero de linhas. As linhas vem de
+# scripts/tabelas_referencia.json, exportado de lib/referencia.ts por
+# `npm run tabelas` — e nao do texto cru da pagina: o pdfplumber le a Tabela II
+# do Ato 3448 com as colunas embaralhadas, e pedir ao modelo que refaca o
+# pareamento UF -> prefixo a partir disso e' pedir para ele errar um dado
+# regulatorio. A transcricao exportada ja passou pela conferencia contra o PDF
+# que testes/referencia.test.ts faz linha a linha.
+#
+# Quem fecha o circuito e' testes/cobertura.test.ts: ele deriva a lista esperada
+# da mesma lib/referencia.ts e cobra que cada faixa e cada UF tenha questao.
+# O peso e o do sorteio, e nao a importancia da materia. Uma questao por linha e'
+# o que garante cobertura, mas as 39 linhas da Tabela I viram 39 questoes do
+# mesmo molde ("na Faixa de X, a radiofrequencia e' Y e podem operar Z"). No
+# peso 1 elas seriam 11% do acervo de Legislacao e apareceriam ~2 vezes por
+# bateria de 20, o suficiente para o candidato aprender a forma em vez do
+# conteudo. Em 0,3 caem para menos de uma por bateria, sem sumir do banco.
+#
+# A de prefixos fica em 1: cada linha e' um estado com prefixos proprios, entao
+# a repeticao e' de estrutura, nao de conteudo — quem responde precisa saber
+# outra coisa a cada questao.
+# (id da tabela em tabelas_referencia.json, tema, linhas por lote, peso)
+TABELAS_COBERTURA = [
+    ("bandas", TEMAS[1], 6, 0.3),
+    ("prefixos", TEMAS[1], 6, 1.0),
+]
+
+ARQ_TABELAS = RAIZ / "scripts" / "tabelas_referencia.json"
+
+# A Cartilha: unico dos seis PDFs que cobre as tres materias. E' para ela que os
+# passes complementares apontam a pagina de estudo, e dela que sai o reforco.
+ARQUIVO_COMPLEMENTAR = "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf"
+
+
+# Passe de reforco: paginas que o chunking geral cobriu de raspao.
+#
+# Mesma causa do passe de tabela — cota fixa por chunk. O chunk das pp.50-52 da
+# Cartilha recebeu 8 questoes e o modelo as concentrou nas duas primeiras
+# paginas: a p.52 ficou com zero, e e' onde esta a distincao entre certificacao
+# e homologacao, item nomeado na ementa de Legislacao ("Regulamento de Avaliacao
+# da Conformidade e de Homologacao") e que a propria Cartilha marca com um "Para
+# prova:".
+#
+# Sao paginas de prosa, entao aqui o passe e' o geral (fidelidade ao trecho),
+# so' que mirando uma pagina e com cota propria. Estas questoes tem origem no
+# documento e trecho literal, como as do passe geral.
+#
+# Ficam de fora, de proposito, as paginas administrativas que o levantamento
+# tambem apontou como rasas — pp.8-9 (o que levar para a prova) e p.17 (como
+# pedir documento): a ementa cobra o conteudo tecnico e normativo do servico, e
+# nao o procedimento do exame. O gerador ja descarta questao sobre a prova em
+# `questao_meta`; adicionar paginas dessas seria remar contra isso.
+# (arquivo, paginas, assunto, questoes)
+PAGINAS_REFORCO = [
+    (ARQUIVO_COMPLEMENTAR, [52],
+     "certificação x homologação de produtos: quem faz cada uma, em que ordem "
+     "e para que serve", 6),
+    (ARQUIVO_COMPLEMENTAR, [47],
+     "atribuição de indicativos de chamada: séries internacionais do Brasil, "
+     "escolha, vacância e sufixos vedados", 8),
+    (ARQUIVO_COMPLEMENTAR, [45],
+     "tipos de estação (fixa, móvel, repetidora) e uso da estação por terceiros "
+     "não radioamadores", 6),
+    ("Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf", [6],
+     "regras gerais de uso das faixas: estações NSS temporárias, vedação de "
+     "criptografia em modos digitais, salto em frequência e espalhamento "
+     "espectral abaixo de 440 MHz", 8),
+]
+
+# Nao entram no reforco, apesar de tambem estarem sem questao: as pp.7, 16 e 17
+# do Ato 926, que sao a grade de modos de emissao por subfaixa. Ali o dado e'
+# posicional — um "x" numa coluna CW/SSB/AM/FM/DV —, e a extracao de texto
+# entrega "3.510 3.570 x" sem dizer sob qual coluna aquele "x" estava. Gerar
+# questao dai e' inventar qual modo e' permitido. As faixas dessas paginas ja
+# sao cobradas pela Tabela I, que diz quem pode operar cada uma e cujas linhas
+# vem transcritas e conferidas.
+
+
+def carregar_tabelas_referencia() -> dict[str, dict[str, Any]]:
+    """Le as tabelas exportadas de lib/referencia.ts, indexadas por id."""
+    if not ARQ_TABELAS.exists():
+        log(f"AVISO: {ARQ_TABELAS.name} não encontrado; passe de tabela pulado. "
+            f"Gere-o com `npm run tabelas`.")
+        return {}
+    try:
+        dados = json.loads(ARQ_TABELAS.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        log(f"AVISO: {ARQ_TABELAS.name} inválido ({e}); passe de tabela pulado.")
+        return {}
+    return {t["id"]: t for t in dados}
 
 
 # ---------------------------------------------------------------------------
@@ -995,10 +1149,17 @@ def montar_chunks(arquivo: str, blocos: list[Bloco]) -> list[Chunk]:
 
 
 def gerar_do_chunk(
-    cliente, modelo: str, chunk: Chunk, forcar: bool
+    cliente,
+    modelo: str,
+    chunk: Chunk,
+    forcar: bool,
+    quantidade: int = QUESTOES_POR_CHUNK,
 ) -> list[dict[str, Any]]:
+    # `quantidade` entra na chave de cache no lugar onde a constante entrava:
+    # com o padrao, a chave dos chunks ja gerados nao muda, e o cache continua
+    # valendo. So' o passe de reforco, que pede outra cota, gera chave nova.
     chave = hashlib.sha1(
-        f"gen|{versao_prompt(PROMPT_SISTEMA)}|{modelo}|{QUESTOES_POR_CHUNK}"
+        f"gen|{versao_prompt(PROMPT_SISTEMA)}|{modelo}|{quantidade}"
         f"|{chunk.chave_cache}".encode("utf-8")
     ).hexdigest()
 
@@ -1010,7 +1171,7 @@ def gerar_do_chunk(
             f"DOCUMENTO: {chunk.arquivo_origem}\n"
             f"PÁGINA: {chunk.pagina}\n\n"
             f"TRECHO:\n\"\"\"\n{chunk.texto}\n\"\"\"\n\n"
-            f"Gere até {QUESTOES_POR_CHUNK} questões Verdadeiro/Falso a partir "
+            f"Gere até {quantidade} questões Verdadeiro/Falso a partir "
             f"deste trecho, seguindo todas as regras. Se o trecho não tiver "
             f"conteúdo cobrável, retorne uma lista vazia."
         )
@@ -1047,8 +1208,7 @@ def gerar_do_chunk(
 # Os passes complementares nao partem de um trecho: geram questoes a partir da
 # ementa oficial, cobrindo o que os PDFs ensinam sem exercitar (calculo) ou
 # tratam de forma resumida demais (operacao). Apontam para o capitulo da
-# Cartilha que cobre o assunto, para consulta.
-ARQUIVO_COMPLEMENTAR = "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf"
+# Cartilha que cobre o assunto (ARQUIVO_COMPLEMENTAR), para consulta.
 
 
 def gerar_complementar(
@@ -1105,6 +1265,123 @@ def gerar_complementar(
         q["_complementar"] = True
         q["_nivel"] = classe
     return questoes
+
+
+def gerar_da_tabela(
+    cliente,
+    modelo: str,
+    tabela: dict[str, Any],
+    lote: list[list[str]],
+    tema: str,
+    chunk: Chunk,
+    paginas_texto: dict[int, str],
+    peso: float,
+    forcar: bool,
+) -> list[dict[str, Any]]:
+    """Gera uma questao para cada linha de um lote da tabela.
+
+    Diferente do passe da ementa, estas questoes tem origem no documento: o
+    `chunk` traz o texto literal das paginas da tabela, e e ele que vai para
+    `public/trechos.json` como trecho de origem. O que o modelo recebe para
+    escrever sao as linhas conferidas, nao o texto embaralhado da pagina.
+    """
+    linhas = "\n".join(" | ".join(c for c in linha) for linha in lote)
+    chave = hashlib.sha1(
+        f"tab|{versao_prompt(PROMPT_SISTEMA_TABELA)}|{modelo}|{tabela['id']}"
+        f"|{linhas}".encode("utf-8")
+    ).hexdigest()
+
+    if not forcar and (cacheado := ler_cache(chave)) is not None:
+        USO.registrar_cache()
+        questoes = cacheado["questoes"]
+    else:
+        prompt = (
+            f"DOCUMENTO: {tabela['arquivo']}\n"
+            f"TABELA: {tabela['referencia']} — {tabela['titulo']}\n"
+            f"COLUNAS: {' | '.join(tabela['colunas'])}\n\n"
+            f"LINHAS:\n{linhas}\n\n"
+            f"Gere exatamente {len(lote)} questões Verdadeiro/Falso, uma por "
+            f"linha, na ordem acima. Use sempre o tema \"{tema}\"."
+        )
+        bruto = chamar_llm(
+            cliente,
+            modelo,
+            [
+                {"role": "system", "content": PROMPT_SISTEMA_TABELA},
+                {"role": "user", "content": prompt},
+            ],
+            schema=SCHEMA_QUESTOES,
+        )
+        try:
+            questoes = json.loads(bruto).get("questoes", [])
+        except json.JSONDecodeError:
+            log(f"    ! Resposta não-JSON para a tabela {tabela['id']}")
+            return []
+        gravar_cache(chave, {"questoes": questoes})
+
+    # A regra 2 do prompt — nomear a chave da linha — e o que faz a questao
+    # exercitar aquela linha e nao a tabela em geral. Conferir aqui e' barato e
+    # deterministico: sem isto, "a faixa seguinte tem limite maior" passaria,
+    # sem dizer de qual faixa se trata. A chave que casou tambem diz em qual
+    # pagina da tabela a linha mora.
+    chaves = [(normalizar(linha[0]), linha[0]) for linha in lote]
+    aproveitadas: list[dict[str, Any]] = []
+    for q in questoes:
+        afirmacao = normalizar(q.get("afirmacao") or "")
+        casada = next(
+            (rotulo for chave, rotulo in chaves if chave and chave in afirmacao),
+            None,
+        )
+        if casada is None:
+            continue
+        # O passe e exclusivo de um tema; corrige eventual desvio do modelo.
+        q["tema"] = tema
+        q["arquivo_origem"] = tabela["arquivo"]
+        q["pagina"] = pagina_da_linha(casada, paginas_texto, chunk.pagina)
+        q["_trecho"] = chunk.id_trecho
+        q["_peso"] = peso
+        aproveitadas.append(q)
+
+    if len(aproveitadas) < len(questoes):
+        log(f"    {len(questoes) - len(aproveitadas)} questões descartadas por não "
+            f"nomear a linha ({tabela['id']})")
+    return aproveitadas
+
+
+def pagina_da_linha(rotulo: str, paginas_texto: dict[int, str], padrao: int) -> int:
+    """Pagina em que a linha aparece de fato.
+
+    A Tabela I atravessa as pp.3-4 do Ato 926 e a Tabela II as pp.8-9 do Ato
+    3448. Apontar toda questao para a primeira pagina manda quem aperta
+    "Consultar Material" para uma pagina onde a linha nao esta — e e' o que
+    `testes/paginas.test.ts` reprova, comparando o assunto da pagina apontada
+    com o da vizinha.
+    """
+    alvo = normalizar(rotulo)
+    for pagina in sorted(paginas_texto):
+        if alvo and alvo in normalizar(paginas_texto[pagina]):
+            return pagina
+    return padrao
+
+
+def chunk_de_paginas(
+    arquivo: str, paginas: list[int], blocos: list[Bloco]
+) -> Chunk | None:
+    """Monta um chunk com o texto literal de paginas especificas.
+
+    Serve aos dois passes dirigidos — o de tabela e o de reforco —, que
+    precisam mirar uma pagina exata em vez do recorte do chunking geral.
+    """
+    do_intervalo = [b for b in blocos if b.pagina in paginas]
+    texto = "\n\n".join(b.texto for b in do_intervalo).strip()
+    if len(texto) < MIN_CHARS_CHUNK_UTIL:
+        return None
+    return Chunk(
+        arquivo_origem=arquivo,
+        pagina=min(paginas),
+        texto=texto,
+        pagina_fim=max(paginas),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1354,6 +1631,14 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 # Questoes da ementa nascem de um topico, e nao de um texto:
                 # inventar um trecho para elas seria mentir sobre a origem.
                 **({"trecho_id": q["_trecho"]} if q.get("_trecho") else {}),
+                # Peso proprio no sorteio. Omitido quando e' 1, que e' o padrao
+                # de `lib/tipos.ts`: gravar 1 em quase mil questoes so' engorda
+                # o JSON que o app carrega inteiro no bundle.
+                **(
+                    {"peso": q["_peso"]}
+                    if q.get("_peso") is not None and q["_peso"] != 1
+                    else {}
+                ),
             }
         )
 
@@ -1487,6 +1772,10 @@ def main() -> int:
 
     # --- Extracao e chunking -------------------------------------------------
     chunks: list[Chunk] = []
+    # Guardados para o passe de tabela, que precisa do texto literal de paginas
+    # especificas — e nao dos chunks, que ja misturaram a tabela com a prosa ao
+    # redor.
+    blocos_por_arquivo: dict[str, list[Bloco]] = {}
     for pdf in pdfs:
         log(f"[{pdf.name}]")
         try:
@@ -1494,6 +1783,7 @@ def main() -> int:
         except Exception as e:
             log(f"  ! Falha ao ler: {e}")
             continue
+        blocos_por_arquivo[pdf.name] = blocos
         do_pdf = montar_chunks(pdf.name, blocos)
         chunks.extend(do_pdf)
         log(f"  {len(do_pdf)} chunks")
@@ -1577,6 +1867,84 @@ def main() -> int:
                         continue
                     questoes.extend(novas)
                     log(f"  {topico[:52]:<52} -> {len(novas)} questões")
+
+    # --- Passe de reforco: paginas cobertas de raspao ------------------------
+    if not args.sem_complementos and not args.limite_chunks:
+        if PAGINAS_REFORCO:
+            log(f"\n=== Passe de reforço: {len(PAGINAS_REFORCO)} páginas ===")
+        for arquivo, paginas, assunto, quantidade in PAGINAS_REFORCO:
+            blocos = blocos_por_arquivo.get(arquivo)
+            if not blocos:
+                log(f"  ! {arquivo} não foi lido nesta execução; reforço pulado.")
+                continue
+            chunk = chunk_de_paginas(arquivo, paginas, blocos)
+            if chunk is None:
+                log(f"  ! p.{paginas} de {arquivo[:30]} sem texto aproveitável.")
+                continue
+            chunks.append(chunk)
+            try:
+                novas = gerar_do_chunk(cliente, modelo, chunk, args.forcar, quantidade)
+            except Exception as e:
+                log(f"  ! p.{paginas}: {e}")
+                continue
+            questoes.extend(novas)
+            log(f"  p.{str(paginas):<8} {assunto[:44]:<44} -> {len(novas)} questões")
+
+    # --- Passe de tabela: cobertura linha a linha ----------------------------
+    if not args.sem_complementos and not args.limite_chunks:
+        catalogo = carregar_tabelas_referencia()
+        for id_tabela, tema, por_lote, peso_tabela in TABELAS_COBERTURA:
+            tabela = catalogo.get(id_tabela)
+            if tabela is None:
+                if catalogo:
+                    log(f"\n! Tabela '{id_tabela}' não está em {ARQ_TABELAS.name}; "
+                        f"passe pulado.")
+                continue
+
+            blocos = blocos_por_arquivo.get(tabela["arquivo"])
+            if not blocos:
+                log(f"\n! {tabela['arquivo']} não foi lido nesta execução; "
+                    f"passe da tabela '{id_tabela}' pulado.")
+                continue
+            chunk = chunk_de_paginas(tabela["arquivo"], tabela["paginas"], blocos)
+            if chunk is None:
+                log(f"\n! Páginas {tabela['paginas']} de {tabela['arquivo']} sem "
+                    f"texto aproveitável; passe da tabela '{id_tabela}' pulado.")
+                continue
+
+            # `public/trechos.json` e' montado no fim a partir de `chunks`. Sem
+            # registrar o chunk da tabela aqui, as questoes deste passe
+            # apontariam para um trecho que nao existe no arquivo.
+            chunks.append(chunk)
+
+            # Texto pagina a pagina, para cada questao apontar para a pagina em
+            # que a sua linha esta — as duas tabelas atravessam duas paginas.
+            paginas_texto = {
+                b.pagina: b.texto for b in blocos if b.pagina in tabela["paginas"]
+            }
+
+            linhas = tabela["linhas"]
+            lotes = [linhas[i : i + por_lote] for i in range(0, len(linhas), por_lote)]
+            log(f"\n=== Passe da tabela '{id_tabela}': {len(linhas)} linhas em "
+                f"{len(lotes)} lotes ===")
+            with ThreadPoolExecutor(max_workers=args.workers) as pool:
+                futuros = {
+                    pool.submit(
+                        gerar_da_tabela, cliente, modelo, tabela, lote, tema,
+                        chunk, paginas_texto, peso_tabela, args.forcar
+                    ): lote
+                    for lote in lotes
+                }
+                for fut in as_completed(futuros):
+                    lote = futuros[fut]
+                    try:
+                        novas = fut.result()
+                    except Exception as e:
+                        log(f"  ! lote iniciado em {lote[0][0][:40]}: {e}")
+                        continue
+                    questoes.extend(novas)
+                    log(f"  {lote[0][0][:32]:<32} +{len(lote) - 1:<2} linhas "
+                        f"-> {len(novas)} questões")
 
     # --- Questoes autorais de cobertura --------------------------------------
     if not args.sem_complementos and not args.limite_chunks:

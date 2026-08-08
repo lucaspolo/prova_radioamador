@@ -51,8 +51,9 @@ hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
-testes/       sorteio, histórico, prioridade, PDFs, páginas, trechos, classes
-              e render
+              exportar_tabelas.ts — tabelas de referência para o gerador
+testes/       sorteio, histórico, estudo, bateria, prioridade, PDFs, páginas,
+              trechos, classes, cobertura, cálculos, referência e render
 public/       banco_questoes.json, trechos.json e pdfs/
 ```
 
@@ -159,7 +160,28 @@ O script:
 4. roda passes complementares guiados pela ementa oficial, para os tópicos que
    os PDFs ensinam mas não exercitam (cálculo de eletrônica) ou tratam de forma
    resumida (operação);
-5. deduplica, valida e revisa a aritmética das questões numéricas.
+5. roda um passe por tabela normativa, com uma questão para cada linha do plano
+   de bandas e da tabela de prefixos por UF. As linhas vêm de
+   `scripts/tabelas_referencia.json`, exportado de `lib/referencia.ts` por
+   `npm run tabelas`: é a transcrição que `testes/referencia.test.ts` já confere
+   contra o PDF, e não o texto cru da página, que o extrator entrega com as
+   colunas embaralhadas. Reexporte depois de mexer em `lib/referencia.ts`;
+6. roda um passe de reforço nas páginas que o passo 3 cobriu de raspão;
+7. deduplica, valida e revisa a aritmética das questões numéricas.
+
+Os passos 5 e 6 existem pela mesma razão. O passo 3 gera um número fixo de
+questões por trecho, tenha o trecho uma linha ou trinta: a tabela das 28 faixas
+recebia as mesmas oito questões de um trecho de prosa, e o trecho das pp. 50–52
+da Cartilha concentrava as suas oito nas duas primeiras páginas. O resultado era
+silencioso — 10 das 28 faixas, 26 das 27 unidades da federação e a página que
+distingue certificação de homologação não tinham questão nenhuma, e nada
+acusava. Hoje `testes/cobertura.test.ts` cobra cada faixa e cada UF, e confere
+que nenhuma questão verdadeira atribua a um estado o prefixo de outro.
+
+Ficam de fora do reforço, de propósito, as páginas administrativas: o que levar
+para a prova, como pedir um documento. A ementa cobra o conteúdo técnico e
+normativo do serviço, não o procedimento do exame — e o gerador já descarta
+questão sobre a própria prova.
 
 Cada chamada é cacheada em `scripts/.cache/`, então reexecuções não repagam
 tokens. A chave de cache inclui um hash do prompt: editar um prompt invalida

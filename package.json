@@ -11,7 +11,8 @@
     "predev": "node scripts/preparar_worker.mjs",
     "prebuild": "node scripts/preparar_worker.mjs",
     "postbuild": "node scripts/gerar_sw.mjs",
-    "pdfs": "node scripts/copiar_pdfs.mjs"
+    "pdfs": "node scripts/copiar_pdfs.mjs",
+    "tabelas": "tsx scripts/exportar_tabelas.ts"
   },
   "dependencies": {
     "next": "16.3.0",

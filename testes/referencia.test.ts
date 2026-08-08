@@ -141,6 +141,34 @@ async function main() {
     checar("30 metros é exclusiva da Classe A", so30m?.celulas[2] === "A");
   }
 
+  // --- A cópia que o gerador Python lê está em dia ----------------------
+  //
+  // `scripts/tabelas_referencia.json` é gerado deste arquivo por
+  // `npm run tabelas` e versionado, para o gerador de questões não depender de
+  // rodar Node antes do Python. O risco é silencioso: quem corrige uma linha
+  // aqui e esquece de reexportar deixa o passe de tabela produzindo questão a
+  // partir do dado velho — e o teste que conferiu a linha contra o PDF passa,
+  // porque ele olha para este arquivo, não para a cópia.
+  {
+    const exportado = JSON.parse(
+      readFileSync(new URL("../scripts/tabelas_referencia.json", import.meta.url), "utf8"),
+    );
+    const atual = TABELAS.map((t) => ({
+      id: t.id,
+      titulo: t.titulo,
+      colunas: t.colunas,
+      arquivo: t.fonte.arquivo,
+      paginas: t.fonte.paginas,
+      referencia: t.fonte.referencia,
+      linhas: t.linhas.map((l) => l.celulas),
+    }));
+    checar(
+      "scripts/tabelas_referencia.json está em dia com este arquivo",
+      JSON.stringify(atual) === JSON.stringify(exportado),
+      "rode `npm run tabelas` após mexer nas tabelas",
+    );
+  }
+
   console.log(
     `\n${falhas === 0 ? "TODOS OS TESTES DE REFERÊNCIA PASSARAM" : falhas + " FALHA(S)"}`,
   );
