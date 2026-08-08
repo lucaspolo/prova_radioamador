@@ -1,0 +1,20 @@
+{
+ "cobertura": {
+  "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf": {
+   "revisadas": 14,
+   "total": 16,
+   "em": "2026-08-08"
+  },
+  "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf": {
+   "revisadas": 16,
+   "total": 16,
+   "em": "2026-08-08"
+  }
+ },
+ "achados": {
+  "ee9152bdd5e65601": {
+   "decisao": "descartado",
+   "motivo": "O revisor marcou F alegando que a primeira letra do agrupamento é \"Z\" e suspeitou de mistura entre os itens I e II. Conferido na imagem da p.1 do Ato 3445, ampliada: o texto do chunk é fiel, e são regras diferentes, não uma mistura. O item 12.10.6-I trata das estações localizadas na Região Antártica sem qualificar nacionalidade e dá para as classes \"A\" e \"B\" o prefixo \"PY\", o número \"0\" e um agrupamento de duas ou três letras com a primeira obrigatoriamente \"A\" — exatamente a afirmação. O \"Z\" que o revisor viu está no 12.10.7, que é a exceção para radioamadores estrangeiros (PY0 + três letras começando em \"Z\"). O gabarito V está certo. O que induziu ao erro foi o campo passagem, que começa recortado no 12.10.6-II e emenda no 12.10.7, escondendo justamente o inciso I que responde à pergunta; a passagem é aproximação por sobreposição de termos, não prova. Fica o registro de que a afirmação não diz \"estrangeiros\" nem \"brasileiros\" e apoia-se na regra geral: se um próximo revisor tropeçar nela de novo, o caminho é remover e repor à mão com a nacionalidade explícita, não mexer no gabarito."
+  }
+ }
+}
