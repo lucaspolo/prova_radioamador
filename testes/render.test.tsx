@@ -20,6 +20,39 @@ function checar(nome: string, ok: boolean, detalhe = "") {
   console.log(`${ok ? "  ok  " : "FALHA "} ${nome}${detalhe ? " — " + detalhe : ""}`);
 }
 
+/**
+ * Procura um texto do banco dentro do HTML renderizado.
+ *
+ * O React escapa `& < > " '` no texto, então comparar a afirmação crua com o
+ * markup falha em toda questão que traga aspas — e as da tabela de prefixos
+ * trazem, porque a coluna do Ato 3448 se chama Classes "A" ou "B". Sem escapar
+ * aqui, o teste do enunciado quebrava em ~4% das execuções, conforme o sorteio,
+ * e o de "não vaza a resposta" passava por engano: a explicação podia estar na
+ * tela e o `includes` não a encontraria.
+ */
+/**
+ * As asserções sobre a explicação comparam o texto INTEIRO, e não um prefixo.
+ *
+ * Comparar os primeiros 40 caracteres parecia equivalente e não era: várias
+ * explicações abrem reafirmando o enunciado ("O Serviço de Radioamador é de
+ * interesse restrito..."), e o enunciado está na tela por construção. O teste
+ * de que a prova cega não vaza a resposta acusava essa questão como vazamento
+ * sempre que ela caía em primeiro no sorteio — 0,5% das execuções, o bastante
+ * para a suíte falhar de vez em quando sem ninguém entender por quê.
+ *
+ * A explicação inteira não colide com nenhuma afirmação do banco, e é o que
+ * "vazou" de fato significa: a justificativa apareceu na tela.
+ */
+function contem(html: string, texto: string): boolean {
+  const escapado = texto
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+  return html.includes(escapado);
+}
+
 const H_VAZIO: Historico = { versao: VERSAO_HISTORICO, simulados: [] };
 const PROPS_INICIO = {
   historico: H_VAZIO,
@@ -91,10 +124,10 @@ const PROPS_INICIO = {
   checar("TelaSimulado renderiza", html.length > 0);
   checar("mostra posição na bateria", html.includes("Questão 1 de 20"));
   checar("oferece Verdadeiro e Falso", html.includes("Verdadeiro") && html.includes("Falso"));
-  checar("exibe o enunciado da 1ª questão", html.includes(questoes[0].afirmacao.slice(0, 40)));
+  checar("exibe o enunciado da 1ª questão", contem(html, questoes[0].afirmacao.slice(0, 40)));
   checar(
     "não vaza a resposta antes de responder",
-    !html.includes(questoes[0].explicacao_curta.slice(0, 40)),
+    !contem(html, questoes[0].explicacao_curta),
   );
   checar("permite abandonar", html.includes("Abandonar simulado"));
   checar("sem cronômetro, não mostra relógio", !html.includes("30:00"));
@@ -122,20 +155,24 @@ const PROPS_INICIO = {
   );
   checar("TelaProvaCega renderiza", html.length > 0);
   checar("mostra posição na bateria", html.includes("Questão 1 de 20"));
-  checar("exibe o enunciado da 1ª questão", html.includes(questoes[0].afirmacao.slice(0, 40)));
+  checar("exibe o enunciado da 1ª questão", contem(html, questoes[0].afirmacao.slice(0, 40)));
   checar("oferece Verdadeiro e Falso", html.includes("Verdadeiro") && html.includes("Falso"));
 
   // Os três vazamentos possíveis.
   checar(
     "não mostra a explicação de nenhuma questão",
-    questoes.every((q) => !html.includes(q.explicacao_curta.slice(0, 40))),
+    questoes.every((q) => !contem(html, q.explicacao_curta)),
   );
   checar(
     "não emite veredito por questão",
     !html.includes("Acertou") && !html.includes("Errou") && !html.includes("a afirmação é"),
   );
-  // O placar parcial entregaria o gabarito de tudo que já passou.
-  checar("não mostra placar de acertos", !html.includes("acertos"));
+  // O placar parcial entregaria o gabarito de tudo que já passou. O que se
+  // procura é o placar do modo treino — `{acertos} acertos`, em
+  // TelaSimulado.tsx —, e não a palavra solta: uma questão do banco fala em
+  // "maioria de acertos somando todas as provas", e quando ela caía em
+  // primeiro no sorteio a asserção acusava placar onde havia só enunciado.
+  checar("não mostra placar de acertos", !/\d+\s*acertos/.test(html));
   checar("mostra o quanto já foi respondido", html.includes("0 de 20 respondidas"));
 
   // Consultar o PDF no meio do exame é justamente o que a prova não permite.
@@ -181,7 +218,7 @@ const PROPS_INICIO = {
   checar("oferece filtrar só os erros", cega.includes("Só os erros (5)") && cega.includes("Todas (20)"));
   checar(
     "mostra a explicação de uma questão acertada",
-    cega.includes(questoes[0].explicacao_curta.slice(0, 40)),
+    contem(cega, questoes[0].explicacao_curta),
   );
   checar("identifica os acertos", cega.includes("Acertou"));
 
@@ -192,7 +229,7 @@ const PROPS_INICIO = {
   checar("bateria de treino continua listando só os erros", treino.includes("Revisão dos erros (5)"));
   checar(
     "e não mostra a explicação de uma acertada",
-    !treino.includes(questoes[0].explicacao_curta.slice(0, 40)),
+    !contem(treino, questoes[0].explicacao_curta),
   );
 
   // Encerrar cedo à mão deixa questões em branco sem que o tempo tenha acabado.
