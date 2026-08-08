@@ -1,0 +1,10 @@
+{
+ "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf": [
+  {
+   "pagina": 3,
+   "de": "a primeira letra “Y”.",
+   "para": "a primeira letra “W”.",
+   "motivo": "Item 12.12.4. O modelo de visão leu a letra “W” como “Y”. Conferido na imagem da página, ampliada até o glifo, e corroborado pelo resto do Ato: a Tabela IV da p.1 acrescenta W a cada série da classe C (ZV8W, ZW8W, ZX8W...) e o item 12.12.7 impõe W como segunda letra da classe C em ilhas e na Região Antártica. Y não tem função nenhuma no documento. Achado a partir da issue #2; o tesseract e o docling+RapidOCR leem W."
+  }
+ ]
+}

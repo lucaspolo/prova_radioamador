@@ -552,13 +552,6 @@
   },
   "motivo": "passagem está na p.62 do chunk que começa na p.61 (verificação mecânica, score 1.0)"
  },
- "9b56ed5463f55fa7": {
-  "acao": "editar",
-  "campos": {
-   "pagina": 2
-  },
-  "motivo": "passagem está na p.2 do chunk que começa na p.1 (verificação mecânica, score 1.0)"
- },
  "a252dafaaa21a174": {
   "acao": "editar",
   "campos": {
