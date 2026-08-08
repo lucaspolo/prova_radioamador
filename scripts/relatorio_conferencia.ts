@@ -15,7 +15,8 @@
  * histórico (`relatorios/` está no .gitignore). Regere com `npm run conferencia`.
  */
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { agruparEmCapitulos } from "../lib/conferencia";
 import { caminhoPdf } from "../lib/pdfs";
 import { localizarPassagem } from "../lib/trechos";
 import type { Questao, Trecho } from "../lib/tipos";
@@ -27,6 +28,7 @@ const QUESTOES = banco as Questao[];
 const TRECHOS = trechos as Record<string, Trecho>;
 
 const DESTINO = new URL("../relatorios/conferencia.md", import.meta.url);
+const DESTINO_OCR = new URL("../lib/ocr-visao.json", import.meta.url);
 
 // --- Escape -----------------------------------------------------------------
 
@@ -73,29 +75,60 @@ function citar(texto: string, recuo: string): string {
     .join("\n");
 }
 
-// --- Ordenação --------------------------------------------------------------
+// --- Ordem dos arquivos -----------------------------------------------------
 
 /**
- * Ordem de leitura: arquivo, depois página.
+ * O mesmo corte de `processar_pdfs.py:78`. Abaixo disto o gerador desiste da
+ * camada de texto e manda a página para o OCR de visão.
  *
- * Os desempates existem só para a saída ser estável entre execuções — dentro de
- * uma página o `id` é um hash e não significa nada. `documento` antes de
- * `ementa` porque são duas conferências diferentes: a primeira se faz contra o
- * PDF aberto na página, a segunda contra o que você sabe do assunto.
- *
- * Agrupar por trecho foi descartado de propósito. Sob a ordem de página os
- * trechos se interrompem 79 vezes (o passe de tabela espalha questões do mesmo
- * trecho por páginas diferentes), então agrupar por trecho quebraria a leitura
- * linear, que é justamente o motivo do relatório.
+ * Está duplicado porque a constante mora no Python e o valor não atravessa a
+ * fronteira das linguagens — como o `tabelas_referencia.json` faz com as
+ * tabelas. Se um dia divergir, o efeito é só a ordem dos capítulos, e não um
+ * dado errado no relatório.
  */
-function ordenar(a: Questao, b: Questao): number {
-  return (
-    a.arquivo_origem.localeCompare(b.arquivo_origem, "pt-BR") ||
-    a.pagina - b.pagina ||
-    a.origem.localeCompare(b.origem) ||
-    (a.trecho_id ?? "").localeCompare(b.trecho_id ?? "") ||
-    a.id.localeCompare(b.id)
-  );
+const MIN_CHARS_POR_PAGINA = 100;
+
+/**
+ * Se o gerador leu este PDF por OCR de visão, pelo mesmo critério que ele usa.
+ *
+ * Derivado, e não uma lista de nomes: um PDF novo sem camada de texto sobe
+ * sozinho para o começo da fila, que é onde ele precisa estar. Mesma ideia do
+ * `digitalizados()` de `auditar_ocr.py`, com o pdf.js no lugar do pdfplumber —
+ * a diferença entre os dois extratores é irrelevante num corte de 100
+ * caracteres por página, já que os digitalizados devolvem zero.
+ */
+async function porOcrDeVisao(arquivoOrigem: string): Promise<boolean> {
+  const publicado = caminhoPdf(arquivoOrigem);
+  if (!publicado) return false;
+
+  const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const dados = new Uint8Array(readFileSync(`public${publicado}`));
+  const pdf = await getDocument({ data: dados, useSystemFonts: true }).promise;
+
+  let chars = 0;
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const conteudo = await (await pdf.getPage(p)).getTextContent();
+    for (const i of conteudo.items) chars += ((i as { str?: string }).str ?? "").length;
+  }
+  return chars / Math.max(pdf.numPages, 1) < MIN_CHARS_POR_PAGINA;
+}
+
+/**
+ * Publica em `lib/ocr-visao.json` quais PDFs vieram por OCR de visão.
+ *
+ * A tela `/conferencia` precisa desse conjunto logo ao abrir: ele define a ordem
+ * dos capítulos, o aviso de que a citação é a leitura do modelo e não os bytes
+ * do PDF, e desliga o destaque nos arquivos que não têm camada de texto onde
+ * grifar. Descobri-lo do jeito daqui — abrindo cada PDF e medindo — custaria ao
+ * navegador baixar os 5,4 MB dos seis arquivos antes de mostrar a primeira
+ * questão.
+ *
+ * Então o critério continua tendo uma definição só, a de `porOcrDeVisao()`, e o
+ * resultado dela é materializado num arquivo versionado. É o mesmo arranjo de
+ * `lib/mapa-pdfs.json`, que `scripts/copiar_pdfs.mjs` escreve e `lib/pdfs.ts` lê.
+ */
+function publicarOcrDeVisao(arquivos: string[]): void {
+  writeFileSync(DESTINO_OCR, JSON.stringify(arquivos.sort(), null, 2) + "\n", "utf8");
 }
 
 // --- Montagem ---------------------------------------------------------------
@@ -116,125 +149,156 @@ function ancora(titulo: string): string {
     .replace(/ /g, "-");
 }
 
-const ordenadas = [...QUESTOES].sort(ordenar);
-const arquivos = [...new Set(ordenadas.map((q) => q.arquivo_origem))];
+async function main() {
+  const digitalizados = new Set<string>();
+  for (const arquivo of new Set(QUESTOES.map((q) => q.arquivo_origem))) {
+    if (await porOcrDeVisao(arquivo)) digitalizados.add(arquivo);
+  }
+  publicarOcrDeVisao([...digitalizados]);
 
-let comPassagem = 0;
-let semPassagem = 0;
-let daEmenta = 0;
+  const capitulos = agruparEmCapitulos(QUESTOES, digitalizados);
 
-const linhas: string[] = [];
+  let comPassagem = 0;
+  let semPassagem = 0;
+  let daEmenta = 0;
 
-linhas.push("# Conferência do banco de questões");
-linhas.push("");
-linhas.push(
-  `${QUESTOES.length} questões · ${arquivos.length} arquivos · gerado de ` +
-    "`public/banco_questoes.json` por `npm run conferencia`",
-);
-linhas.push("");
-linhas.push(
-  "> **Como ler.** *Texto original* é a passagem do trecho mais parecida com a " +
-    "afirmação, localizada por aproximação — a mesma função que grifa a origem " +
-    "no app. Serve para achar o lugar na página, não como prova: o trecho " +
-    "inteiro que foi ao modelo está em `public/trechos.json`. Questões marcadas " +
-    "*ementa* não nasceram de um texto, e ali a página é só o capítulo onde " +
-    "estudar o assunto. O código no fim de cada questão é o `id`, que é a chave " +
-    "de `scripts/correcoes.json` — quem achar uma questão errada já tem em mãos " +
-    "o que precisa para corrigi-la.",
-);
-linhas.push("");
+  const linhas: string[] = [];
 
-for (const arquivo of arquivos) {
-  const n = ordenadas.filter((q) => q.arquivo_origem === arquivo).length;
-  linhas.push(`- [${arquivo}](#${ancora(arquivo)}) — ${n} questões`);
-}
-linhas.push("");
-
-for (const arquivo of arquivos) {
-  const doArquivo = ordenadas.filter((q) => q.arquivo_origem === arquivo);
-  const publicado = caminhoPdf(arquivo);
-
-  linhas.push("");
-  linhas.push(`## ${arquivo}`);
+  linhas.push("# Conferência do banco de questões");
   linhas.push("");
   linhas.push(
-    `${doArquivo.length} questões` +
-      (publicado ? ` · [abrir PDF](../public${publicado})` : ""),
+    `${QUESTOES.length} questões · ${capitulos.length} arquivos · gerado de ` +
+      "`public/banco_questoes.json` por `npm run conferencia`",
   );
+  linhas.push("");
+  linhas.push(
+    "> **Como ler.** *Texto original* é a passagem do trecho mais parecida com a " +
+      "afirmação, localizada por aproximação — a mesma função que grifa a origem " +
+      "no app. Serve para achar o lugar na página, não como prova: o trecho " +
+      "inteiro que foi ao modelo está em `public/trechos.json`. Questões marcadas " +
+      "*ementa* não nasceram de um texto, e ali a página é só o capítulo onde " +
+      "estudar o assunto. O código no fim de cada questão é o `id`, que é a chave " +
+      "de `scripts/correcoes.json` — quem achar uma questão errada já tem em mãos " +
+      "o que precisa para corrigi-la.",
+  );
+  linhas.push("");
+  linhas.push(
+    "> **Ordem dos arquivos.** Primeiro os que o gerador leu por OCR de visão: " +
+      "eles não têm camada de texto, o leitor erra *normalizando* — devolve " +
+      "português plausível que se afastou da fonte — e foi de lá que saíram os " +
+      "dois erros graves já conhecidos. Depois os demais, com os que mais dependem " +
+      "da ementa por último: questão de ementa não se confere contra a página, e " +
+      "sim contra o que você sabe do assunto.",
+  );
+  linhas.push("");
 
-  let paginaAtual = -1;
-  for (const q of doArquivo) {
-    if (q.pagina !== paginaAtual) {
-      paginaAtual = q.pagina;
-      linhas.push("");
-      linhas.push(`### p. ${q.pagina}`);
-      linhas.push("");
-    }
-
+  for (const c of capitulos) {
     linhas.push(
-      `- **[${q.resposta_correta ? "V" : "F"}]** ${escapar(q.afirmacao)}`,
+      `- [${c.arquivo}](#${ancora(c.arquivo)}) — ${c.questoes.length} questões` +
+        (c.porOcr ? " · **OCR de visão**" : ""),
     );
-    linhas.push(`  - **Explicação:** ${escapar(q.explicacao_curta)}`);
+  }
+  linhas.push("");
 
-    if (q.trecho_id) {
-      const trecho = TRECHOS[q.trecho_id];
-      // Trecho ausente é incoerência entre os dois JSON, não um caso normal:
-      // vale dizer alto, e não desenhar uma citação vazia como se estivesse tudo bem.
-      if (!trecho) {
-        linhas.push(
-          `  - **Trecho \`${q.trecho_id}\` não está em public/trechos.json.**`,
-        );
-        semPassagem++;
-      } else {
-        const p = localizarPassagem(trecho.texto, q.afirmacao);
-        if (p) {
-          comPassagem++;
-          linhas.push("  - **Texto original:**");
-          linhas.push(citar(trecho.texto.slice(p.inicio, p.fim), "    "));
-        } else {
-          semPassagem++;
-          linhas.push(
-            "  - **Passagem não localizada** — o trecho inteiro " +
-              `(pp. ${trecho.pagina}-${trecho.fim}) está em ` +
-              `\`public/trechos.json\`, chave \`${q.trecho_id}\`.`,
-          );
-        }
-      }
-    } else {
-      daEmenta++;
+  for (const c of capitulos) {
+    const publicado = caminhoPdf(c.arquivo);
+    const daEmentaAqui = c.questoes.filter((q) => q.origem === "ementa").length;
+
+    linhas.push("");
+    linhas.push(`## ${c.arquivo}`);
+    linhas.push("");
+    linhas.push(
+      `${c.questoes.length} questões` +
+        (daEmentaAqui ? ` (${daEmentaAqui} da ementa)` : "") +
+        (publicado ? ` · [abrir PDF](../public${publicado})` : ""),
+    );
+    if (c.porOcr) {
+      linhas.push("");
       linhas.push(
-        `  - **Sem texto de origem** — questão da ementa; a p. ${q.pagina} é só ` +
-          "o capítulo onde estudar o assunto.",
+        "> **Sem camada de texto: transcrito por OCR de visão.** Toda citação " +
+          "abaixo é a leitura do modelo, e não os bytes do PDF — se uma delas " +
+          "não bater com a página, o erro pode estar na transcrição, e o conserto " +
+          "é uma entrada em `scripts/erratas_ocr.json`.",
       );
     }
 
-    linhas.push(
-      `  - **Origem:** p. ${q.pagina} · ${q.tema} · ${q.origem}` +
-        (q.nivel === "A" ? " · Classe A" : "") +
-        ` · \`${q.id}\``,
-    );
-    linhas.push("");
+    let paginaAtual = -1;
+    for (const q of c.questoes) {
+      if (q.pagina !== paginaAtual) {
+        paginaAtual = q.pagina;
+        linhas.push("");
+        linhas.push(`### p. ${q.pagina}`);
+        linhas.push("");
+      }
+
+      linhas.push(
+        `- **[${q.resposta_correta ? "V" : "F"}]** ${escapar(q.afirmacao)}`,
+      );
+      linhas.push(`  - **Explicação:** ${escapar(q.explicacao_curta)}`);
+
+      if (q.trecho_id) {
+        const trecho = TRECHOS[q.trecho_id];
+        // Trecho ausente é incoerência entre os dois JSON, não um caso normal:
+        // vale dizer alto, e não desenhar uma citação vazia como se estivesse tudo bem.
+        if (!trecho) {
+          linhas.push(
+            `  - **Trecho \`${q.trecho_id}\` não está em public/trechos.json.**`,
+          );
+          semPassagem++;
+        } else {
+          const p = localizarPassagem(trecho.texto, q.afirmacao);
+          if (p) {
+            comPassagem++;
+            linhas.push("  - **Texto original:**");
+            linhas.push(citar(trecho.texto.slice(p.inicio, p.fim), "    "));
+          } else {
+            semPassagem++;
+            linhas.push(
+              "  - **Passagem não localizada** — o trecho inteiro " +
+                `(pp. ${trecho.pagina}-${trecho.fim}) está em ` +
+                `\`public/trechos.json\`, chave \`${q.trecho_id}\`.`,
+            );
+          }
+        }
+      } else {
+        daEmenta++;
+        linhas.push(
+          `  - **Sem texto de origem** — questão da ementa; a p. ${q.pagina} é só ` +
+            "o capítulo onde estudar o assunto.",
+        );
+      }
+
+      linhas.push(
+        `  - **Origem:** p. ${q.pagina} · ${q.tema} · ${q.origem}` +
+          (q.nivel === "A" ? " · Classe A" : "") +
+          ` · \`${q.id}\``,
+      );
+      linhas.push("");
+    }
   }
-}
 
-const saida = linhas.join("\n").replace(/\n{3,}/g, "\n\n") + "\n";
+  const saida = linhas.join("\n").replace(/\n{3,}/g, "\n\n") + "\n";
 
-// Um relatório que perde questão em silêncio é pior que nenhum: passa a sensação
-// de cobertura completa sem ela. Conferir é uma linha.
-const escritas = (saida.match(/^- \*\*\[[VF]\]\*\* /gm) ?? []).length;
-if (escritas !== QUESTOES.length) {
-  console.error(
-    `FALHA: ${QUESTOES.length} questões no banco, ${escritas} no relatório.`,
+  // Um relatório que perde questão em silêncio é pior que nenhum: passa a sensação
+  // de cobertura completa sem ela. Conferir é uma linha.
+  const escritas = (saida.match(/^- \*\*\[[VF]\]\*\* /gm) ?? []).length;
+  if (escritas !== QUESTOES.length) {
+    console.error(
+      `FALHA: ${QUESTOES.length} questões no banco, ${escritas} no relatório.`,
+    );
+    process.exit(1);
+  }
+
+  mkdirSync(new URL("../relatorios/", import.meta.url), { recursive: true });
+  writeFileSync(DESTINO, saida, "utf8");
+
+  const doDocumento = comPassagem + semPassagem;
+  console.log(
+    `${escritas} questões · ${capitulos.length} arquivos ` +
+      `(${digitalizados.size} por OCR de visão, primeiros na fila) · ` +
+      `${comPassagem}/${doDocumento} com passagem localizada · ` +
+      `${daEmenta} da ementa (sem texto de origem) -> ${DESTINO.pathname}`,
   );
-  process.exit(1);
 }
 
-mkdirSync(new URL("../relatorios/", import.meta.url), { recursive: true });
-writeFileSync(DESTINO, saida, "utf8");
-
-const doDocumento = comPassagem + semPassagem;
-console.log(
-  `${escritas} questões · ${arquivos.length} arquivos · ` +
-    `${comPassagem}/${doDocumento} com passagem localizada · ` +
-    `${daEmenta} da ementa (sem texto de origem) -> ${DESTINO.pathname}`,
-);
+main();

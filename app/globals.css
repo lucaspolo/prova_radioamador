@@ -19,15 +19,24 @@
   }
 }
 
+/* O `color-scheme` anda junto com as cores, e não é detalhe: ele é a única
+   forma de dizer ao navegador como pintar o que ele desenha sozinho — a lista
+   suspensa de um `<select>`, o quadrado de um `<input type=checkbox>`, a barra
+   de rolagem. Sem ele, no tema escuro o popup do `<select>` nasce branco por
+   padrão enquanto as `<option>` herdam a cor clara do texto, e a lista fica
+   ilegível: claro sobre claro. Vale para os `<select>` da conferência e para o
+   do código de cores em Calculadoras, que têm o mesmo `bg-transparent`. */
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0b1120;
     --foreground: #e2e8f0;
+    color-scheme: dark;
   }
 }
 
@@ -35,11 +44,13 @@
 :root[data-tema="claro"] {
   --background: #f8fafc;
   --foreground: #0f172a;
+  color-scheme: light;
 }
 
 :root[data-tema="escuro"] {
   --background: #0b1120;
   --foreground: #e2e8f0;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -67,6 +78,21 @@ body {
 :focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* O grifo da passagem de origem sobre a página do PDF, na tela de conferência.
+   Mora aqui, e não numa classe do Tailwind, porque quem escreve esta marcação é
+   o `customTextRenderer` do pdf.js, que devolve HTML em texto — o Tailwind não
+   varre string montada em tempo de execução e apagaria a classe do bundle.
+
+   O `color: transparent` é obrigatório: a camada de texto do pdf.js fica por
+   cima do canvas justamente invisível, e um `<mark>` com a cor padrão do
+   navegador imprimiria a frase uma segunda vez, deslocada, por cima do desenho
+   da página. */
+.destaque-conferencia {
+  background-color: rgb(250 204 21 / 0.4);
+  color: transparent;
+  border-radius: 2px;
 }
 
 /* Impressão: a folha de erros no papel é material de estudo, e o que vale ali

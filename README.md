@@ -45,16 +45,18 @@ partir da Classe B. A tela inicial avisa.
 ## Estrutura
 
 ```
-app/          rotas e layout (Next.js App Router)
+app/          rotas e layout (Next.js App Router) — inclui /conferencia
 components/   telas, menu, resumo de desempenho e visualizador de PDF
 hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
+              conferencia.ts — ordem da revisão, storage e exportação
 scripts/      processar_pdfs.py — gerador do banco de questões
               auditar_ocr.py — segundo leitor dos PDFs digitalizados
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
               exportar_tabelas.ts — tabelas de referência para o gerador
 testes/       sorteio, histórico, estudo, bateria, prioridade, PDFs, páginas,
-              trechos, classes, cobertura, cálculos, referência e render
+              trechos, classes, cobertura, cálculos, referência, conferência
+              e render
 public/       banco_questoes.json, trechos.json e pdfs/
 ```
 
@@ -257,12 +259,19 @@ apareceram porque alguém leu uma questão e desconfiou.
 npm run conferencia   # -> relatorios/conferencia.md
 ```
 
-O relatório traz as 903 questões na ordem em que o assunto aparece nos PDFs —
-por arquivo, depois por página —, cada uma com o gabarito, a explicação, a
-passagem do trecho que a produziu e o `id`. Dá para abrir um PDF, ir descendo as
-páginas e conferir de uma vez tudo o que o banco cobra de cada uma. Quem achar
-uma questão errada já tem o `id` em mãos, que é a chave de
-`scripts/correcoes.json`.
+O relatório traz as 903 questões na ordem em que o assunto aparece nos PDFs,
+cada uma com o gabarito, a explicação, a passagem do trecho que a produziu e o
+`id`. Dá para abrir um PDF, ir descendo as páginas e conferir de uma vez tudo o
+que o banco cobra de cada uma. Quem achar uma questão errada já tem o `id` em
+mãos, que é a chave de `scripts/correcoes.json`.
+
+Os arquivos vêm na ordem de quem paga melhor a primeira hora de leitura: começa
+pelos que o gerador leu por OCR de visão, porque esse leitor erra normalizando e
+foi de lá que saíram os dois erros graves; termina pelos que mais dependem da
+ementa, cujas questões não se conferem contra a página. Quais são os
+digitalizados sai do mesmo `MIN_CHARS_POR_PAGINA` que o gerador usa para decidir
+entre camada de texto e OCR — não de uma lista de nomes, para que um PDF novo
+sem camada de texto suba sozinho para o começo da fila.
 
 A passagem citada é aproximada: sai da mesma função que grifa a origem no app
 (`localizarPassagem`), por sobreposição de termos. Acha o lugar em 474 das 488
@@ -273,6 +282,60 @@ assunto. O relatório marca cada uma.
 
 `relatorios/` fica fora do histórico: é derivado de dois JSON já versionados, e
 regerar custa menos que carregar meio megabyte de prosa em cada `git diff`.
+
+### A tela de conferência
+
+O Markdown resolve *achar* o que conferir; conferir mesmo pede o PDF aberto ao
+lado. Para isso existe uma segunda saída dos mesmos dados:
+
+```bash
+npm run dev    # http://localhost:3000/conferencia
+```
+
+Tela larga, duas colunas: as questões à esquerda, na mesma ordem do relatório, e
+à direita o PDF que gerou a selecionada — já rolado até a página e com a
+passagem de origem grifada em amarelo. Trocar de questão move o PDF junto.
+
+Cada questão recebe um veredito e, se for o caso, uma justificativa:
+
+| | |
+| --- | --- |
+| **V** / **F** | a sua resposta, dada por conta própria. Divergir do gabarito marca a questão como achado. |
+| **⚑** | nem uma nem outra: enunciado ambíguo, transcrição de OCR corrompida, questão sem resposta possível. |
+| justificativa | contra o que você conferiu. Vale mesmo quando o gabarito confere — "certo, mas ambíguo" é achado. |
+
+São 903 questões, então o teclado importa: `J`/`K` andam, `V`/`F`/`P` marcam e
+avançam, `Enter` cai na justificativa, `Esc` sai dela. O *modo cego* esconde o
+gabarito até você decidir — é o que dá sentido a escolher V ou F em vez de
+julgar uma resposta já escrita na tela. Os filtros (arquivo, tema, não
+revisadas, divergentes, com nota) permitem parar e voltar depois; a barra de
+progresso mede sempre sobre o banco inteiro, e não sobre o filtro.
+
+Tudo fica no `localStorage`, e **Baixar revisão** produz um JSON com o resumo e
+o detalhe só do que precisa de ação — cada item já com afirmação, gabarito,
+veredito, arquivo, página e a passagem de origem, para virar entrada de
+`scripts/correcoes.json` sem abrir mais nada. O arquivo também serve de backup:
+o campo `estado` traz o veredito de todas as revisões, inclusive as que
+conferem, e **Importar** restaura a partir dele.
+
+O que fazer com o arquivo baixado está em `.claude/skills/processar-conferencia/`:
+cada achado vira conserto em `scripts/correcoes.json` ou `scripts/erratas_ocr.json`,
+e o destino de todos eles — inclusive os descartados e os adiados — fica em
+`scripts/conferencia_triado.json`. É esse arquivo que responde, meses depois, o
+que já foi conferido e o que ainda falta, sem depender da memória de quem
+conferiu.
+
+Duas coisas a tela não faz. Nos dois PDFs digitalizados não há camada de texto
+onde grifar — ela avisa, e ali a conferência é comparar a citação da esquerda
+com a imagem da direita. E questão de ementa não tem passagem nenhuma: a página
+indicada é o capítulo onde estudar o assunto, não a origem do enunciado.
+
+A ordem dos capítulos é a mesma do Markdown porque as duas saídas chamam
+`agruparEmCapitulos()` de `lib/conferencia.ts`. Quais PDFs vieram por OCR é o
+único dado que a tela não consegue derivar sozinha — medir isso custaria baixar
+os 5,4 MB dos seis arquivos antes da primeira questão —, então
+`npm run conferencia` materializa o resultado em `lib/ocr-visao.json`, como
+`npm run pdfs` faz com `lib/mapa-pdfs.json`.
 
 ## Formato do banco
 
