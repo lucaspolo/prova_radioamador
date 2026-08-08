@@ -69,6 +69,21 @@ body {
   outline-offset: 2px;
 }
 
+/* O grifo da passagem de origem sobre a página do PDF, na tela de conferência.
+   Mora aqui, e não numa classe do Tailwind, porque quem escreve esta marcação é
+   o `customTextRenderer` do pdf.js, que devolve HTML em texto — o Tailwind não
+   varre string montada em tempo de execução e apagaria a classe do bundle.
+
+   O `color: transparent` é obrigatório: a camada de texto do pdf.js fica por
+   cima do canvas justamente invisível, e um `<mark>` com a cor padrão do
+   navegador imprimiria a frase uma segunda vez, deslocada, por cima do desenho
+   da página. */
+.destaque-conferencia {
+  background-color: rgb(250 204 21 / 0.4);
+  color: transparent;
+  border-radius: 2px;
+}
+
 /* Impressão: a folha de erros no papel é material de estudo, e o que vale ali
    é o texto — botões, navegação e rodapé só gastam tinta. */
 @media print {
