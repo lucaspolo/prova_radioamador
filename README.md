@@ -318,6 +318,13 @@ veredito, arquivo, página e a passagem de origem, para virar entrada de
 o campo `estado` traz o veredito de todas as revisões, inclusive as que
 conferem, e **Importar** restaura a partir dele.
 
+O que fazer com o arquivo baixado está em `.claude/skills/processar-conferencia/`:
+cada achado vira conserto em `scripts/correcoes.json` ou `scripts/erratas_ocr.json`,
+e o destino de todos eles — inclusive os descartados e os adiados — fica em
+`scripts/conferencia_triado.json`. É esse arquivo que responde, meses depois, o
+que já foi conferido e o que ainda falta, sem depender da memória de quem
+conferiu.
+
 Duas coisas a tela não faz. Nos dois PDFs digitalizados não há camada de texto
 onde grifar — ela avisa, e ali a conferência é comparar a citação da esquerda
 com a imagem da direita. E questão de ementa não tem passagem nenhuma: a página
