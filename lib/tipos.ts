@@ -52,6 +52,22 @@ export interface Questao {
    * ementa, e não de um texto — não há trecho a mostrar.
    */
   trecho_id?: string;
+  /**
+   * Quanto esta questão pesa no sorteio, quando diferente de 1.
+   *
+   * Existe para a questão que precisa estar no banco mas não pode dominá-lo. O
+   * caso que criou o campo é o plano de bandas: são 39 linhas na Tabela I, e
+   * uma questão por linha é o que garante que nenhuma faixa fique sem ser
+   * cobrada. Só que todas têm a mesma forma — "na Faixa de X, a radiofrequência
+   * é Y e podem operar Z" —, e sorteadas por igual encheriam a bateria de
+   * variações do mesmo molde, ensinando a reconhecer o padrão em vez do
+   * conteúdo.
+   *
+   * Ausente significa 1. Não confundir com o peso por desempenho de
+   * `lib/prioridade.ts`, que muda conforme o usuário acerta ou erra: este é
+   * fixo, uma propriedade da questão, e os dois se multiplicam.
+   */
+  peso?: number;
 }
 
 /** Um trecho de PDF, exatamente como foi enviado ao modelo que gerou as questões. */

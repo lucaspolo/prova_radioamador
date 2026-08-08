@@ -95,5 +95,40 @@ checar(
   );
 }
 
+// --- Peso próprio: a questão repetitiva não toma conta da bateria ----------
+//
+// As 39 questões do plano de bandas seguem todas o mesmo molde. São necessárias
+// — sem uma por linha, faixa fica sem cobrança —, mas no peso 1 seriam 11% do
+// acervo de Legislação e cairiam umas duas por bateria de 20, ensinando a
+// reconhecer a forma. Com peso 0,3 a média fica abaixo de uma por bateria.
+//
+// O teste é estatístico, então mede um efeito grosseiro: a folga entre 1,5 e a
+// média real (~0,74) é de muitos desvios-padrão em 400 baterias, e o que ele
+// pega é o peso ter deixado de ser aplicado, não uma flutuação.
+{
+  const comPeso = new Set(BANCO.filter((q) => q.peso !== undefined).map((q) => q.id));
+  checar("o banco declara questões de peso reduzido", comPeso.size > 0, `${comPeso.size} questões`);
+
+  const tema: Tema = "Legislação de Telecomunicações";
+  const noAcervo = acervo().filter((q) => q.tema === tema);
+  const proporcaoUniforme = (20 * noAcervo.filter((q) => comPeso.has(q.id)).length) / noAcervo.length;
+
+  const rodadas = 400;
+  let total = 0;
+  for (let i = 0; i < rodadas; i++) {
+    total += sortearSimulado(tema, 20).filter((q) => comPeso.has(q.id)).length;
+  }
+  const media = total / rodadas;
+
+  checar(
+    "questão de peso baixo aparece menos que no sorteio uniforme",
+    media < proporcaoUniforme * 0.6,
+    `${media.toFixed(2)} por bateria, contra ${proporcaoUniforme.toFixed(2)} se todas pesassem igual`,
+  );
+  // Reduzir não é excluir: se sumissem, as faixas raras deixariam de ser
+  // cobradas e a cobertura que o passe de tabela garante viraria enfeite.
+  checar("mas continua aparecendo", media > 0.2, `${media.toFixed(2)} por bateria`);
+}
+
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

@@ -62,14 +62,23 @@ export function sortearSimulado(
     ? desempenhoPorQuestao(historico)
     : new Map<string, Desempenho>();
 
+  // O peso próprio da questão vale mesmo sem histórico. Aplicá-lo só no ramo
+  // ponderado deixaria a primeira bateria de quem acabou de instalar o app —
+  // justamente a que forma a impressão do simulado — cheia do molde repetitivo
+  // que o campo existe para diluir.
   if (desempenho.size === 0) {
-    return embaralharSimples(candidatas).slice(0, quantidade);
+    return amostrarPonderado(candidatas, pesoProprio, quantidade);
   }
   return amostrarPonderado(
     candidatas,
-    (q) => peso(desempenho.get(q.id)),
+    (q) => pesoProprio(q) * peso(desempenho.get(q.id)),
     quantidade,
   );
+}
+
+/** O peso fixo da questão; 1 quando ela não declara nenhum. */
+function pesoProprio(q: Questao): number {
+  return q.peso ?? 1;
 }
 
 /**
