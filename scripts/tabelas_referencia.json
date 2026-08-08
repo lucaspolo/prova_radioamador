@@ -465,138 +465,138 @@
     "linhas": [
       [
         "Acre",
-        "PT 8 AA a ZZ",
-        "PT 8 AAA a YZZ · PU 8 JAA a LZZ"
+        "PT 8 AA a ZZ · PT 8 AAA a YZZ",
+        "PU 8 JAA a LZZ"
       ],
       [
         "Alagoas",
-        "PP 7 AA a ZZ",
-        "PP 7 AAA a YZZ · PU 7 AAA a DZZ"
+        "PP 7 AA a ZZ · PP 7 AAA a YZZ",
+        "PU 7 AAA a DZZ"
       ],
       [
         "Amapá",
-        "PQ 8 AA a ZZ",
-        "PQ 8 AAA a YZZ · PU 8 GAA a IZZ"
+        "PQ 8 AA a ZZ · PQ 8 AAA a YZZ",
+        "PU 8 GAA a IZZ"
       ],
       [
         "Amazonas",
-        "PP 8 AA a ZZ",
-        "PP 8 AAA a YZZ · PU 8 AAA a CZZ"
+        "PP 8 AA a ZZ · PP 8 AAA a YZZ",
+        "PU 8 AAA a CZZ"
       ],
       [
         "Bahia",
-        "PY 6 AA a ZZ",
-        "PY 6 AAA a YZZ · PU 6 JAA a YZZ"
+        "PY 6 AA a ZZ · PY 6 AAA a YZZ",
+        "PU 6 JAA a YZZ"
       ],
       [
         "Ceará",
-        "PT 7 AA a ZZ",
-        "PT 7 AAA a YZZ · PU 7 MAA a PZZ"
+        "PT 7 AA a ZZ · PT 7 AAA a YZZ",
+        "PU 7 MAA a PZZ"
       ],
       [
         "Distrito Federal",
-        "PT 2 AA a ZZ",
-        "PT 2 AAA a YZZ · PU 2 AAA a EZZ"
+        "PT 2 AA a ZZ · PT 2 AAA a YZZ",
+        "PU 2 AAA a EZZ"
       ],
       [
         "Espírito Santo",
-        "PP 1 AA a ZZ",
-        "PP 1 AAA a YZZ · PU 1 AAA a IZZ"
+        "PP 1 AA a ZZ · PP 1 AAA a YZZ",
+        "PU 1 AAA a IZZ"
       ],
       [
         "Goiás",
-        "PP 2 AA a ZZ",
-        "PP 2 AAA a YZZ · PU 2 FAA a HZZ"
+        "PP 2 AA a ZZ · PP 2 AAA a YZZ",
+        "PU 2 FAA a HZZ"
       ],
       [
         "Maranhão",
-        "PR 8 AA a ZZ",
-        "PR 8 AAA a YZZ · PU 8 MAA a OZZ"
+        "PR 8 AA a ZZ · PR 8 AAA a YZZ",
+        "PU 8 MAA a OZZ"
       ],
       [
         "Mato Grosso",
-        "PY 9 AA a ZZ",
-        "PY 9 AAA a YZZ · PU 9 OAA a YZZ"
+        "PY 9 AA a ZZ · PY 9 AAA a YZZ",
+        "PU 9 OAA a YZZ"
       ],
       [
         "Mato Grosso do Sul",
-        "PT 9 AA a ZZ",
-        "PT 9 AAA a YZZ · PU 9 AAA a NZZ"
+        "PT 9 AA a ZZ · PT 9 AAA a YZZ",
+        "PU 9 AAA a NZZ"
       ],
       [
         "Minas Gerais",
-        "PY 4 AA a ZZ",
-        "PY 4 AAA a YZZ · PU 4 AAA a YZZ"
+        "PY 4 AA a ZZ · PY 4 AAA a YZZ",
+        "PU 4 AAA a YZZ"
       ],
       [
         "Paraíba",
-        "PR 7 AA a ZZ",
-        "PR 7 AAA a YZZ · PU 7 EAA a HZZ"
+        "PR 7 AA a ZZ · PR 7 AAA a YZZ",
+        "PU 7 EAA a HZZ"
       ],
       [
         "Paraná",
-        "PY 5 AA a ZZ",
-        "PY 5 AAA a YZZ · PU 5 MAA a YZZ"
+        "PY 5 AA a ZZ · PY 5 AAA a YZZ",
+        "PU 5 MAA a YZZ"
       ],
       [
         "Pará",
-        "PY 8 AA a ZZ",
-        "PY 8 AAA a YZZ · PU 8 WAA a YZZ"
+        "PY 8 AA a ZZ · PY 8 AAA a YZZ",
+        "PU 8 WAA a YZZ"
       ],
       [
         "Pernambuco",
-        "PY 7 AA a ZZ",
-        "PY 7 AAA a YZZ · PU 7 RAA a YZZ"
+        "PY 7 AA a ZZ · PY 7 AAA a YZZ",
+        "PU 7 RAA a YZZ"
       ],
       [
         "Piauí",
-        "PS 8 AA a ZZ",
-        "PS 8 AAA a YZZ · PU 8 PAA a SZZ"
+        "PS 8 AA a ZZ · PS 8 AAA a YZZ",
+        "PU 8 PAA a SZZ"
       ],
       [
         "Rio de Janeiro",
-        "PY 1 AA a ZZ",
-        "PY 1 AAA a YZZ · PU 1 JAA a YZZ"
+        "PY 1 AA a ZZ · PY 1 AAA a YZZ",
+        "PU 1 JAA a YZZ"
       ],
       [
         "Rio Grande do Norte",
-        "PS 7 AA a ZZ",
-        "PS 7 AAA a YZZ · PU 7 IAA a LZZ"
+        "PS 7 AA a ZZ · PS 7 AAA a YZZ",
+        "PU 7 IAA a LZZ"
       ],
       [
         "Rio Grande do Sul",
-        "PY 3 AA a ZZ",
-        "PY 3 AAA a YZZ · PU 3 AAA a YZZ"
+        "PY 3 AA a ZZ · PY 3 AAA a YZZ",
+        "PU 3 AAA a YZZ"
       ],
       [
         "Rondônia",
-        "PW 8 AA a ZZ",
-        "PW 8 AAA a YZZ · PU 8 DAA a FZZ"
+        "PW 8 AA a ZZ · PW 8 AAA a YZZ",
+        "PU 8 DAA a FZZ"
       ],
       [
         "Roraima",
-        "PV 8 AA a ZZ",
-        "PV 8 AAA a YZZ · PU 8 TAA a VZZ"
+        "PV 8 AA a ZZ · PV 8 AAA a YZZ",
+        "PU 8 TAA a VZZ"
       ],
       [
         "Santa Catarina",
-        "PP 5 AA a ZZ",
-        "PP 5 AAA a YZZ · PU 5 AAA a LZZ"
+        "PP 5 AA a ZZ · PP 5 AAA a YZZ",
+        "PU 5 AAA a LZZ"
       ],
       [
         "São Paulo",
-        "PY 2 AA a ZZ · PR 2 AA e ZZ",
-        "PY 2 AAA a YZZ · PR 2 AAA a YZZ · PU 2 KAA a YZZ · PV 2 KAA a YZZ"
+        "PY 2 AA a ZZ · PR 2 AA e ZZ · PY 2 AAA a YZZ · PR 2 AAA a YZZ",
+        "PU 2 KAA a YZZ · PV 2 KAA a YZZ"
       ],
       [
         "Sergipe",
-        "PP 6 AA a ZZ",
-        "PP 6 AAA a YZZ · PU 6 AAA a IZZ"
+        "PP 6 AA a ZZ · PP 6 AAA a YZZ",
+        "PU 6 AAA a IZZ"
       ],
       [
         "Tocantins",
-        "PQ 2 AA a ZZ",
-        "PQ 2 AAA a YZZ · PU 2 IAA a JZZ"
+        "PQ 2 AA a ZZ · PQ 2 AAA a YZZ",
+        "PU 2 IAA a JZZ"
       ]
     ]
   },
