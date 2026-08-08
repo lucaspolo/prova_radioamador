@@ -50,6 +50,7 @@ components/   telas, menu, resumo de desempenho e visualizador de PDF
 hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
+              auditar_ocr.py — segundo leitor dos PDFs digitalizados
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
               exportar_tabelas.ts — tabelas de referência para o gerador
 testes/       sorteio, histórico, estudo, bateria, prioridade, PDFs, páginas,
@@ -189,6 +190,59 @@ automaticamente o que ele produziu.
 
 Flags úteis: `--dry-run`, `--arquivo <padrão>`, `--limite-chunks N`,
 `--verificar`, `--forcar`, `--listar-modelos`.
+
+O banco é gravado em ordem estável — por documento, página e id. Sem isso o
+`as_completed` do processamento paralelo embaralhava o arquivo a cada regeração,
+e o `git diff` deixava de dizer o que mudou.
+
+## Conferindo a transcrição dos PDFs digitalizados
+
+Dois dos seis PDFs não têm camada de texto e só existem para o gerador através
+do OCR de visão. Esse leitor tem um modo de falha próprio: ele erra
+**normalizando**. Devolve português fluente e plausível que se afastou da fonte,
+e nada no resultado denuncia. No Ato 3445 ele leu a primeira letra "W" do item
+12.12.4 como "Y"; a questão saiu fiel ao trecho já corrompido, com o gabarito
+invertido, e o erro só apareceu quando alguém que estudava por ela abriu a
+[issue #2](https://github.com/lucaspolo/prova_radioamador/issues/2).
+
+O conserto tem duas metades.
+
+**`scripts/erratas_ocr.json`** corrige a transcrição na origem, logo depois do
+OCR e antes de a página virar bloco. Fica versionado porque `scripts/.cache/`
+está no `.gitignore`: consertado só no cache, o erro voltaria na próxima máquina
+que regerasse o banco. Errata que não encontra o texto que promete corrigir é
+erro fatal — o caso ruim seria o silencioso, em que a transcrição muda, a errata
+deixa de casar e o banco volta a ser gerado errado sem aviso.
+
+Como o `id` do trecho deriva do texto que o gerou, uma errata regera as questões
+daquele bloco, com ids novos. É o comportamento correto: a questão nunca aponta
+para um trecho que não foi o que a produziu.
+
+**`scripts/auditar_ocr.py`** procura o próximo caso. Relê os mesmos PDFs com um
+segundo leitor cujo modo de falha não seja correlacionado — `docling` com
+`RapidOCR`, que lê pixel e não pode ser convencido pelo contexto de que "Y" cai
+melhor ali — e aponta onde as duas leituras discordam **no que alguma questão
+afirma**. Esse último filtro é o que separa sinal de ruído: divergência que
+nenhuma afirmação repete não muda gabarito nenhum.
+
+```bash
+.venv/bin/pip install docling rapidocr-onnxruntime   # fora do requirements.txt: puxam torch
+.venv/bin/python scripts/auditar_ocr.py
+```
+
+Nenhum dos dois leitores ganha em tudo, e por isso o gerador continua usando o
+de visão. Medido na p.3 do Ato 3445 contra o gabarito conferido na imagem: em
+prosa o docling não errou nada em 229 palavras e o modelo de visão errou seis;
+em tabela é o contrário — a Tabela IV de prefixos sai inteira e certa pela
+visão, enquanto o docling lê o dígito `0` dos prefixos de ilha como letra `O`
+(`PP0F` → `PPOF`). Esse erro do docling é mecânico de achar, já que prefixo é
+duas letras mais dígito; o "Y" não era.
+
+O que já foi conferido na imagem e julgado inofensivo fica em
+`scripts/auditar_ocr_triado.json`, para a auditoria não repetir o mesmo achado a
+cada execução — uma que sempre grita a mesma coisa deixa de ser lida justamente
+quando grita algo novo. A triagem é por par de tokens, e não por id de questão,
+porque o id muda quando o trecho é regerado.
 
 ## Formato do banco
 
