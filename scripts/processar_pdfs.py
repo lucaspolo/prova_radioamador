@@ -1965,6 +1965,12 @@ def main() -> int:
         return 1
 
     args.saida.parent.mkdir(parents=True, exist_ok=True)
+    # Ordem estavel na gravacao. Os chunks sao processados em paralelo e o
+    # `as_completed` os devolve na ordem em que terminam, entao cada regeracao
+    # embaralhava o arquivo inteiro: 6.363 linhas de diff para 33 questoes
+    # alteradas, e o `git diff` deixava de dizer o que mudou. Agrupar por
+    # documento e pagina mantem junto o que se le junto; o id desempata.
+    finais.sort(key=lambda q: (q["arquivo_origem"], q["pagina"], q["id"]))
     args.saida.write_text(
         json.dumps(finais, ensure_ascii=False, indent=2), encoding="utf-8"
     )
