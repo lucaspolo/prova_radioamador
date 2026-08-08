@@ -244,6 +244,36 @@ cada execução — uma que sempre grita a mesma coisa deixa de ser lida justame
 quando grita algo novo. A triagem é por par de tokens, e não por id de questão,
 porque o id muda quando o trecho é regerado.
 
+## Conferindo as questões na mão
+
+As travas automáticas cobrem o que dá para derivar do texto: que a linha da
+tabela está na página, que toda faixa e toda unidade da federação têm questão,
+que duas leituras do mesmo PDF concordam. Nenhuma delas responde "esta afirmação
+é verdadeira?". Os dois erros graves que já saíram deste banco — o "W" lido como
+"Y" e as colunas trocadas da Tabela II, que inverteram treze gabaritos —
+apareceram porque alguém leu uma questão e desconfiou.
+
+```bash
+npm run conferencia   # -> relatorios/conferencia.md
+```
+
+O relatório traz as 903 questões na ordem em que o assunto aparece nos PDFs —
+por arquivo, depois por página —, cada uma com o gabarito, a explicação, a
+passagem do trecho que a produziu e o `id`. Dá para abrir um PDF, ir descendo as
+páginas e conferir de uma vez tudo o que o banco cobra de cada uma. Quem achar
+uma questão errada já tem o `id` em mãos, que é a chave de
+`scripts/correcoes.json`.
+
+A passagem citada é aproximada: sai da mesma função que grifa a origem no app
+(`localizarPassagem`), por sobreposição de termos. Acha o lugar em 474 das 488
+questões de documento; nas outras o relatório diz que não achou, em vez de
+chutar. As 415 questões da ementa não têm texto de origem nenhum — nasceram de
+um tópico, não de um trecho —, e ali a página é só o capítulo onde estudar o
+assunto. O relatório marca cada uma.
+
+`relatorios/` fica fora do histórico: é derivado de dois JSON já versionados, e
+regerar custa menos que carregar meio megabyte de prosa em cada `git diff`.
+
 ## Formato do banco
 
 ```json
