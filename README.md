@@ -257,12 +257,19 @@ apareceram porque alguém leu uma questão e desconfiou.
 npm run conferencia   # -> relatorios/conferencia.md
 ```
 
-O relatório traz as 903 questões na ordem em que o assunto aparece nos PDFs —
-por arquivo, depois por página —, cada uma com o gabarito, a explicação, a
-passagem do trecho que a produziu e o `id`. Dá para abrir um PDF, ir descendo as
-páginas e conferir de uma vez tudo o que o banco cobra de cada uma. Quem achar
-uma questão errada já tem o `id` em mãos, que é a chave de
-`scripts/correcoes.json`.
+O relatório traz as 903 questões na ordem em que o assunto aparece nos PDFs,
+cada uma com o gabarito, a explicação, a passagem do trecho que a produziu e o
+`id`. Dá para abrir um PDF, ir descendo as páginas e conferir de uma vez tudo o
+que o banco cobra de cada uma. Quem achar uma questão errada já tem o `id` em
+mãos, que é a chave de `scripts/correcoes.json`.
+
+Os arquivos vêm na ordem de quem paga melhor a primeira hora de leitura: começa
+pelos que o gerador leu por OCR de visão, porque esse leitor erra normalizando e
+foi de lá que saíram os dois erros graves; termina pelos que mais dependem da
+ementa, cujas questões não se conferem contra a página. Quais são os
+digitalizados sai do mesmo `MIN_CHARS_POR_PAGINA` que o gerador usa para decidir
+entre camada de texto e OCR — não de uma lista de nomes, para que um PDF novo
+sem camada de texto suba sozinho para o começo da fila.
 
 A passagem citada é aproximada: sai da mesma função que grifa a origem no app
 (`localizarPassagem`), por sobreposição de termos. Acha o lugar em 474 das 488
