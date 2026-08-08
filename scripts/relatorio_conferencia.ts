@@ -16,6 +16,7 @@
  */
 
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { agruparEmCapitulos } from "../lib/conferencia";
 import { caminhoPdf } from "../lib/pdfs";
 import { localizarPassagem } from "../lib/trechos";
 import type { Questao, Trecho } from "../lib/tipos";
@@ -27,6 +28,7 @@ const QUESTOES = banco as Questao[];
 const TRECHOS = trechos as Record<string, Trecho>;
 
 const DESTINO = new URL("../relatorios/conferencia.md", import.meta.url);
+const DESTINO_OCR = new URL("../lib/ocr-visao.json", import.meta.url);
 
 // --- Escape -----------------------------------------------------------------
 
@@ -111,57 +113,22 @@ async function porOcrDeVisao(arquivoOrigem: string): Promise<boolean> {
   return chars / Math.max(pdf.numPages, 1) < MIN_CHARS_POR_PAGINA;
 }
 
-interface Capitulo {
-  arquivo: string;
-  questoes: Questao[];
-  porOcr: boolean;
-  /** Fração das questões que vieram da ementa, e não de um trecho. */
-  daEmenta: number;
-}
-
 /**
- * Ordena os capítulos por onde vale mais a pena gastar a primeira hora.
+ * Publica em `lib/ocr-visao.json` quais PDFs vieram por OCR de visão.
  *
- * 1. **Digitalizados primeiro.** São os que só existem para o gerador através
- *    do OCR de visão, cujo modo de falha é errar *normalizando* — devolver
- *    português plausível que se afastou da fonte, sem nada no resultado
- *    denunciando. Os dois erros graves conhecidos saíram daí, e são 91 questões
- *    em 10 páginas: o melhor retorno por minuto de leitura.
- * 2. **Depois, menos questões de ementa primeiro.** Questão de ementa não tem
- *    texto de origem — a conferência dela é contra o que você sabe do assunto,
- *    e não contra a página aberta. Deixar para o fim mantém a leitura no mesmo
- *    modo pelo maior tempo possível, e joga a Cartilha (415 das 647) para
- *    depois dos atos, que são conferíveis linha a linha.
- * 3. O nome, só para a saída não depender da ordem em que os arquivos entraram.
+ * A tela `/conferencia` precisa desse conjunto logo ao abrir: ele define a ordem
+ * dos capítulos, o aviso de que a citação é a leitura do modelo e não os bytes
+ * do PDF, e desliga o destaque nos arquivos que não têm camada de texto onde
+ * grifar. Descobri-lo do jeito daqui — abrindo cada PDF e medindo — custaria ao
+ * navegador baixar os 5,4 MB dos seis arquivos antes de mostrar a primeira
+ * questão.
+ *
+ * Então o critério continua tendo uma definição só, a de `porOcrDeVisao()`, e o
+ * resultado dela é materializado num arquivo versionado. É o mesmo arranjo de
+ * `lib/mapa-pdfs.json`, que `scripts/copiar_pdfs.mjs` escreve e `lib/pdfs.ts` lê.
  */
-function ordenarCapitulos(a: Capitulo, b: Capitulo): number {
-  return (
-    Number(b.porOcr) - Number(a.porOcr) ||
-    a.daEmenta - b.daEmenta ||
-    a.arquivo.localeCompare(b.arquivo, "pt-BR")
-  );
-}
-
-/**
- * Ordem das questões dentro de um arquivo: a página, e só.
- *
- * Os desempates existem para a saída ser estável entre execuções — dentro de
- * uma página o `id` é um hash e não significa nada. `documento` antes de
- * `ementa` porque são duas conferências diferentes: a primeira se faz contra o
- * PDF aberto na página, a segunda contra o que você sabe do assunto.
- *
- * Agrupar por trecho foi descartado de propósito. Sob a ordem de página os
- * trechos se interrompem 79 vezes (o passe de tabela espalha questões do mesmo
- * trecho por páginas diferentes), então agrupar por trecho quebraria a leitura
- * linear, que é justamente o motivo do relatório.
- */
-function ordenar(a: Questao, b: Questao): number {
-  return (
-    a.pagina - b.pagina ||
-    a.origem.localeCompare(b.origem) ||
-    (a.trecho_id ?? "").localeCompare(b.trecho_id ?? "") ||
-    a.id.localeCompare(b.id)
-  );
+function publicarOcrDeVisao(arquivos: string[]): void {
+  writeFileSync(DESTINO_OCR, JSON.stringify(arquivos.sort(), null, 2) + "\n", "utf8");
 }
 
 // --- Montagem ---------------------------------------------------------------
@@ -183,20 +150,13 @@ function ancora(titulo: string): string {
 }
 
 async function main() {
-  const capitulos: Capitulo[] = [];
+  const digitalizados = new Set<string>();
   for (const arquivo of new Set(QUESTOES.map((q) => q.arquivo_origem))) {
-    const questoes = QUESTOES.filter((q) => q.arquivo_origem === arquivo).sort(
-      ordenar,
-    );
-    capitulos.push({
-      arquivo,
-      questoes,
-      porOcr: await porOcrDeVisao(arquivo),
-      daEmenta:
-        questoes.filter((q) => q.origem === "ementa").length / questoes.length,
-    });
+    if (await porOcrDeVisao(arquivo)) digitalizados.add(arquivo);
   }
-  capitulos.sort(ordenarCapitulos);
+  publicarOcrDeVisao([...digitalizados]);
+
+  const capitulos = agruparEmCapitulos(QUESTOES, digitalizados);
 
   let comPassagem = 0;
   let semPassagem = 0;
@@ -333,10 +293,9 @@ async function main() {
   writeFileSync(DESTINO, saida, "utf8");
 
   const doDocumento = comPassagem + semPassagem;
-  const digitalizados = capitulos.filter((c) => c.porOcr).length;
   console.log(
     `${escritas} questões · ${capitulos.length} arquivos ` +
-      `(${digitalizados} por OCR de visão, primeiros na fila) · ` +
+      `(${digitalizados.size} por OCR de visão, primeiros na fila) · ` +
       `${comPassagem}/${doDocumento} com passagem localizada · ` +
       `${daEmenta} da ementa (sem texto de origem) -> ${DESTINO.pathname}`,
   );

@@ -1,17 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
+import "@/lib/pdf-worker";
 import type { Origem } from "@/lib/tipos";
-
-/**
- * O worker é servido pelo próprio site, e não por CDN: assim o visualizador
- * funciona offline e não depende de terceiros. O arquivo é publicado em
- * public/ por scripts/preparar_worker.mjs, antes de `dev` e de `build`.
- */
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 interface Props {
   caminho: string;
