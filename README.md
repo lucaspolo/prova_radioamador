@@ -265,6 +265,22 @@ As questões são geradas por LLM; as tabelas da consulta rápida, não. Cada li
 `testes/referencia.test.ts` abre o arquivo e confere que o texto está lá — um
 número trocado derruba o teste.
 
+O que esse teste **não** confere é onde uma coluna acaba e a outra começa. Ele
+casa a linha inteira contra o texto da página, e mover um valor para a célula
+vizinha não muda a string casada. Foi por aí que a Tabela II passou meses com a
+série de três letras na coluna da classe "C", gerando 13 questões com gabarito
+invertido. Fronteira de coluna só se prova com uma regra que conheça o
+significado da tabela: a dos prefixos está em `testes/cobertura.test.ts`, que
+confere UF **e** classe, nos dois sentidos.
+
+As sete tabelas foram conferidas linha a linha contra a imagem das páginas
+depois desse episódio. As de duas colunas (fonético, código Q, potência,
+e.i.r.p., sufixos vedados) não têm fronteira ambígua — as de potência e e.i.r.p.
+ainda amarram cada par numa frase inteira do Ato, do tipo "quando operada por
+Radioamador Classe A, deve estar limitada a 1.500 W". No plano de bandas, as
+subfaixas cujas classes poderiam deslizar trazem `trechosFonte` que amarram
+radiofrequência e classe na mesma string.
+
 | Tabela | Fonte |
 | --- | --- |
 | Alfabeto fonético | Cartilha, seção 6.2, pp. 34–35 |

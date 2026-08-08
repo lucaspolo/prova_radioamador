@@ -83,6 +83,19 @@ async function main() {
   // --- A trava: cada linha existe, literalmente, na fonte citada ---------
   // Sem isto as tabelas seriam só mais um texto escrito de memória — que é
   // exatamente o que o README promete que este app não faz.
+  //
+  // O que esta trava NÃO prova: onde uma coluna acaba e a outra começa. Ela
+  // confere que os valores da linha estão na página, na ordem em que estão lá,
+  // e mover um valor para a célula vizinha não muda a string conferida. Foi
+  // assim que a Tabela II ficou com a série de três letras na coluna da classe
+  // "C" nas 27 linhas, gerando 13 questões com gabarito invertido, sem que
+  // nada aqui reclamasse. Fronteira de coluna só se prova com uma regra que
+  // conheça o significado da tabela — a dos prefixos mora em cobertura.test.ts.
+  //
+  // Some a isso que, quando a linha declara `trechosFonte`, são eles que vão à
+  // página: as `celulas` — o que o app mostra e o gerador consome — não são
+  // conferidas contra nada. O tally abaixo põe esse buraco à vista, em vez de
+  // deixá-lo do tamanho que ninguém mede.
   for (const t of TABELAS) {
     const { texto, totalPaginas } = await textoDasPaginas(
       t.fonte.arquivo,
@@ -110,6 +123,14 @@ async function main() {
       ausentes.length === 0,
       ausentes.slice(0, 3).join(" | "),
     );
+
+    const indiretas = t.linhas.filter((l) => l.trechosFonte).length;
+    if (indiretas) {
+      console.log(
+        `       ${indiretas}/${t.linhas.length} linhas conferidas pelo ` +
+          `trechosFonte — nessas, as células não são conferidas`,
+      );
+    }
   }
 
   // --- O alfabeto fonético publicado é o mesmo que o banco cobra ---------
