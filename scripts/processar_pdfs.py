@@ -1337,7 +1337,12 @@ def gerar_da_tabela(
     `public/trechos.json` como trecho de origem. O que o modelo recebe para
     escrever sao as linhas conferidas, nao o texto embaralhado da pagina.
     """
-    linhas = "\n".join(" | ".join(c for c in linha) for linha in lote)
+    # O "·" separa valores dentro de uma celula e existe para a tabela na tela.
+    # Cru no prompt, ele reaparece dentro da frase da questao — "os prefixos sao
+    # PT 8 AA a ZZ · PT 8 AAA a YZZ" —, e ali e' texto para ler, nao tabela.
+    linhas = "\n".join(
+        " | ".join(c.replace(" · ", ", ") for c in linha) for linha in lote
+    )
     chave = hashlib.sha1(
         f"tab|{versao_prompt(PROMPT_SISTEMA_TABELA)}|{modelo}|{tabela['id']}"
         f"|{linhas}".encode("utf-8")
