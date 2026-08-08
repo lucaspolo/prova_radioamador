@@ -279,7 +279,7 @@ export default function TelaConferencia() {
         <select
           value={arquivoFiltro}
           onChange={(e) => setArquivoFiltro(e.target.value)}
-          className="max-w-48 rounded-lg border border-slate-300 bg-transparent px-2 py-1 text-xs dark:border-slate-700"
+          className="max-w-48 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         >
           <option value="">todos os arquivos</option>
           {capitulos.map((c) => (
@@ -292,7 +292,7 @@ export default function TelaConferencia() {
         <select
           value={temaFiltro}
           onChange={(e) => setTemaFiltro(e.target.value as Tema | "")}
-          className="max-w-40 rounded-lg border border-slate-300 bg-transparent px-2 py-1 text-xs dark:border-slate-700"
+          className="max-w-40 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         >
           <option value="">todos os temas</option>
           {TEMAS.map((t) => (
