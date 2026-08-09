@@ -2949,6 +2949,17 @@
     "trecho_id": "25a22373a47329ec"
   },
   {
+    "id": "dcd659c9b686e4b3",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "O código QRA refere-se ao nome ou indicativo da estação.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto: QRA é o indicativo/nome da estação (tabela da Cartilha).",
+    "pagina": 36,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "e096d6e1525d884a",
     "tema": "Técnica e ética operacional",
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",

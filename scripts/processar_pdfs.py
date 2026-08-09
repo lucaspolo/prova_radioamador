@@ -1509,14 +1509,34 @@ def verificar_lote(
 
 
 def executar_verificacao(
-    cliente, modelo: str, questoes: list[dict[str, Any]], workers: int, forcar: bool
+    cliente,
+    modelo: str,
+    questoes: list[dict[str, Any]],
+    workers: int,
+    forcar: bool,
+    protegidas: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Revisa o que tem maior risco de erro.
 
     Duas populacoes: questoes numericas (onde a aritmetica pode falhar) e
     questoes dos passes complementares (que nao vem de um trecho de PDF e,
     portanto, nao tem uma fonte a que se ancorar).
+
+    `protegidas` sao os ids marcados com acao "manter" em correcoes.json: um
+    humano ja conferiu aquele fato contra a pagina, e o veredito do modelo nao
+    pode derrubar essa conferencia. O caso que criou o campo foi o codigo QRA,
+    que a Cartilha define como "Indicativo" (secao 6.3, p.36) e o verificador
+    descartou aplicando a convencao da UIT, onde QRA e' o nome da estacao. A
+    prova cobra a Cartilha; o verificador apagou justamente o que ela ensina.
+
+    Elas continuam *dentro* do lote enviado ao modelo, e so' o descarte e'
+    ignorado. Tira-las de `alvos` mudaria a composicao dos lotes, cuja chave de
+    cache e' o conteudo — todo lote seguinte erraria o cache, voltaria ao modelo
+    e traria vereditos novos para questoes que ninguem mexeu. Foi assim que a
+    questao do QRA caiu: as sete repostas da Tabela I entraram no fim da fila e
+    reavaliaram o ultimo lote.
     """
+    protegidas = protegidas or set()
     tem_numero = re.compile(r"\d")
     alvos = [
         i
@@ -1548,6 +1568,15 @@ def executar_verificacao(
             for idx_local, ok in enumerate(aprovados):
                 if not ok:
                     descartar.add(lote[idx_local])
+
+    # O veredito contra uma questao protegida nao some em silencio: se ele
+    # voltar a aparecer, e' porque o modelo continua discordando da fonte, e
+    # isso e' informacao — ou a fonte mudou, ou a protecao virou permanente.
+    salvas = {i for i in descartar if questoes[i]["id"] in protegidas}
+    for i in sorted(salvas):
+        log(f"    = mantida apesar do veredito (correcoes.json): "
+            f"{questoes[i]['afirmacao'][:70]}...")
+    descartar -= salvas
 
     log(f"  {len(descartar)} questões descartadas por inconsistência")
     return [q for i, q in enumerate(questoes) if i not in descartar]
@@ -1584,6 +1613,19 @@ def carregar_questoes_manuais() -> list[dict[str, Any]]:
 ARQ_CORRECOES = RAIZ / "scripts" / "correcoes.json"
 
 
+def ids_protegidos() -> set[str]:
+    """Ids que o passe --verificar nao pode descartar.
+
+    Lidos do mesmo arquivo das correcoes porque sao a mesma coisa: o resultado
+    de alguem ter aberto a pagina e conferido. A diferenca e' que aqui o
+    conserto e' contra um juizo automatico, e nao contra o gerador.
+    """
+    if not ARQ_CORRECOES.exists():
+        return set()
+    correcoes = json.loads(ARQ_CORRECOES.read_text(encoding="utf-8"))
+    return {i for i, c in correcoes.items() if c.get("acao") == "manter"}
+
+
 def aplicar_correcoes(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Aplica scripts/correcoes.json — o resultado da auditoria humana/LLM.
 
@@ -1592,17 +1634,23 @@ def aplicar_correcoes(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     mapeia o id deterministico da questao para uma acao:
 
         {"<id>": {"acao": "remover", "motivo": "..."},
-         "<id>": {"acao": "editar", "campos": {"pagina": 51}, "motivo": "..."}}
+         "<id>": {"acao": "editar", "campos": {"pagina": 51}, "motivo": "..."},
+         "<id>": {"acao": "manter", "motivo": "..."}}
 
     So os campos declarados em "campos" mudam. A afirmacao nunca e editada por
     aqui: o id deriva dela, e muda-la orfanaria o proprio conserto.
+
+    "manter" nao muda a questao: ela blinda o fato contra o passe --verificar,
+    que e' um juizo de modelo e ja' apagou questao certa por discordar da fonte
+    de estudo. So' cabe quando alguem conferiu o fato contra a pagina e escreveu
+    onde — o "motivo" e' a prova, nao a opiniao.
     """
     if not ARQ_CORRECOES.exists():
         return questoes
 
     correcoes = json.loads(ARQ_CORRECOES.read_text(encoding="utf-8"))
     finais: list[dict[str, Any]] = []
-    removidas = editadas = 0
+    removidas = editadas = mantidas = 0
 
     for q in questoes:
         c = correcoes.get(q["id"])
@@ -1620,10 +1668,23 @@ def aplicar_correcoes(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
             q.update(campos)
             editadas += 1
             finais.append(q)
+        elif c["acao"] == "manter":
+            mantidas += 1
+            finais.append(q)
+        else:
+            # Ate' aqui uma acao desconhecida caia' fora de todos os ramos e a
+            # questao sumia do banco sem uma linha de log. Um erro de digitacao
+            # em "remover" apagava questao certa em silencio, que e' o modo de
+            # falha mais caro que este arquivo tem.
+            raise ValueError(
+                f"correcao de {q['id']} usa acao desconhecida {c['acao']!r}; "
+                f"as validas sao remover, editar e manter"
+            )
 
     orfas = set(correcoes) - {q["id"] for q in questoes}
-    if removidas or editadas:
-        log(f"  Correções da auditoria: {editadas} editadas, {removidas} removidas")
+    if removidas or editadas or mantidas:
+        log(f"  Correções da auditoria: {editadas} editadas, {removidas} removidas, "
+            f"{mantidas} protegidas do verificador")
     if orfas:
         log(f"  AVISO: {len(orfas)} correções apontam para ids inexistentes "
             f"(afirmações mudaram?): {sorted(orfas)[:4]}...")
@@ -2015,7 +2076,9 @@ def main() -> int:
     finais = consolidar(questoes)
 
     if args.verificar:
-        finais = executar_verificacao(cliente, modelo, finais, args.workers, args.forcar)
+        finais = executar_verificacao(
+            cliente, modelo, finais, args.workers, args.forcar, ids_protegidos()
+        )
 
     if not finais:
         log("ERRO: nenhuma questão válida foi gerada.")

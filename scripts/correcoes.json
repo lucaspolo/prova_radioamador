@@ -1173,5 +1173,9 @@
  "af0785df845bcdbe": {
   "acao": "remover",
   "motivo": "Tabela I: a Faixa de 33 centímetros ocupa 902 - 907,5 e 915 - 928 MHz e é dividida em duas subfaixas na tabela. A afirmação apresentava a subfaixa 915 - 928 MHz como se fosse a faixa inteira (\"a radiofrequência é\"), o que faz um candidato que conhece a extensão da faixa responder F contra um gabarito V. Removida e reposta em questoes_manuais.json na forma \"no intervalo de radiofrequência\", que é a que o próprio gerador usa para 15 m, 40 m e 12 m. Não veio da revisão de 2026-08-09: encontrada ao varrer a Tabela I atrás do mesmo defeito que o revisor apontou em quatro faixas milimétricas."
+ },
+ "dcd659c9b686e4b3": {
+  "acao": "manter",
+  "motivo": "\"O código QRA refere-se ao nome ou indicativo da estação\" (V). O passe --verificar descartou em 2026-08-09 alegando \"QRA = nome da estação; não indica o indicativo de chamada\", que é a convenção da UIT. A fonte de estudo diz o contrário e é ela que a prova cobra: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete \"QRA Indicativo\". Conferido nas duas páginas. Era a única questão do banco que ensinava o significado de QRA — as outras três que o citam tratam de sufixo vedado e da extensão da série QRA-QUZ —, e nenhuma trava pegou o sumiço."
  }
 }

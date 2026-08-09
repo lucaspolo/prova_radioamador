@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   agruparEmCapitulos,
@@ -77,6 +77,47 @@ const storage = new StorageFalso();
   // O arquivo é gerado por `npm run conferencia` e versionado; se ele ficar
   // vazio, a tela perde a ordem que faz a revisão começar pelo que mais erra.
   checar("ocr-visao.json não está vazio", OCR.length > 0);
+}
+
+// --- As questões protegidas do verificador continuam no banco --------------
+{
+  const correcoes = JSON.parse(
+    readFileSync(join(RAIZ, "scripts", "correcoes.json"), "utf8"),
+  ) as Record<string, { acao: string; motivo?: string }>;
+
+  const acoes = new Set(Object.values(correcoes).map((c) => c.acao));
+  checar(
+    "toda correção usa uma ação conhecida",
+    [...acoes].every((a) => ["remover", "editar", "manter"].includes(a)),
+    [...acoes].join(", "),
+  );
+
+  const protegidas = Object.entries(correcoes).filter(
+    ([, c]) => c.acao === "manter",
+  );
+  const noBanco = new Set(BANCO.map((q) => q.id));
+
+  /**
+   * `manter` existe porque o passe --verificar já apagou questão certa: ele
+   * descartou o significado de QRA aplicando a convenção da UIT, contra a
+   * tabela da Cartilha que a prova cobra. A proteção some do log num arquivo
+   * que ninguém lê; o que denuncia a reincidência é isto aqui.
+   */
+  const sumidas = protegidas.filter(([id]) => !noBanco.has(id));
+  checar(
+    "toda questão protegida do verificador está no banco",
+    sumidas.length === 0,
+    sumidas.map(([id]) => id).join("; "),
+  );
+
+  // Proteger sem dizer contra o quê é opinião, não conferência: o motivo é o
+  // único registro de que alguém abriu a página.
+  const semMotivo = protegidas.filter(([, c]) => (c.motivo ?? "").length < 40);
+  checar(
+    "toda proteção declara onde o fato foi conferido",
+    semMotivo.length === 0,
+    semMotivo.map(([id]) => id).join("; "),
+  );
 }
 
 // --- Ordem: a mesma do relatório e das duas telas --------------------------
