@@ -625,9 +625,10 @@
  "a6a7cff14ce4b132": {
   "acao": "editar",
   "campos": {
-   "pagina": 12
+   "pagina": 12,
+   "explicacao_curta": "Além de 144,300 MHz, a Tabela XV indica frequência de chamada em 144,2 MHz, no segmento de DX, e a frequência de chamada em FM de 146,520 MHz, no segmento 146,390 - 146,600 MHz."
   },
-  "motivo": "passagem confirmada na p.12 (auditoria: revisor LLM + conferência manual da página)"
+  "motivo": "Página 12 confirmada na auditoria anterior (revisor LLM + conferência manual); mantida. A explicação citava só 144,2 MHz e deixava de fora 146,520 MHz. A Tabela XV da Faixa de 2 metros atravessa a fronteira do chunk: o trecho 475a2bdfde0a1ced termina na p.12, em 144,500 MHz, e a linha \"Frequência de chamada FM: 146,520 MHz\" está na p.13, já no trecho seguinte. O gerador respondeu com o que enxergava. O gabarito F continua certo — é a exaustividade da explicação que estava errada, e a afirmação (\"a única frequência de chamada\") fica mais bem justificada citando as três."
  },
  "e6d3a9f7f5109815": {
   "acao": "editar",
