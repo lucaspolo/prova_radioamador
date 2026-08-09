@@ -7853,19 +7853,6 @@
     "trecho_id": "7096718561a418cf"
   },
   {
-    "id": "0a40b1a27aeb8faa",
-    "tema": "Legislação de Telecomunicações",
-    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 160 metros, a radiofrequência é 1.800 - 1.850 kHz e podem operar todas as classes.",
-    "resposta_correta": true,
-    "explicacao_curta": "Correto: o trecho de 1.800 - 1.850 kHz na Faixa de 160 metros é para todas as classes.",
-    "pagina": 3,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
-  },
-  {
     "id": "134c541cc6476bcb",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
@@ -7924,19 +7911,6 @@
     "afirmacao": "Na Faixa de 1,3 metro, a radiofrequência é 430 - 440 MHz e podem operar Todas as classes.",
     "resposta_correta": false,
     "explicacao_curta": "O correto na Faixa de 1,3 metro é 220 - 225 MHz, com operação por Todas as classes.",
-    "pagina": 3,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
-  },
-  {
-    "id": "4587b151bb890c43",
-    "tema": "Legislação de Telecomunicações",
-    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 80 metros, a radiofrequência é 3.500 - 3.800 kHz e podem operar todas as classes.",
-    "resposta_correta": true,
-    "explicacao_curta": "Correto: em 3.500 - 3.800 kHz, na Faixa de 80 metros, operam todas as classes.",
     "pagina": 3,
     "origem": "documento",
     "nivel": "B",
@@ -8097,6 +8071,17 @@
     "peso": 0.3
   },
   {
+    "id": "cf37fe846cb46a88",
+    "tema": "Legislação de Telecomunicações",
+    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+    "afirmacao": "Na Faixa de 80 metros, no intervalo de radiofrequência 3.500 - 3.800 kHz, podem operar todas as classes.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. Na Tabela I a Faixa de 80 metros é dividida em 3.500 - 3.800 kHz, para todas as classes, e 3.800 - 4.000 kHz, restrito à classe A.",
+    "pagina": 3,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "d041aea9117a7199",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
@@ -8148,6 +8133,17 @@
     "peso": 0.3
   },
   {
+    "id": "ea924a1ae73a6823",
+    "tema": "Legislação de Telecomunicações",
+    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+    "afirmacao": "Na Faixa de 160 metros, no intervalo de radiofrequência 1.800 - 1.850 kHz, podem operar todas as classes.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. Na Tabela I a Faixa de 160 metros é dividida em 1.800 - 1.850 kHz, para todas as classes, e 1.850 - 2.000 kHz, restrito à classe A.",
+    "pagina": 3,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "f72394705447351e",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
@@ -8159,6 +8155,17 @@
     "nivel": "B",
     "trecho_id": "a51d6bc0af330b0a",
     "peso": 0.3
+  },
+  {
+    "id": "02208ae5e5943fc8",
+    "tema": "Legislação de Telecomunicações",
+    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+    "afirmacao": "Na Faixa de 1,2 centímetro, no intervalo de radiofrequência 24 - 24,05 GHz, podem operar todas as classes.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. A Faixa de 1,2 centímetro é dividida em 24 - 24,05 GHz e 24,05 - 24,25 GHz, ambos para todas as classes.",
+    "pagina": 4,
+    "origem": "ementa",
+    "nivel": "B"
   },
   {
     "id": "14ff47e5dee71b42",
@@ -8195,6 +8202,28 @@
     "origem": "documento",
     "nivel": "B",
     "trecho_id": "d1abbbcc36dcf973"
+  },
+  {
+    "id": "31da4be612ee0e17",
+    "tema": "Legislação de Telecomunicações",
+    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+    "afirmacao": "Na Faixa de 2 milímetros, no intervalo de radiofrequência 136 - 141 GHz, podem operar todas as classes.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. A Faixa de 2 milímetros vai de 134 a 141 GHz, repartida na Tabela I em 134 - 136 e 136 - 141 GHz, ambos para todas as classes.",
+    "pagina": 4,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "37818b6227e6a136",
+    "tema": "Legislação de Telecomunicações",
+    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+    "afirmacao": "Na Faixa de 1 milímetro, no intervalo de radiofrequência 248 - 250 GHz, podem operar todas as classes.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. A Faixa de 1 milímetro vai de 241 a 250 GHz, repartida na Tabela I em 241 - 248 e 248 - 250 GHz, ambos para todas as classes.",
+    "pagina": 4,
+    "origem": "ementa",
+    "nivel": "B"
   },
   {
     "id": "4b44d0ff570ea7d0",
@@ -8262,6 +8291,17 @@
     "peso": 0.3
   },
   {
+    "id": "67d9237e6b4d1404",
+    "tema": "Legislação de Telecomunicações",
+    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+    "afirmacao": "Na Faixa de 4 milímetros, no intervalo de radiofrequência 77,5 - 78 GHz, podem operar todas as classes.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. A Faixa de 4 milímetros vai de 76 a 81,5 GHz, repartida na Tabela I em 76 - 77,5, 77,5 - 78 e 78 - 81,5 GHz, todos para todas as classes.",
+    "pagina": 4,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "6e616df6d5e439b9",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
@@ -8325,19 +8365,6 @@
     "peso": 0.3
   },
   {
-    "id": "af0785df845bcdbe",
-    "tema": "Legislação de Telecomunicações",
-    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 33 centímetros, a radiofrequência é 915 - 928 MHz e podem operar Todas as classes.",
-    "resposta_correta": true,
-    "explicacao_curta": "Está de acordo com a subfaixa de 915 - 928 MHz da Faixa de 33 centímetros.",
-    "pagina": 4,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
-  },
-  {
     "id": "b8ea412b528715f7",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
@@ -8390,17 +8417,15 @@
     "peso": 0.3
   },
   {
-    "id": "d446ba98a0d78c2f",
+    "id": "cec314f45c782d4f",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 4 milímetros, a radiofrequência é 77,5 - 78 GHz e podem operar Todas as classes.",
+    "afirmacao": "Na Faixa de 33 centímetros, no intervalo de radiofrequência 915 - 928 MHz, podem operar todas as classes.",
     "resposta_correta": true,
-    "explicacao_curta": "Esta subfaixa da Faixa de 4 milímetros é 77,5 - 78 GHz e permite operações por Todas as classes.",
+    "explicacao_curta": "Correto. A Faixa de 33 centímetros aparece na Tabela I em dois intervalos, 902 - 907,5 MHz e 915 - 928 MHz, ambos para todas as classes.",
     "pagina": 4,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
+    "origem": "ementa",
+    "nivel": "B"
   },
   {
     "id": "dcb98a42c8ad2b8c",
@@ -8415,38 +8440,12 @@
     "trecho_id": "d1abbbcc36dcf973"
   },
   {
-    "id": "e61b7d61c6ee873e",
-    "tema": "Legislação de Telecomunicações",
-    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 2 milímetros, a radiofrequência é 136 - 141 GHz, e Todas as classes podem operar.",
-    "resposta_correta": true,
-    "explicacao_curta": "Correto: a Faixa de 2 milímetros abrange 136 - 141 GHz e é aberta a Todas as classes.",
-    "pagina": 4,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
-  },
-  {
     "id": "e98d54e102a9b79e",
     "tema": "Legislação de Telecomunicações",
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
     "afirmacao": "Na Faixa de 33 centímetros, a radiofrequência é 144 - 148 MHz e podem operar Todas as classes.",
     "resposta_correta": false,
     "explicacao_curta": "Para esta linha, a subfaixa correta é 902 - 907,5 MHz, com operação por Todas as classes.",
-    "pagina": 4,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
-  },
-  {
-    "id": "ea22286ee13a7afd",
-    "tema": "Legislação de Telecomunicações",
-    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 1 milímetro, a radiofrequência é 248 - 250 GHz, e Todas as classes podem operar.",
-    "resposta_correta": true,
-    "explicacao_curta": "Correto: a Faixa de 1 milímetro também possui a subfaixa de 248 - 250 GHz, com operação por Todas as classes.",
     "pagina": 4,
     "origem": "documento",
     "nivel": "B",
@@ -8477,19 +8476,6 @@
     "origem": "documento",
     "nivel": "B",
     "trecho_id": "d1abbbcc36dcf973"
-  },
-  {
-    "id": "f3a0162419ff7be0",
-    "tema": "Legislação de Telecomunicações",
-    "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-    "afirmacao": "Na Faixa de 1,2 centímetro, a radiofrequência é 24 - 24,05 GHz e as classes que podem operar são: Todas as classes.",
-    "resposta_correta": true,
-    "explicacao_curta": "Correto: essa subfaixa de 1,2 centímetro é 24 - 24,05 GHz e permite operação por Todas as classes.",
-    "pagina": 4,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "a51d6bc0af330b0a",
-    "peso": 0.3
   },
   {
     "id": "f8509ccbf2c61459",
@@ -8773,7 +8759,7 @@
     "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
     "afirmacao": "Na faixa de 2 metros, a única frequência de chamada indicada é 144,300 MHz.",
     "resposta_correta": false,
-    "explicacao_curta": "Além de 144,300 MHz, também há indicação de frequência de chamada em 144,2 MHz.",
+    "explicacao_curta": "Além de 144,300 MHz, a Tabela XV indica frequência de chamada em 144,2 MHz, no segmento de DX, e a frequência de chamada em FM de 146,520 MHz, no segmento 146,390 - 146,600 MHz.",
     "pagina": 12,
     "origem": "documento",
     "nivel": "B",

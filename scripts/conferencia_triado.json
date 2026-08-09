@@ -1,0 +1,104 @@
+{
+ "cobertura": {
+  "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf": {
+   "revisadas": 250,
+   "total": 647,
+   "em": "2026-08-09"
+  },
+  "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf": {
+   "revisadas": 16,
+   "total": 16,
+   "em": "2026-08-09"
+  },
+  "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf": {
+   "revisadas": 16,
+   "total": 16,
+   "em": "2026-08-08"
+  },
+  "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf": {
+   "revisadas": 117,
+   "total": 117,
+   "em": "2026-08-09"
+  },
+  "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf": {
+   "revisadas": 32,
+   "total": 32,
+   "em": "2026-08-09"
+  },
+  "SEI_ANATEL - 15307586 - Ato_orginal.pdf": {
+   "revisadas": 75,
+   "total": 75,
+   "em": "2026-08-09"
+  }
+ },
+ "achados": {
+  "ee9152bdd5e65601": {
+   "decisao": "descartado",
+   "motivo": "O revisor marcou F alegando que a primeira letra do agrupamento é \"Z\" e suspeitou de mistura entre os itens I e II. Conferido na imagem da p.1 do Ato 3445, ampliada: o texto do chunk é fiel, e são regras diferentes, não uma mistura. O item 12.10.6-I trata das estações localizadas na Região Antártica sem qualificar nacionalidade e dá para as classes \"A\" e \"B\" o prefixo \"PY\", o número \"0\" e um agrupamento de duas ou três letras com a primeira obrigatoriamente \"A\" — exatamente a afirmação. O \"Z\" que o revisor viu está no 12.10.7, que é a exceção para radioamadores estrangeiros (PY0 + três letras começando em \"Z\"). O gabarito V está certo. O que induziu ao erro foi o campo passagem, que começa recortado no 12.10.6-II e emenda no 12.10.7, escondendo justamente o inciso I que responde à pergunta; a passagem é aproximação por sobreposição de termos, não prova. Fica o registro de que a afirmação não diz \"estrangeiros\" nem \"brasileiros\" e apoia-se na regra geral: se um próximo revisor tropeçar nela de novo, o caminho é remover e repor à mão com a nacionalidade explícita, não mexer no gabarito."
+  },
+  "d446ba98a0d78c2f": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 4 milímetros (76 - 81,5 GHz) em três subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 77,5 - 78 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 67d9237e6b4d1404."
+  },
+  "e61b7d61c6ee873e": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 2 milímetros (134 - 141 GHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 136 - 141 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 31da4be612ee0e17."
+  },
+  "ea22286ee13a7afd": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 1 milímetro (241 - 250 GHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 248 - 250 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 37818b6227e6a136."
+  },
+  "f3a0162419ff7be0": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 1,2 centímetro (24 - 24,25 GHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 24 - 24,05 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 02208ae5e5943fc8."
+  },
+  "0a40b1a27aeb8faa": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 160 metros (1.800 - 2.000 kHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 1.800 - 1.850 kHz como se fosse a faixa inteira. Conferido na imagem da p.3, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: ea924a1ae73a6823. Não foi apontada pelo revisor: saiu da varredura das nove faixas multi-subfaixa da Tabela I, feita depois que as quatro faixas milimétricas mostraram que o defeito era da forma da pergunta, não da faixa."
+  },
+  "4587b151bb890c43": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 80 metros (3.500 - 4.000 kHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 3.500 - 3.800 kHz como se fosse a faixa inteira. Conferido na imagem da p.3, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: cf37fe846cb46a88. Não foi apontada pelo revisor: saiu da varredura das nove faixas multi-subfaixa da Tabela I, feita depois que as quatro faixas milimétricas mostraram que o defeito era da forma da pergunta, não da faixa."
+  },
+  "af0785df845bcdbe": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 33 centímetros (902 - 907,5 e 915 - 928 MHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 915 - 928 MHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: cec314f45c782d4f. Não foi apontada pelo revisor: saiu da varredura das nove faixas multi-subfaixa da Tabela I, feita depois que as quatro faixas milimétricas mostraram que o defeito era da forma da pergunta, não da faixa."
+  },
+  "a6a7cff14ce4b132": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json",
+   "motivo": "Revisor certo. A explicação citava só 144,2 MHz como a outra frequência de chamada de 2 m e omitia 146,520 MHz, que ele lembrou de cabeça. A causa é fronteira de chunk: a Tabela XV começa no trecho 475a2bdfde0a1ced, que termina na p.12 em 144,500 MHz, e a linha \"Frequência de chamada FM: 146,520 MHz\" cai no trecho 5bd95437b4852b06, a partir da p.13 — o gerador respondeu com o pedaço da tabela que enxergava. O gabarito F sempre esteve certo; só a explicação era incompleta, e explicacao_curta pode ser editada por correcoes.json (o que o id proíbe é editar a afirmação). A correção de página que já existia para este id foi preservada. Varri as outras 17 questões de frequência de chamada: só esta estava truncada."
+  },
+  "aee78599044102ff": {
+   "decisao": "descartado",
+   "motivo": "O revisor está certo sobre o fato e errado sobre a consequência. Os itens 6.10 a 6.13 com \"(Redação dada pelo Boletim de Serviço Eletrônico publicado em 6/2/2024)\" estão mesmo tachados nas pp.5-6, conferido nas imagens. Mas logo abaixo, na p.6, vem o bloco vigente 6.10/6.11/6.12, que é o mesmo conteúdo sem o item de estações IDG e renumerado. A regra do salto em frequência e espalhamento espectral abaixo de 440 MHz sobrevive como 6.11, palavra por palavra: gabarito V continua certo. Conferi o que o bloco tachado poderia ter contaminado — não há nenhuma questão sobre estações IDG no banco, e as de criptografia e NSS repetem texto que também está no bloco vigente."
+  },
+  "d84034af97ecf9e2": {
+   "decisao": "descartado",
+   "motivo": "O revisor citou 12.10.6-II (Região Antártica, primeira letra \"A\") e 12.10.7/12.10.8 (estrangeiros, primeira letra \"Z\"), mas a afirmação é sobre ilhas oceânicas, que têm artigo próprio: 12.10.5-II dá para a classe \"C\" o prefixo \"PU\", o número \"0\" e três letras \"sendo a primeira letra aquela identificadora da ilha, arquipélago oceânico, penedo ou atol em questão\" — exatamente a afirmação. Gabarito V certo. É o segundo achado seguido perdido no mesmo bloco de artigos: como em [[ee9152bdd5e65601]], o campo passagem mostrou o artigo vizinho em vez do que responde à pergunta. Ilhas = 12.10.5, Antártica = 12.10.6, estrangeiros = 12.10.7/8."
+  },
+  "13488007ec9dd7e0": {
+   "decisao": "descartado",
+   "motivo": "Não é erro: o revisor sugeriu complementar a explicação com os dois últimos itens do checklist da p.11 da Cartilha (potência e modo de emissão; identificação e periodicidade). A afirmação só pergunta sobre COER, licenciamento e faixa autorizada, e a explicação responde isso corretamente — puxar os outros dois itens responderia o que não foi perguntado. Os temas sugeridos já têm cobertura vizinha em 8821db55a32924e4, da mesma página. Se a intenção for cobrar cada item do checklist separadamente, isso é questão nova em questoes_manuais.json, não conserto desta."
+  },
+  "dcd659c9b686e4b3": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json (acao manter) + processar_pdfs.py",
+   "motivo": "O passe --verificar descartou esta questão ao regerar o banco em 2026-08-09, alegando que QRA é o nome da estação e não o indicativo — a convenção da UIT. A fonte que a prova cobra diz o contrário: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete. Conferido nas duas páginas. Era a única questão que ensinava o significado de QRA. Reposta pela ação \"manter\", nova em correcoes.json: ela não altera a questão, só impede o verificador de derrubá-la. A questão protegida continua indo ao modelo dentro do lote — tirá-la mudaria a composição dos lotes, cuja chave de cache é o conteúdo, e todo lote seguinte voltaria ao modelo com vereditos novos para questões que ninguém mexeu. Foi exatamente assim que ela caiu."
+  }
+ },
+ "pendencias": [
+  {
+   "o_que": "As 7 questões repostas nascerão com origem \"ementa\".",
+   "detalhe": "carregar_questoes_manuais() força _complementar = True, e a linha 1681 traduz isso em origem: \"ementa\". Elas vêm de um trecho real (Tabela I, pp.3-4 do Ato 926), então a tela de conferência vai dizer que não há texto de origem quando há. arquivo_origem e pagina foram preenchidos à mão para que o revisor ainda chegue à página certa.",
+   "para_destravar": "Decidir se vale permitir que uma questão manual declare _trecho/origem \"documento\". Enquanto não, conferir estas 7 contra a Tabela I na mão."
+  }
+ ]
+}
