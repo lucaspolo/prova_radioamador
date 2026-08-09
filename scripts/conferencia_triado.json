@@ -91,14 +91,14 @@
  },
  "pendencias": [
   {
-   "o_que": "O banco publicado ainda não reflete estes consertos.",
-   "detalhe": "public/banco_questoes.json continua com as 7 questões removidas e sem as 7 repostas. scripts/.cache/ está no .gitignore e não existe nesta máquina, e não há .venv nem chave de API: rodar processar_pdfs.py aqui não reaproveitaria chunk nenhum, chamaria o modelo para os 6 PDFs e devolveria um banco gerado do zero — diff impossível de conferir, que é justamente o que a skill manda evitar. As entradas foram validadas offline: os 7 ids de remoção existem no banco, a edição aponta para questão existente, e os 7 ids novos (ea924a1ae73a6823, cf37fe846cb46a88, cec314f45c782d4f, 02208ae5e5943fc8, 67d9237e6b4d1404, 31da4be612ee0e17, 37818b6227e6a136) não colidem entre si nem com o banco.",
-   "para_destravar": "Rodar em máquina com scripts/.cache/ e credencial: .venv/bin/python scripts/processar_pdfs.py --verificar && npm run conferencia. Esperado: total continua 903 (-7 +7) e git diff --stat mostra só essas 14 questões mais a explicação de a6a7cff14ce4b132."
-  },
-  {
    "o_que": "As 7 questões repostas nascerão com origem \"ementa\".",
    "detalhe": "carregar_questoes_manuais() força _complementar = True, e a linha 1681 traduz isso em origem: \"ementa\". Elas vêm de um trecho real (Tabela I, pp.3-4 do Ato 926), então a tela de conferência vai dizer que não há texto de origem quando há. arquivo_origem e pagina foram preenchidos à mão para que o revisor ainda chegue à página certa.",
    "para_destravar": "Decidir se vale permitir que uma questão manual declare _trecho/origem \"documento\". Enquanto não, conferir estas 7 contra a Tabela I na mão."
+  },
+  {
+   "o_que": "O passe --verificar descartou uma questão correta, contra a fonte.",
+   "detalhe": "Ao regerar o banco em 2026-08-09, executar_verificacao() descartou dcd659c9b686e4b3 (\"O código QRA refere-se ao nome ou indicativo da estação.\", gabarito V) com o motivo \"QRA = nome da estação; não indica o indicativo de chamada\". O verificador aplicou a convenção da UIT, mas a fonte de estudo diz o contrário: a tabela de Código Q da Cartilha (seção 6.3, p.36) traz literalmente \"QRA — Indicativo\", e a p.34 repete \"QRA Indicativo\". A prova da Anatel cobra este material, então quem responder pela UIT erra. A questão estava certa e sumiu sem ninguém decidir — o banco caiu de 903 para 902. Nenhuma trava pegou: cobertura.test.ts continua verde porque outras três questões citam QRA, ainda que nenhuma cobre o que ele significa.",
+   "para_destravar": "Decidir entre duas saídas. (a) Repor em questoes_manuais.json com a redação da fonte (\"Na tabela de códigos Q da Cartilha, QRA corresponde ao indicativo da estação\") — mas ela nasce origem \"ementa\" e volta a passar pelo mesmo verificador, que pode descartá-la de novo. (b) Dar ao verificador uma forma de não contrariar tabela de referência já conferida contra a página: as sete tabelas de tabelas_referencia.json são fonte provada por referencia.test.ts, e um passe que as ignora pode apagar justamente o que a norma manda ensinar. A (b) é a que resolve a classe do problema, não só este caso."
   }
  ]
 }
