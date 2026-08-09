@@ -376,5 +376,61 @@
   "resposta_correta": false,
   "explicacao_curta": "QTR pergunta/informa a hora certa. Retransmitir mensagem é QSP.",
   "pagina": 36
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 160 metros, no intervalo de radiofrequência 1.800 - 1.850 kHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. Na Tabela I a Faixa de 160 metros é dividida em 1.800 - 1.850 kHz, para todas as classes, e 1.850 - 2.000 kHz, restrito à classe A.",
+  "pagina": 3
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 80 metros, no intervalo de radiofrequência 3.500 - 3.800 kHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. Na Tabela I a Faixa de 80 metros é dividida em 3.500 - 3.800 kHz, para todas as classes, e 3.800 - 4.000 kHz, restrito à classe A.",
+  "pagina": 3
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 33 centímetros, no intervalo de radiofrequência 915 - 928 MHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. A Faixa de 33 centímetros aparece na Tabela I em dois intervalos, 902 - 907,5 MHz e 915 - 928 MHz, ambos para todas as classes.",
+  "pagina": 4
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 1,2 centímetro, no intervalo de radiofrequência 24 - 24,05 GHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. A Faixa de 1,2 centímetro é dividida em 24 - 24,05 GHz e 24,05 - 24,25 GHz, ambos para todas as classes.",
+  "pagina": 4
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 4 milímetros, no intervalo de radiofrequência 77,5 - 78 GHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. A Faixa de 4 milímetros vai de 76 a 81,5 GHz, repartida na Tabela I em 76 - 77,5, 77,5 - 78 e 78 - 81,5 GHz, todos para todas as classes.",
+  "pagina": 4
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 2 milímetros, no intervalo de radiofrequência 136 - 141 GHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. A Faixa de 2 milímetros vai de 134 a 141 GHz, repartida na Tabela I em 134 - 136 e 136 - 141 GHz, ambos para todas as classes.",
+  "pagina": 4
+ },
+ {
+  "tema": "Legislação de Telecomunicações",
+  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
+  "afirmacao": "Na Faixa de 1 milímetro, no intervalo de radiofrequência 248 - 250 GHz, podem operar todas as classes.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. A Faixa de 1 milímetro vai de 241 a 250 GHz, repartida na Tabela I em 241 - 248 e 248 - 250 GHz, ambos para todas as classes.",
+  "pagina": 4
  }
 ]
