@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  aoAnotar,
+  aoMarcar,
+  darPorVistas as aplicarVistas,
   gravarRevisoes,
   lerRevisoes,
   type Revisoes,
@@ -72,26 +75,14 @@ export function useConferencia() {
    * meio segundo só criaria uma janela para perdê-la.
    *
    * Clicar de novo no mesmo veredito desmarca — é como se desfaz um engano de
-   * teclado sem ter de escolher outra resposta que também não é a sua.
+   * teclado sem ter de escolher outra resposta que também não é a sua. A regra
+   * inteira — inclusive a de que mexer no veredito reabre um achado já dado por
+   * visto — está em `aoMarcar`, testada sem navegador.
    */
   const marcar = useCallback(
     (id: string, veredito: Veredito) => {
       setRevisoes((atuais) => {
-        const atual = atuais[id];
-        const novas = { ...atuais };
-        if (atual?.veredito === veredito) {
-          // Desmarcar tira a decisão, não o que foi escrito: a justificativa
-          // costuma ser o motivo de estar hesitando, e apagá-la junto faria o
-          // clique de desfazer custar a frase que explicava a dúvida.
-          if (atual.nota.trim()) novas[id] = { ...atual, veredito: null };
-          else delete novas[id];
-        } else {
-          novas[id] = {
-            veredito,
-            nota: atual?.nota ?? "",
-            em: new Date().toISOString(),
-          };
-        }
+        const novas = aoMarcar(atuais, id, veredito, new Date().toISOString());
         descarregar();
         gravar(novas);
         return novas;
@@ -107,28 +98,13 @@ export function useConferencia() {
    * caractere. O atraso resolve isso, e o `onBlur` da tela chama `descarregar()`
    * para que sair do campo não dependa dele.
    *
-   * A nota pode existir sem veredito, e nesse caso o veredito fica `null` em
-   * vez de virar "problema": quem escreve "conferir contra o anexo" antes de
-   * decidir registrou algo que não pode sumir, mas não decidiu nada — chutar
-   * "P" por ele inflaria a contagem de problemas com trabalho não feito.
+   * O que a nota faz com a revisão — inclusive existir sem veredito e reabrir um
+   * achado dado por visto — está em `aoAnotar`.
    */
   const anotar = useCallback(
     (id: string, nota: string) => {
       setRevisoes((atuais) => {
-        const atual = atuais[id];
-        const novas = { ...atuais };
-        if (!atual && !nota.trim()) {
-          delete novas[id];
-        } else if (atual && !atual.veredito && !nota.trim()) {
-          // Anotação apagada e sem veredito: não sobrou revisão nenhuma.
-          delete novas[id];
-        } else {
-          novas[id] = {
-            veredito: atual?.veredito ?? null,
-            nota,
-            em: atual?.em ?? new Date().toISOString(),
-          };
-        }
+        const novas = aoAnotar(atuais, id, nota, new Date().toISOString());
         pendente.current = novas;
         if (timer.current) clearTimeout(timer.current);
         timer.current = setTimeout(() => {
@@ -142,6 +118,23 @@ export function useConferencia() {
       });
     },
     [gravar],
+  );
+
+  /**
+   * Dá por lida a triagem de um conjunto de achados. Grava na hora, como
+   * `marcar`: é uma decisão, não digitação.
+   */
+  const darPorVistas = useCallback(
+    (ids: readonly string[]) => {
+      if (ids.length === 0) return;
+      setRevisoes((atuais) => {
+        const novas = aplicarVistas(atuais, ids, new Date().toISOString());
+        descarregar();
+        gravar(novas);
+        return novas;
+      });
+    },
+    [descarregar, gravar],
   );
 
   /** Substitui tudo — usado ao importar um arquivo de revisão. */
@@ -160,6 +153,7 @@ export function useConferencia() {
     storageRecusou,
     marcar,
     anotar,
+    darPorVistas,
     descarregar,
     substituir,
   };

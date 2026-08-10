@@ -5,12 +5,15 @@ import dynamic from "next/dynamic";
 import ItemConferencia from "./ItemConferencia";
 import { useConferencia } from "@/hooks/useConferencia";
 import {
+  achadosTriados,
   agruparEmCapitulos,
   divergente,
   montarExportacao,
+  pendente,
   revisoesDoArquivo,
   type Veredito,
 } from "@/lib/conferencia";
+import { IDS_TRIADOS, TRIAGENS } from "@/lib/triagem";
 import { TEMAS } from "@/lib/constantes";
 import { caminhoPdf } from "@/lib/pdfs";
 import { BANCO } from "@/lib/questoes";
@@ -32,13 +35,14 @@ const LeitorPdfPainel = dynamic(() => import("./LeitorPdfPainel"), {
 
 const POR_OCR: ReadonlySet<string> = new Set(ocrVisao as string[]);
 
-type Filtro = "todas" | "pendentes" | "divergentes" | "anotadas";
+type Filtro = "todas" | "pendentes" | "divergentes" | "anotadas" | "triadas";
 
 const FILTROS: { chave: Filtro; rotulo: string }[] = [
   { chave: "todas", rotulo: "todas" },
   { chave: "pendentes", rotulo: "não revisadas" },
   { chave: "divergentes", rotulo: "divergentes" },
   { chave: "anotadas", rotulo: "com nota" },
+  { chave: "triadas", rotulo: "já triadas" },
 ];
 
 /**
@@ -56,8 +60,15 @@ const FILTROS: { chave: Filtro; rotulo: string }[] = [
  */
 export default function TelaConferencia() {
   const conferencia = useConferencia();
-  const { revisoes, carregado, marcar, anotar, descarregar, substituir } =
-    conferencia;
+  const {
+    revisoes,
+    carregado,
+    marcar,
+    anotar,
+    darPorVistas,
+    descarregar,
+    substituir,
+  } = conferencia;
 
   const [trechos, setTrechos] = useState<Record<string, Trecho>>({});
   const [arquivoFiltro, setArquivoFiltro] = useState("");
@@ -93,9 +104,13 @@ export default function TelaConferencia() {
         if (arquivoFiltro && q.arquivo_origem !== arquivoFiltro) return false;
         if (temaFiltro && q.tema !== temaFiltro) return false;
         const r = revisoes[q.id];
+        if (filtro === "triadas") return IDS_TRIADOS.has(q.id);
         if (filtro === "pendentes") return !r?.veredito;
-        if (filtro === "divergentes") return !!r && divergente(q, r);
-        if (filtro === "anotadas") return !!r?.nota.trim();
+        // Divergência e nota dadas por vistas saem das duas lentes de trabalho:
+        // são assunto encerrado, e continuam achaveis em "já triadas".
+        if (filtro === "divergentes")
+          return !!r && !r.visto && divergente(q, r);
+        if (filtro === "anotadas") return !!r && !r.visto && !!r.nota.trim();
         return true;
       });
 
@@ -194,12 +209,23 @@ export default function TelaConferencia() {
     let anotadas = 0;
     for (const q of BANCO) {
       const r = revisoes[q.id];
-      if (!r) continue;
+      if (!r || !pendente(q, r)) continue;
       if (divergente(q, r)) divergencias++;
       if (r.nota.trim()) anotadas++;
     }
     return { divergencias, anotadas };
   }, [revisoes]);
+
+  /**
+   * Achados que o repositório já resolveu e que ainda pesam na tela.
+   *
+   * Recalculado a cada mudança nas revisões porque é o rótulo do botão: assim
+   * que ele age, a contagem cai a zero e ele some sozinho.
+   */
+  const triadosPendentes = useMemo(
+    () => achadosTriados(BANCO, revisoes, IDS_TRIADOS),
+    [revisoes],
+  );
 
   function baixar() {
     descarregar();
@@ -275,6 +301,21 @@ export default function TelaConferencia() {
         <span className="text-xs text-slate-500 dark:text-slate-400">
           {achados.divergencias} divergências · {achados.anotadas} com nota
         </span>
+
+        {triadosPendentes.length > 0 && (
+          <button
+            onClick={() => {
+              darPorVistas(triadosPendentes);
+              setMensagem(
+                `${triadosPendentes.length} ${triadosPendentes.length === 1 ? "achado já triado saiu" : "achados já triados saíram"} da pendência. Os vereditos continuam gravados.`,
+              );
+            }}
+            title="Marca como lidos os achados que já têm decisão em scripts/conferencia_triado.json. O veredito e a nota continuam onde estão."
+            className="rounded-lg border border-emerald-600 px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950"
+          >
+            Dar {triadosPendentes.length} triadas por vistas
+          </button>
+        )}
 
         <select
           value={arquivoFiltro}
@@ -403,6 +444,7 @@ export default function TelaConferencia() {
                     <ItemConferencia
                       questao={q}
                       revisao={revisoes[q.id]}
+                      triagem={TRIAGENS[q.id]}
                       trecho={q.trecho_id ? trechos[q.trecho_id] : undefined}
                       selecionado={i === sel}
                       modoCego={modoCego}

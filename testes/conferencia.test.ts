@@ -1,16 +1,22 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  achadosTriados,
   agruparEmCapitulos,
+  aoAnotar,
+  aoMarcar,
+  darPorVistas,
   divergente,
   gravarRevisoes,
   lerRevisoes,
   montarExportacao,
   ordenar,
   ordenarCapitulos,
+  pendente,
   revisoesDoArquivo,
   type Revisoes,
 } from "@/lib/conferencia";
+import { achadosDeclarados, IDS_TRIADOS, TRIAGENS } from "@/lib/triagem";
 import { criarDestacador } from "@/lib/destaque-pdf";
 import { caminhoPdf } from "@/lib/pdfs";
 import { BANCO } from "@/lib/questoes";
@@ -419,6 +425,247 @@ const storage = new StorageFalso();
     "casa apesar do espaçamento diferente entre extratores",
     espacado({ str: "a  potência   de saída" }).includes("<mark"),
   );
+}
+
+// --- A triagem que o repositório já registrou -------------------------------
+{
+  const declarados = achadosDeclarados();
+  console.log(`\nAchados com decisão registrada: ${declarados}\n`);
+
+  // A leitura de `lib/triagem.ts` é defensiva porque o arquivo é escrito à mão,
+  // mas defensiva não pode virar silenciosa: uma decisão com typo que sumisse da
+  // tela faria o achado voltar como pendência sem ninguém entender por quê.
+  checar(
+    "toda entrada de conferencia_triado.json sobrevive à leitura",
+    Object.keys(TRIAGENS).length === declarados,
+    `${Object.keys(TRIAGENS).length} lidas de ${declarados} declaradas`,
+  );
+
+  const rasos = Object.entries(TRIAGENS).filter(
+    ([, t]) => t.motivo.trim().length < 40,
+  );
+  checar(
+    "toda triagem diz o que foi conferido e contra o quê",
+    rasos.length === 0,
+    rasos.map(([id]) => id).join(", "),
+  );
+
+  // Um id que não está no banco nem consta como removido é engano de digitação:
+  // a decisão foi escrita para uma questão que nunca existiu, e como a tela só
+  // consulta a triagem por id, ninguém seria avisado.
+  const noBanco = new Set(BANCO.map((q) => q.id));
+  const correcoes = JSON.parse(
+    readFileSync(join(RAIZ, "scripts/correcoes.json"), "utf8"),
+  ) as Record<string, { acao?: string }>;
+  const fantasmas = Object.keys(TRIAGENS).filter(
+    (id) => !noBanco.has(id) && correcoes[id]?.acao !== "remover",
+  );
+  checar(
+    "todo id triado está no banco ou consta como removido",
+    fantasmas.length === 0,
+    fantasmas.join(", "),
+  );
+}
+
+// --- pendente(), achadosTriados() e darPorVistas() ---------------------------
+{
+  const em = "2026-08-10T00:00:00.000Z";
+  const visto = "2026-08-11T00:00:00.000Z";
+  const verdadeira = { resposta_correta: true } as Questao;
+
+  checar(
+    "divergência sem visto pende",
+    pendente(verdadeira, { veredito: "F", nota: "", em }),
+  );
+  checar(
+    "nota sem visto pende, mesmo conferindo",
+    pendente(verdadeira, { veredito: "V", nota: "conferir o anexo", em }),
+  );
+  checar(
+    "visto encerra a divergência",
+    !pendente(verdadeira, { veredito: "F", nota: "", em, visto }),
+  );
+  checar(
+    "visto encerra também a nota",
+    !pendente(verdadeira, { veredito: "V", nota: "conferir", em, visto }),
+  );
+  checar(
+    "quem confere e não anota nunca pendeu",
+    !pendente(verdadeira, { veredito: "V", nota: "", em }),
+  );
+
+  const triada = BANCO.find((q) => IDS_TRIADOS.has(q.id));
+  const nova = BANCO.find((q) => !IDS_TRIADOS.has(q.id));
+  checar(
+    "o banco tem questão triada e questão sem triagem para o teste",
+    !!triada && !!nova,
+  );
+
+  if (triada && nova) {
+    const revisoes: Revisoes = {
+      [triada.id]: {
+        veredito: triada.resposta_correta ? "F" : "V",
+        nota: "",
+        em,
+      },
+      [nova.id]: { veredito: nova.resposta_correta ? "F" : "V", nota: "", em },
+    };
+
+    // O achado novo é o trabalho que a rodada acabou de produzir. Somi-lo junto
+    // com os encerrados apagaria exatamente o que se foi buscar na tela.
+    const alvos = achadosTriados(BANCO, revisoes, IDS_TRIADOS);
+    checar(
+      "dá por vista só a divergência que o repositório já decidiu",
+      alvos.length === 1 && alvos[0] === triada.id,
+      alvos.join(", "),
+    );
+
+    const depois = darPorVistas(revisoes, alvos, visto);
+    checar(
+      "marcar não mexe no veredito nem na nota",
+      depois[triada.id].veredito === revisoes[triada.id].veredito &&
+        depois[triada.id].nota === "",
+    );
+    checar("marcar carimba a data", depois[triada.id].visto === visto);
+    checar(
+      "marcar não encosta no achado que ninguém triou",
+      depois[nova.id].visto === undefined,
+    );
+    checar(
+      "marcar id desconhecido não inventa revisão",
+      darPorVistas({}, ["id-que-nao-existe"], visto)["id-que-nao-existe"] ===
+        undefined,
+    );
+    checar(
+      "depois de marcar não sobra o que dar por visto",
+      achadosTriados(BANCO, depois, IDS_TRIADOS).length === 0,
+    );
+
+    const saida = montarExportacao(BANCO, depois, TRECHOS, POR_OCR, em);
+    checar(
+      "o achado visto sai dos itens",
+      !saida.itens.some((i) => i.id === triada.id),
+    );
+    checar(
+      "o achado novo continua nos itens",
+      saida.itens.some((i) => i.id === nova.id),
+    );
+    // Retido por nome, e não só por contagem: é o que deixa quem processa o
+    // arquivo conferir contra o triado que nada foi engolido por engano.
+    checar(
+      "o achado visto sai por nome em vistas",
+      saida.vistas.join() === triada.id,
+      saida.vistas.join(", "),
+    );
+    checar("o resumo conta os retidos", saida.resumo.jaVistas === 1);
+    checar(
+      "o visto não conta mais como divergência",
+      saida.resumo.divergencias === 1,
+      String(saida.resumo.divergencias),
+    );
+    checar(
+      "o visto continua contando como questão revisada",
+      saida.resumo.revisadas === 2 && saida.estado[triada.id] !== undefined,
+    );
+
+    // Sem isto, restaurar um backup ressuscitaria todo achado já encerrado — e
+    // como eles saem de `itens` justamente por estarem encerrados, não haveria
+    // de onde deduzi-los.
+    const voltou = revisoesDoArquivo(saida)!;
+    checar(
+      "importar preserva a marca de visto",
+      !!voltou[triada.id]?.visto,
+    );
+    checar(
+      "importar não inventa visto no achado novo",
+      voltou[nova.id]?.visto === undefined,
+    );
+    checar(
+      "importar não reabre o que já foi encerrado",
+      achadosTriados(BANCO, voltou, IDS_TRIADOS).length === 0,
+    );
+
+    storage.clear();
+    gravarRevisoes(depois);
+    checar(
+      "o storage preserva a marca de visto",
+      lerRevisoes()[triada.id]?.visto === visto,
+    );
+  }
+
+  // Revisão gravada antes deste campo existir continua válida; `visto` de tipo
+  // errado derruba só a entrada estragada, como o resto da leitura.
+  storage.clear();
+  storage.setItem(
+    "prova-radioamador:conferencia",
+    JSON.stringify({
+      versao: 1,
+      revisoes: {
+        antiga: { veredito: "V", nota: "", em },
+        estragada: { veredito: "V", nota: "", em, visto: 7 },
+      },
+    }),
+  );
+  const lidas = lerRevisoes();
+  checar("revisão sem o campo visto continua sendo lida", !!lidas.antiga);
+  checar("revisão com visto de tipo errado é descartada", !lidas.estragada);
+  storage.clear();
+}
+
+// --- aoMarcar() e aoAnotar(): quando um achado encerrado reabre --------------
+{
+  const em = "2026-08-10T00:00:00.000Z";
+  const agora = "2026-08-11T00:00:00.000Z";
+  const encerrado: Revisoes = {
+    x: { veredito: "F", nota: "conferido contra a p.4", em, visto: agora },
+  };
+
+  // O caminho de volta prometido no README e na skill: a triagem gravada decidiu
+  // sobre o veredito que estava lá, então mudá-lo faz dela resposta a outra
+  // pergunta, e o achado volta a pendente.
+  const trocado = aoMarcar(encerrado, "x", "V", agora);
+  checar("trocar o veredito reabre o achado", trocado.x.visto === undefined);
+  checar("trocar o veredito grava o novo", trocado.x.veredito === "V");
+  checar(
+    "trocar o veredito preserva a justificativa",
+    trocado.x.nota === "conferido contra a p.4",
+  );
+
+  const desmarcado = aoMarcar(encerrado, "x", "F", agora);
+  checar(
+    "desmarcar o mesmo veredito também reabre",
+    desmarcado.x.visto === undefined && desmarcado.x.veredito === null,
+  );
+  checar(
+    "desmarcar sem nota apaga a revisão inteira",
+    aoMarcar({ x: { veredito: "F", nota: "", em } }, "x", "F", agora).x ===
+      undefined,
+  );
+
+  const reanotado = aoAnotar(encerrado, "x", "outra frase", agora);
+  checar("escrever na justificativa reabre", reanotado.x.visto === undefined);
+  checar("escrever preserva o veredito", reanotado.x.veredito === "F");
+  checar(
+    "anotar em questão nova nasce sem veredito",
+    aoAnotar({}, "y", "conferir o anexo", agora).y.veredito === null,
+  );
+  checar(
+    "apagar a nota de quem não decidiu apaga a revisão",
+    aoAnotar({ x: { veredito: null, nota: "algo", em } }, "x", "  ", agora).x ===
+      undefined,
+  );
+  checar(
+    "apagar a nota de quem decidiu mantém o veredito",
+    aoAnotar({ x: { veredito: "V", nota: "algo", em } }, "x", "", agora).x
+      ?.veredito === "V",
+  );
+
+  // Puras: a tela guarda o resultado num setState, e mutar a entrada faria o
+  // React não enxergar a mudança.
+  const antes = JSON.stringify(encerrado);
+  aoMarcar(encerrado, "x", "V", agora);
+  aoAnotar(encerrado, "x", "seja o que for", agora);
+  checar("nenhuma das duas muta a entrada", JSON.stringify(encerrado) === antes);
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE CONFERÊNCIA PASSARAM" : falhas + " FALHA(S)"}`);

@@ -6,6 +6,7 @@ import TelaResultado from "@/components/TelaResultado";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import ResumoDesempenho from "@/components/ResumoDesempenho";
 import MenuPrincipal, { PainelMenu } from "@/components/MenuPrincipal";
+import ItemConferencia from "@/components/ItemConferencia";
 import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaIntervalo from "@/components/TelaIntervalo";
@@ -645,6 +646,51 @@ const PROPS_INICIO = {
   checar("tema e tamanho de texto saíram da home", !home.includes("Automático"));
   checar("a consulta rápida saiu da home", !home.includes("Consulta rápida"));
   checar("a escolha da prova continua à vista", home.includes("Iniciar modo treino"));
+}
+
+// --- O cartão de conferência sob triagem ------------------------------------
+{
+  const q = BANCO[0];
+  const em = "2026-08-10T00:00:00.000Z";
+  const MOTIVO =
+    "Conferido na imagem da página ampliada: a transcrição está fiel.";
+
+  function cartao(triagem?: {
+    decisao: "corrigido" | "descartado" | "adiado";
+    motivo: string;
+  }) {
+    return renderToStaticMarkup(
+      <ItemConferencia
+        questao={q}
+        revisao={{ veredito: q.resposta_correta ? "F" : "V", nota: "", em }}
+        triagem={triagem}
+        selecionado
+        modoCego={false}
+        onSelecionar={() => {}}
+        onMarcar={() => {}}
+        onAnotar={() => {}}
+        onDescarregar={() => {}}
+        refNota={{ current: null }}
+      />,
+    );
+  }
+
+  const semTriagem = cartao();
+  checar(
+    "achado novo é divergência e nada mais",
+    semTriagem.includes("divergência") && !semTriagem.includes("triado"),
+  );
+
+  const comTriagem = cartao({ decisao: "descartado", motivo: MOTIVO });
+  checar("o cartão triado ganha o selo", comTriagem.includes("triado"));
+  checar("o selo diz qual foi a decisão", comTriagem.includes("descartado"));
+  // O motivo é o que evita reconferir o que já foi conferido — se ele não
+  // chegar à tela, o selo vira enfeite.
+  checar("o cartão aberto mostra o motivo por extenso", comTriagem.includes(MOTIVO));
+  checar(
+    "sob triagem a divergência perde o vermelho de pendência",
+    comTriagem.includes("divergência") && !comTriagem.includes("bg-rose-100"),
+  );
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);

@@ -39,6 +39,7 @@ entrada descartável. `relatorios/` também não serve — está no `.gitignore`
 python3 -c "
 import json,sys; d=json.load(open(sys.argv[1]))
 print(d['resumo'])
+print('retidos por já terem decisão:', d.get('vistas', []))
 for i in d['itens']: print(i['id'], i['veredito'], 'gab', i['gabarito'], '|', i['afirmacao'][:70])
 " ~/Downloads/conferencia-AAAA-MM-DD.json
 ```
@@ -47,6 +48,13 @@ Compare `resumo.porArquivo` com o `cobertura` de `scripts/conferencia_triado.jso
 o que subiu é revisão nova, o que não subiu continua pendente. Cruze
 `d["estado"]` com os `achados` já triados e ignore o que já tem decisão — a
 menos que o veredito tenha mudado, e aí a mudança é o assunto.
+
+**`vistas` é o que a tela reteve, e não o que ela perdeu.** São ids que o revisor
+deu por encerrados porque este arquivo aqui já registrou a decisão deles; eles
+saem de `itens` justamente para não serem retriados a cada rodada. Confira que
+todos constam em `achados` — um id em `vistas` sem decisão registrada seria
+achado sumindo em silêncio, e aí o assunto é esse. O caminho de volta existe: o
+revisor tira a marca reabrindo o veredito na tela.
 
 ### 2. Conferir cada achado antes de agir
 

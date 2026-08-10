@@ -130,6 +130,18 @@ export interface Revisao {
   nota: string;
   /** ISO da marcação; diz o que foi revisado antes de qual regeração do banco. */
   em: string;
+  /**
+   * ISO de quando a triagem deste achado foi dada por lida — ausente enquanto
+   * não foi.
+   *
+   * O veredito sobrevive no navegador de uma rodada para a outra, então um
+   * achado já decidido em `scripts/conferencia_triado.json` continuaria pesando
+   * no contador e voltando em toda exportação. Este campo encerra o assunto sem
+   * mexer no veredito: o que o revisor concluiu continua escrito e visível na
+   * tela, e o histórico de por que aquilo foi resolvido está no repositório, com
+   * muito mais detalhe do que caberia aqui.
+   */
+  visto?: string;
 }
 
 /** Revisões por `id` de questão. O `id` é hash da afirmação e sobrevive a regerações. */
@@ -140,7 +152,13 @@ function revisaoValida(x: unknown): x is Revisao {
   const r = x as Record<string, unknown>;
   const veredito =
     r.veredito === null || VEREDITOS.includes(r.veredito as Veredito);
-  return veredito && typeof r.nota === "string" && typeof r.em === "string";
+  const visto = r.visto === undefined || typeof r.visto === "string";
+  return (
+    veredito &&
+    visto &&
+    typeof r.nota === "string" &&
+    typeof r.em === "string"
+  );
 }
 
 /**
@@ -205,6 +223,126 @@ export function divergente(q: Questao, r: Revisao): boolean {
   return (r.veredito === "V") !== q.resposta_correta;
 }
 
+/**
+ * A revisão ainda pede trabalho de alguém.
+ *
+ * Divergência e nota são as duas formas de um achado existir. `visto` derruba as
+ * duas de uma vez, porque quem deu a triagem por lida está dizendo que aquele
+ * achado já teve seu destino escrito no repositório — não que ele nunca existiu.
+ */
+export function pendente(q: Questao, r: Revisao): boolean {
+  if (r.visto) return false;
+  return divergente(q, r) || r.nota.trim() !== "";
+}
+
+/**
+ * Achados que o repositório já decidiu e que ainda aparecem como pendência.
+ *
+ * É o que o botão "dar por vistas" mexe, calculado antes de mexer para que a
+ * tela possa dizer quantos são e o usuário decidir. Um id só entra se as três
+ * coisas valerem ao mesmo tempo: há uma questão viva com esse id, há um achado
+ * a limpar (divergência ou nota), e `scripts/conferencia_triado.json` já
+ * registrou a decisão. Achado novo, que ninguém triou ainda, fica de fora — é
+ * exatamente o trabalho que a rodada seguinte existe para produzir, e some-lo
+ * junto seria apagar o que a tela acabou de descobrir.
+ */
+export function achadosTriados(
+  questoes: Questao[],
+  revisoes: Revisoes,
+  triados: ReadonlySet<string>,
+): string[] {
+  const ids: string[] = [];
+  for (const q of questoes) {
+    const r = revisoes[q.id];
+    if (!r || !triados.has(q.id)) continue;
+    if (pendente(q, r)) ids.push(q.id);
+  }
+  return ids;
+}
+
+// --- O que cada gesto do revisor faz ----------------------------------------
+//
+// Puras e fora do hook de propósito. São as regras de quando um achado nasce,
+// morre e reabre — o hook cuida de storage, debounce e do ciclo do React, que
+// são outro assunto e não deveriam esconder estas decisões dentro de um
+// `setState`.
+
+/** Marca os achados como lidos, sem tocar em veredito nem em nota. */
+export function darPorVistas(
+  revisoes: Revisoes,
+  ids: readonly string[],
+  em: string,
+): Revisoes {
+  const novas = { ...revisoes };
+  for (const id of ids) {
+    const atual = novas[id];
+    if (atual) novas[id] = { ...atual, visto: em };
+  }
+  return novas;
+}
+
+/**
+ * Um clique de veredito.
+ *
+ * Clicar de novo no mesmo veredito desmarca — é como se desfaz um engano de
+ * teclado sem ter de escolher outra resposta que também não é a sua. Desmarcar
+ * tira a decisão, não o que foi escrito: a justificativa costuma ser o motivo da
+ * hesitação, e apagá-la junto faria o clique de desfazer custar a frase que
+ * explicava a dúvida.
+ *
+ * Nos dois caminhos a revisão é remontada sem `visto`, e é isso que dá o caminho
+ * de volta: a triagem gravada no repositório decidiu sobre o veredito que estava
+ * lá, então mudá-lo faz daquela decisão a resposta a outra pergunta. O achado
+ * volta a pendente e é retriado na rodada seguinte.
+ */
+export function aoMarcar(
+  revisoes: Revisoes,
+  id: string,
+  veredito: Veredito,
+  em: string,
+): Revisoes {
+  const atual = revisoes[id];
+  const novas = { ...revisoes };
+  if (atual?.veredito === veredito) {
+    if (atual.nota.trim()) {
+      novas[id] = { veredito: null, nota: atual.nota, em: atual.em };
+    } else {
+      delete novas[id];
+    }
+  } else {
+    novas[id] = { veredito, nota: atual?.nota ?? "", em };
+  }
+  return novas;
+}
+
+/**
+ * Uma justificativa escrita.
+ *
+ * A nota pode existir sem veredito, e nesse caso o veredito fica `null` em vez
+ * de virar "problema": quem escreve "conferir contra o anexo" antes de decidir
+ * registrou algo que não pode sumir, mas não decidiu nada — chutar "P" por ele
+ * inflaria a contagem de problemas com trabalho não feito. Apagar a nota de uma
+ * revisão que não tinha veredito não deixa revisão nenhuma.
+ *
+ * Também limpa `visto`, pelo mesmo motivo de `aoMarcar`: frase nova é assunto
+ * novo, e a decisão registrada era sobre a frase velha.
+ */
+export function aoAnotar(
+  revisoes: Revisoes,
+  id: string,
+  nota: string,
+  em: string,
+): Revisoes {
+  const atual = revisoes[id];
+  const novas = { ...revisoes };
+  if (!atual?.veredito && !nota.trim()) {
+    delete novas[id];
+  } else {
+    novas[id] = { veredito: atual?.veredito ?? null, nota, em: atual?.em ?? em };
+  }
+  return novas;
+}
+
 export interface ItemExportado {
   id: string;
   afirmacao: string;
@@ -237,9 +375,21 @@ export interface Exportacao {
     comNota: number;
     /** Notas escritas em questões que ainda não têm veredito. */
     semVeredito: number;
+    /** Achados retidos por já terem decisão no repositório. Ver `vistas`. */
+    jaVistas: number;
     porArquivo: Record<string, { total: number; revisadas: number }>;
   };
   itens: ItemExportado[];
+  /**
+   * Ids retidos de `itens` por terem sido dados por vistos.
+   *
+   * Saem por nome, e não só por contagem, por duas razões: quem processa o
+   * arquivo consegue conferir contra `scripts/conferencia_triado.json` que
+   * nenhum achado foi engolido por engano, e a importação consegue restaurar as
+   * marcas — sem isso, recuperar um backup ressuscitaria todos os achados já
+   * encerrados.
+   */
+  vistas: string[];
   /** Mapa compacto `id -> veredito` de tudo que foi revisado; serve de backup. */
   estado: Record<string, Veredito>;
 }
@@ -270,6 +420,7 @@ export function montarExportacao(
 ): Exportacao {
   const porArquivo: Record<string, { total: number; revisadas: number }> = {};
   const itens: ItemExportado[] = [];
+  const vistas: string[] = [];
   const estado: Record<string, Veredito> = {};
   let divergencias = 0;
   let problemas = 0;
@@ -295,6 +446,15 @@ export function montarExportacao(
 
     const diverge = divergente(q, r);
     const nota = r.nota.trim();
+
+    // Achado já triado e dado por visto sai da contagem inteira, e não só da
+    // lista: um resumo que continuasse dizendo "9 divergências" para nove
+    // assuntos encerrados mediria o histórico, não o que falta fazer.
+    if (r.visto && (diverge || nota)) {
+      vistas.push(q.id);
+      continue;
+    }
+
     if (diverge) divergencias++;
     if (r.veredito === "P") problemas++;
     if (nota) comNota++;
@@ -339,9 +499,11 @@ export function montarExportacao(
       problemas,
       comNota,
       semVeredito,
+      jaVistas: vistas.length,
       porArquivo,
     },
     itens,
+    vistas,
     estado,
   };
 }
@@ -356,7 +518,12 @@ export function montarExportacao(
  */
 export function revisoesDoArquivo(dados: unknown): Revisoes | null {
   if (typeof dados !== "object" || dados === null) return null;
-  const d = dados as { estado?: unknown; itens?: unknown; exportadoEm?: unknown };
+  const d = dados as {
+    estado?: unknown;
+    itens?: unknown;
+    vistas?: unknown;
+    exportadoEm?: unknown;
+  };
 
   const estado = d.estado;
   if (typeof estado !== "object" || estado === null || Array.isArray(estado)) {
@@ -382,6 +549,21 @@ export function revisoesDoArquivo(dados: unknown): Revisoes | null {
       const atual = (revisoes[item.id] ??= { veredito: null, nota: "", em });
       atual.nota = item.justificativa;
       if (typeof item.revisadoEm === "string") atual.em = item.revisadoEm;
+    }
+  }
+
+  // As marcas de "já visto" voltam por último e por nome. Sem isto, restaurar um
+  // backup ressuscitaria todos os achados encerrados de uma vez — e como eles
+  // saem de `itens` justamente por estarem encerrados, não haveria de onde
+  // deduzi-los.
+  if (Array.isArray(d.vistas)) {
+    for (const id of d.vistas as unknown[]) {
+      // Só marca o que já veio de `estado`: um id visto cuja revisão era só uma
+      // nota sem veredito não tem como voltar (a nota saiu com o item retido), e
+      // criar a revisão aqui deixaria para trás um registro vazio, sem veredito
+      // e sem nota, que a tela não teria como mostrar nem o revisor como desfazer.
+      const atual = typeof id === "string" ? revisoes[id] : undefined;
+      if (atual) atual.visto = em;
     }
   }
 

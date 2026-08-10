@@ -50,6 +50,7 @@ components/   telas, menu, resumo de desempenho e visualizador de PDF
 hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
               conferencia.ts — ordem da revisão, storage e exportação
+              triagem.ts — o que a conferência já decidiu, lido do triado
 scripts/      processar_pdfs.py — gerador do banco de questões
               auditar_ocr.py — segundo leitor dos PDFs digitalizados
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
@@ -304,12 +305,12 @@ Cada questão recebe um veredito e, se for o caso, uma justificativa:
 | **⚑** | nem uma nem outra: enunciado ambíguo, transcrição de OCR corrompida, questão sem resposta possível. |
 | justificativa | contra o que você conferiu. Vale mesmo quando o gabarito confere — "certo, mas ambíguo" é achado. |
 
-São 903 questões, então o teclado importa: `J`/`K` andam, `V`/`F`/`P` marcam e
-avançam, `Enter` cai na justificativa, `Esc` sai dela. O *modo cego* esconde o
-gabarito até você decidir — é o que dá sentido a escolher V ou F em vez de
-julgar uma resposta já escrita na tela. Os filtros (arquivo, tema, não
-revisadas, divergentes, com nota) permitem parar e voltar depois; a barra de
-progresso mede sempre sobre o banco inteiro, e não sobre o filtro.
+São mais de 900 questões, então o teclado importa: `J`/`K` andam, `V`/`F`/`P`
+marcam e avançam, `Enter` cai na justificativa, `Esc` sai dela. O *modo cego*
+esconde o gabarito até você decidir — é o que dá sentido a escolher V ou F em vez
+de julgar uma resposta já escrita na tela. Os filtros (arquivo, tema, não
+revisadas, divergentes, com nota, já triadas) permitem parar e voltar depois; a
+barra de progresso mede sempre sobre o banco inteiro, e não sobre o filtro.
 
 Tudo fica no `localStorage`, e **Baixar revisão** produz um JSON com o resumo e
 o detalhe só do que precisa de ação — cada item já com afirmação, gabarito,
@@ -317,6 +318,22 @@ veredito, arquivo, página e a passagem de origem, para virar entrada de
 `scripts/correcoes.json` sem abrir mais nada. O arquivo também serve de backup:
 o campo `estado` traz o veredito de todas as revisões, inclusive as que
 conferem, e **Importar** restaura a partir dele.
+
+#### O que já foi decidido não volta a pedir trabalho
+
+O veredito sobrevive no navegador de uma rodada para a outra, e sem nada mais um
+achado já resolvido voltaria a contar como divergência em toda exportação
+seguinte. A tela lê `scripts/conferencia_triado.json` e reconhece o que já tem
+decisão: essas questões ganham o selo **✓ triado** e, ao serem abertas, mostram o
+motivo registrado — o que foi conferido e contra o quê — antes de qualquer outra
+coisa, para você não reconferir o que já foi conferido.
+
+O botão **Dar N triadas por vistas** encerra essas pendências de uma vez. Ele não
+mexe no seu veredito nem na sua nota: só carimba que a decisão do repositório foi
+lida, e a partir daí elas saem dos contadores e da exportação (que passa a
+listá-las em `vistas`, por nome, para nada sair do arquivo em silêncio). O que
+ainda não foi triado nunca é tocado — é justamente o achado novo que a rodada
+existe para produzir. Para revê-las, o filtro **já triadas**.
 
 O que fazer com o arquivo baixado está em `.claude/skills/processar-conferencia/`:
 cada achado vira conserto em `scripts/correcoes.json` ou `scripts/erratas_ocr.json`,
