@@ -129,7 +129,12 @@
   {
    "o_que": "Três materiais de apoio entraram como fonte de questões manuais, não como PDFs do gerador.",
    "detalhe": "Em 2026-08-10 chegaram Código RST e Alfabeto Fonético (PY2BIL, v1.0 2024), Código Q ITU-R (PY2BIL, v1.0 2024) e Código de Conduta DX (trad. CT1ETL, GRAESP 2020). Dez questões saíram deles por questoes_manuais.json, cobrindo QSX, QAP, as escalas do RST e cinco regras do Código de Conduta DX — assuntos que a Cartilha não traz ou traz em quatro marcadores. Não foram adicionados a public/pdfs/ nem ao gerador: os três são obra de terceiros sob Creative Commons BY-NC-SA, e publicá-los no site é redistribuição, o que é decisão do dono do repositório e não do agente. Consequência prática: essas dez nascem com origem \"ementa\" e sem texto de origem, como as sete da Tabela I.",
-   "para_destravar": "Decidir se os três viram fonte de verdade. Se sim: copiar para a pasta dos PDFs de origem, deixar o gerador chunkar e extrair, e acrescentar a atribuição BY-NC-SA exigida pela licença (autor, link da licença, indicação de alterações). Se não: as dez continuam manuais e a conferência delas é contra o PDF original, fora da tela."
+   "para_destravar": "Decidido em 2026-08-10: os PDFs não entram. Continuam fora de public/pdfs/ e do gerador, e as questões tiradas deles seguem manuais — a conferência delas é contra o PDF original, fora da tela. Fica registrado para ninguém repropor a cada material novo que chegar."
+  },
+  {
+   "o_que": "Algarismos fonéticos ficam fora do banco, por decisão de 2026-08-10.",
+   "detalhe": "Nenhuma questão cobre soletração de algarismos, e a lacuna é deliberada. Chegou-se a redigir seis questões sobre o código de algarismos do Apêndice 14 do Regulamento de Rádio da UIT (Nadazero, Unaone, Bissotwo…, mais Decimal e Stop, com a ressalva do item 3 que permite a estações de um mesmo país usarem outra tabela reconhecida pela administração). O texto foi conferido na fonte primária, o RR REV.WRC-23 da UIT, e está correto — mas foi descartado antes de entrar no banco: o dono do repositório apontou que isso não aparece em nenhum material da Anatel. A tabela 6.2 da Cartilha traz só as letras, de A a Z, e o material de apoio que circula usa \"Zero, One, Two\". Questão fiel à norma a montante e ausente do material de estudo cobra o que a prova não pede.",
+   "para_destravar": "Só reabrir se surgir material da Anatel que traga a tabela de algarismos — aí a fonte passa a ser esse material, e não o Apêndice 14. A regra geral que isso firma: o banco segue o que a Anatel publica, e norma internacional só entra pelo que o material brasileiro reproduz."
   },
   {
    "o_que": "A tabela do Código RST tem lixo nas linhas 6 a 9 da coluna R.",
