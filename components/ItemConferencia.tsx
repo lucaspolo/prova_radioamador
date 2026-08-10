@@ -2,11 +2,14 @@
 
 import { localizarPassagem } from "@/lib/trechos";
 import type { Revisao, Veredito } from "@/lib/conferencia";
+import type { Triagem } from "@/lib/triagem";
 import type { Questao, Trecho } from "@/lib/tipos";
 
 interface Props {
   questao: Questao;
   revisao?: Revisao;
+  /** A decisão que o repositório já registrou sobre esta questão, se houver. */
+  triagem?: Triagem;
   trecho?: Trecho;
   selecionado: boolean;
   modoCego: boolean;
@@ -35,6 +38,7 @@ const ROTULOS: Record<Veredito, string> = {
 export default function ItemConferencia({
   questao: q,
   revisao,
+  triagem,
   trecho,
   selecionado,
   modoCego,
@@ -99,8 +103,29 @@ export default function ItemConferencia({
         </span>
 
         {diverge && (
-          <span className="rounded bg-rose-100 px-1.5 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+          // Sob triagem o vermelho sai: a divergência continua sendo verdade,
+          // mas deixou de ser pendência, e pintá-la de alarme faria a tela
+          // pedir de novo um trabalho que já foi feito.
+          <span
+            className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+              triagem
+                ? "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+            }`}
+          >
             {decidido === "P" ? "problema" : "divergência"}
+          </span>
+        )}
+        {triagem && (
+          <span
+            className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+              revisao?.visto
+                ? "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
+            }`}
+            title="Já tem decisão em scripts/conferencia_triado.json"
+          >
+            ✓ triado · {triagem.decisao}
           </span>
         )}
         {revisao?.nota.trim() && !selecionado && (
@@ -123,6 +148,21 @@ export default function ItemConferencia({
 
       {selecionado && (
         <div className="mt-3 space-y-3 border-t border-slate-200 pt-3 dark:border-slate-800">
+          {triagem && (
+            // Vem antes de tudo de propósito. Quem reabre uma questão triada
+            // precisa saber o que já foi conferido antes de gastar tempo
+            // reconferindo — é para isso que o motivo é escrito por extenso.
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-2 dark:border-emerald-900 dark:bg-emerald-950/40">
+              <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+                Já triado — {triagem.decisao}
+                {triagem.onde && ` (${triagem.onde})`}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-emerald-900/80 dark:text-emerald-100/70">
+                {triagem.motivo}
+              </p>
+            </div>
+          )}
+
           <p className="text-xs text-slate-500 dark:text-slate-400">
             <strong className="font-semibold">Explicação do banco:</strong>{" "}
             {q.explicacao_curta}
