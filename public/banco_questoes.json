@@ -7278,6 +7278,17 @@
     "trecho_id": "cbec25b888a4405e"
   },
   {
+    "id": "b4e7a87161223533",
+    "tema": "Conhecimentos de Eletrônica e Eletricidade",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "A AFSK é uma variação da FSK que transmite dados digitais alternando entre duas frequências de áudio distintas dentro da banda de voz.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. A Cartilha apresenta a AFSK (Audio Frequency Shift Keying) como variação importante da FSK, que transmite dados digitais alternando entre duas frequências de áudio distintas dentro da banda de voz, via rádio ou linha telefônica.",
+    "pagina": 64,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "d246c8b32617aae7",
     "tema": "Conhecimentos de Eletrônica e Eletricidade",
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
@@ -7301,24 +7312,23 @@
     "nivel": "B"
   },
   {
+    "id": "e1836097d147fb32",
+    "tema": "Conhecimentos de Eletrônica e Eletricidade",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "A modulação FSK é usada em RTTY, APRS (AX.25), Packet Radio e em modos de HF como o MFSK16.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. O marcador da FSK na seção 11.2 encerra listando essas aplicações. Vale tanto para a FSK direta quanto para a AFSK, que é uma variação dela.",
+    "pagina": 64,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "f6ac26fe58552fe8",
     "tema": "Conhecimentos de Eletrônica e Eletricidade",
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
     "afirmacao": "Na modulação ASK, a informação é transmitida variando-se a frequência da portadora entre dois valores, mantendo a amplitude constante.",
     "resposta_correta": false,
     "explicacao_curta": "ASK varia a amplitude da portadora (alta para “1”, baixa para “0”) mantendo a frequência fixa.",
-    "pagina": 64,
-    "origem": "documento",
-    "nivel": "B",
-    "trecho_id": "cbec25b888a4405e"
-  },
-  {
-    "id": "fa03e4d8a015b2bb",
-    "tema": "Conhecimentos de Eletrônica e Eletricidade",
-    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
-    "afirmacao": "AFSK alterna entre duas frequências de áudio dentro da banda de voz e é amplamente usada em RTTY e APRS (AX.25).",
-    "resposta_correta": true,
-    "explicacao_curta": "AFSK é uma variação de FSK que usa duas frequências de áudio distintas e tem aplicação difundida em RTTY e APRS.",
     "pagina": 64,
     "origem": "documento",
     "nivel": "B",

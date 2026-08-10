@@ -432,5 +432,21 @@
   "resposta_correta": true,
   "explicacao_curta": "Correto. A Faixa de 1 milímetro vai de 241 a 250 GHz, repartida na Tabela I em 241 - 248 e 248 - 250 GHz, ambos para todas as classes.",
   "pagina": 4
+ },
+ {
+  "tema": "Conhecimentos de Eletrônica e Eletricidade",
+  "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+  "afirmacao": "A AFSK é uma variação da FSK que transmite dados digitais alternando entre duas frequências de áudio distintas dentro da banda de voz.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. A Cartilha apresenta a AFSK (Audio Frequency Shift Keying) como variação importante da FSK, que transmite dados digitais alternando entre duas frequências de áudio distintas dentro da banda de voz, via rádio ou linha telefônica.",
+  "pagina": 64
+ },
+ {
+  "tema": "Conhecimentos de Eletrônica e Eletricidade",
+  "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+  "afirmacao": "A modulação FSK é usada em RTTY, APRS (AX.25), Packet Radio e em modos de HF como o MFSK16.",
+  "resposta_correta": true,
+  "explicacao_curta": "Correto. O marcador da FSK na seção 11.2 encerra listando essas aplicações. Vale tanto para a FSK direta quanto para a AFSK, que é uma variação dela.",
+  "pagina": 64
  }
 ]
