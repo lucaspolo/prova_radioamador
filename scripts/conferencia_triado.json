@@ -1,9 +1,9 @@
 {
  "cobertura": {
   "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf": {
-   "revisadas": 250,
+   "revisadas": 431,
    "total": 647,
-   "em": "2026-08-09"
+   "em": "2026-08-10"
   },
   "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf": {
    "revisadas": 16,
@@ -92,13 +92,39 @@
    "decisao": "corrigido",
    "onde": "correcoes.json (acao manter) + processar_pdfs.py",
    "motivo": "O passe --verificar descartou esta questão ao regerar o banco em 2026-08-09, alegando que QRA é o nome da estação e não o indicativo — a convenção da UIT. A fonte que a prova cobra diz o contrário: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete. Conferido nas duas páginas. Era a única questão que ensinava o significado de QRA. Reposta pela ação \"manter\", nova em correcoes.json: ela não altera a questão, só impede o verificador de derrubá-la. A questão protegida continua indo ao modelo dentro do lote — tirá-la mudaria a composição dos lotes, cuja chave de cache é o conteúdo, e todo lote seguinte voltaria ao modelo com vereditos novos para questões que ninguém mexeu. Foi exatamente assim que ela caiu."
+  },
+  "e096d6e1525d884a": {
+   "decisao": "descartado",
+   "motivo": "Revisor marcou V; o gabarito F está certo. QRZ pergunta \"quem está me chamando?\"; quem pede mudança de frequência é QSY. A tabela de Código Q da Cartilha (seção 6.3, p.36) não lista nenhum dos dois — esta questão vem da ementa, não daquela tabela, e é por isso que a tela não tinha texto de origem para mostrar ao lado. O único QSY do corpus está na p.34, \"Se precisar, combine um QSY para outra frequência\", e confirma o sentido. Nada a consertar."
+  },
+  "0340cc5cd71759a8": {
+   "decisao": "descartado",
+   "motivo": "Revisor marcou V; o gabarito F está certo. 10 Vpp em 50 Ω dá Vrms = 5/√2 = 3,536 V, logo P = 12,5/50 = 250 mW — mas essa é a potência durante o bit \"1\", e com 50% de \"1\" a média é 125 mW. Os 250 mW da afirmação são o valor do símbolo vendido como média. Vale registrar que dois enganos diferentes caem nos mesmos 250 mW: esquecer o fator de 50%, ou esquecer a conversão para RMS (Vpico²/R = 25/50 = 500 mW, metade disso = 250 mW). A conta inteira já está em explicacao_curta. Nada a consertar."
+  },
+  "41476a0054655f54": {
+   "decisao": "descartado",
+   "motivo": "Gabarito V está certo: em MSK o índice de modulação é h = 0,5, então Δf = h × Rb = 0,5 × 2000 = 1 kHz. O próprio revisor chegou a esse resultado — a justificativa recua e se recalcula três vezes e termina em \"corrigindo a análise rápida: a afirmação é Verdadeira\" —, mas o veredito gravado continuou F. Não é defeito da questão: é o veredito que não acompanhou a nota. Nada a consertar."
+  },
+  "abd63b08f8586c1c": {
+   "decisao": "descartado",
+   "motivo": "Revisor marcou V; o gabarito F está certo. O critério do detector de envelope é Tc ≪ RC ≪ Tb. Com fc = 100 kHz, Tc = 10 µs; com Rb = 1 kbit/s, Tb = 1 ms = 1000 µs. O RC = 2 ms = 2000 µs proposto viola o limite de cima — é o dobro do período de bit, e o envelope não conseguiria acompanhar a transição entre símbolos. A afirmação erra ao dizer que RC é \"muito menor que o período de bit\" quando é maior que ele. Nada a consertar."
+  },
+  "fa03e4d8a015b2bb": {
+   "decisao": "corrigido",
+   "onde": "correcoes.json + questoes_manuais.json",
+   "motivo": "Revisor certo, e a primeira triagem desta rodada errou: dei o achado por descartado lendo a justificativa como citação que confirmava o gabarito, quando ela era a prova do contrário. O revisor colou o marcador da ASK junto com o da FSK, e é isso que decide a questão. Os três marcadores da seção 11.2 (p.64) têm a mesma forma, e em todos a frase final descreve a modulação do título: ASK termina em \"Simples e de baixo custo, usada em telemetria básica, sensores remotos e sistemas OOK\", PSK em \"Eficiente em banda estreita e ruído, usada por exemplo em PSK31/PSK63\". Pelo mesmo paralelo, o \"Amplamente usada no radioamadorismo atual, robusta contra ruído, usada em RTTY (Radio Teletype), APRS (AX.25), Packet Radio e modos HF como MFSK16\" é da FSK, não da AFSK citada no meio do marcador — e o conteúdo confirma, porque MFSK16 é FSK multi-tom e não AFSK binária. A afirmação transferia essa lista para a AFSK. Conferido na imagem da p.64, ampliada: a transcrição está fiel, o defeito é da pergunta. Removida em correcoes.json e reposta em duas questões: a definição da AFSK, literal na página (nova b4e7a87161223533), e a lista de aplicações atribuída à FSK, que vale sob as duas leituras porque a AFSK é uma variação da FSK (nova e1836097d147fb32). Varri o banco atrás de outras questões da mesma frase — AFSK, RTTY, MFSK, AX.25, Packet Radio: era a única."
   }
  },
  "pendencias": [
   {
-   "o_que": "As 7 questões repostas nascerão com origem \"ementa\".",
-   "detalhe": "carregar_questoes_manuais() força _complementar = True, e a linha 1681 traduz isso em origem: \"ementa\". Elas vêm de um trecho real (Tabela I, pp.3-4 do Ato 926), então a tela de conferência vai dizer que não há texto de origem quando há. arquivo_origem e pagina foram preenchidos à mão para que o revisor ainda chegue à página certa.",
-   "para_destravar": "Decidir se vale permitir que uma questão manual declare _trecho/origem \"documento\". Enquanto não, conferir estas 7 contra a Tabela I na mão."
+   "o_que": "As 7 questões repostas têm origem \"ementa\" e nenhum texto de origem.",
+   "detalhe": "carregar_questoes_manuais() força _complementar = True, e a linha 1681 traduz isso em origem: \"ementa\". Confirmado no banco: as sete estão com trecho_id null. Elas vêm de um trecho real (Tabela I, pp.3-4 do Ato 926), então a tela de conferência diz que não há texto de origem quando há. arquivo_origem e pagina foram preenchidos à mão para que o revisor ainda chegue à página certa. O risco imediato saiu: na rodada de 2026-08-10 as sete foram revisadas e todas confirmadas como V, contra a Tabela I, sem que a falta do trecho atrapalhasse.",
+   "para_destravar": "Decidir se vale permitir que uma questão manual declare _trecho/origem \"documento\". Nada urgente — a decisão é de arquitetura, e a conferência manual já foi feita."
+  },
+  {
+   "o_que": "Cada exportação reemite os achados já triados.",
+   "detalhe": "O JSON baixado traz todo item com nota ou divergência, e o veredito fica no localStorage entre rodadas — então um achado decidido volta em todas as exportações seguintes. Na rodada de 2026-08-10 foram 4 de 9 itens já resolvidos (13488007ec9dd7e0, aee78599044102ff, a6a7cff14ce4b132, d84034af97ecf9e2). Custa um cruzamento contra a chave achados deste arquivo, mas cresce a cada rodada.",
+   "para_destravar": "Decidir entre três caminhos: o revisor apaga a nota depois da triagem (grátis, mas perde o registro na tela); a tela lê conferencia_triado.json e marca o que já foi decidido (útil, custa importar o arquivo no bundle); ou não fazer nada e seguir cruzando na triagem (o que vale enquanto o número for pequeno)."
   }
  ]
 }
