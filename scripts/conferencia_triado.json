@@ -91,7 +91,7 @@
   "dcd659c9b686e4b3": {
    "decisao": "corrigido",
    "onde": "correcoes.json (acao manter) + processar_pdfs.py",
-   "motivo": "O passe --verificar descartou esta questão ao regerar o banco em 2026-08-09, alegando que QRA é o nome da estação e não o indicativo — a convenção da UIT. A fonte que a prova cobra diz o contrário: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete. Conferido nas duas páginas. Era a única questão que ensinava o significado de QRA. Reposta pela ação \"manter\", nova em correcoes.json: ela não altera a questão, só impede o verificador de derrubá-la. A questão protegida continua indo ao modelo dentro do lote — tirá-la mudaria a composição dos lotes, cuja chave de cache é o conteúdo, e todo lote seguinte voltaria ao modelo com vereditos novos para questões que ninguém mexeu. Foi exatamente assim que ela caiu."
+   "motivo": "O passe --verificar descartou esta questão ao regerar o banco em 2026-08-09, alegando que QRA é o nome da estação e não o indicativo — a convenção da UIT. A fonte que a prova cobra diz o contrário: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete. Conferido nas duas páginas. Era a única questão que ensinava o significado de QRA. Reposta pela ação \"manter\", nova em correcoes.json: ela não altera a questão, só impede o verificador de derrubá-la. A questão protegida continua indo ao modelo dentro do lote — tirá-la mudaria a composição dos lotes, cuja chave de cache é o conteúdo, e todo lote seguinte voltaria ao modelo com vereditos novos para questões que ninguém mexeu. Foi exatamente assim que ela caiu. Em 2026-08-10 apareceu confirmação independente, e da própria convenção que o verificador invocou: a tabela \"Código Internacional Q ITU-R\" (PY2BIL, v1.0, 2024) dá para QRA a pergunta \"Qual o nome da estação (indicativo)?\" e a resposta \"O meu indicativo é ____ (ou Nome do operador)\". O descarte não se sustenta nem pela fonte de estudo nem pela UIT."
   },
   "e096d6e1525d884a": {
    "decisao": "descartado",
@@ -124,7 +124,22 @@
   {
    "o_que": "Cada exportação reemite os achados já triados.",
    "detalhe": "O JSON baixado traz todo item com nota ou divergência, e o veredito fica no localStorage entre rodadas — então um achado decidido volta em todas as exportações seguintes. Na rodada de 2026-08-10 foram 4 de 9 itens já resolvidos (13488007ec9dd7e0, aee78599044102ff, a6a7cff14ce4b132, d84034af97ecf9e2). Custa um cruzamento contra a chave achados deste arquivo, mas cresce a cada rodada.",
-   "para_destravar": "Decidir entre três caminhos: o revisor apaga a nota depois da triagem (grátis, mas perde o registro na tela); a tela lê conferencia_triado.json e marca o que já foi decidido (útil, custa importar o arquivo no bundle); ou não fazer nada e seguir cruzando na triagem (o que vale enquanto o número for pequeno)."
+   "para_destravar": "Resolvido em 2026-08-10 pelo terceiro caminho ampliado: lib/triagem.ts lê este arquivo, a tela marca o que já foi decidido e o botão \"dar por vistas\" tira do contador e da exportação, que passa a listar os retidos em \"vistas\". Fica registrado por ser o histórico da decisão."
+  },
+  {
+   "o_que": "Três materiais de apoio entraram como fonte de questões manuais, não como PDFs do gerador.",
+   "detalhe": "Em 2026-08-10 chegaram Código RST e Alfabeto Fonético (PY2BIL, v1.0 2024), Código Q ITU-R (PY2BIL, v1.0 2024) e Código de Conduta DX (trad. CT1ETL, GRAESP 2020). Dez questões saíram deles por questoes_manuais.json, cobrindo QSX, QAP, as escalas do RST e cinco regras do Código de Conduta DX — assuntos que a Cartilha não traz ou traz em quatro marcadores. Não foram adicionados a public/pdfs/ nem ao gerador: os três são obra de terceiros sob Creative Commons BY-NC-SA, e publicá-los no site é redistribuição, o que é decisão do dono do repositório e não do agente. Consequência prática: essas dez nascem com origem \"ementa\" e sem texto de origem, como as sete da Tabela I.",
+   "para_destravar": "Decidido em 2026-08-10: os PDFs não entram. Continuam fora de public/pdfs/ e do gerador, e as questões tiradas deles seguem manuais — a conferência delas é contra o PDF original, fora da tela. Fica registrado para ninguém repropor a cada material novo que chegar."
+  },
+  {
+   "o_que": "Algarismos fonéticos ficam fora do banco, por decisão de 2026-08-10.",
+   "detalhe": "Nenhuma questão cobre soletração de algarismos, e a lacuna é deliberada. Chegou-se a redigir seis questões sobre o código de algarismos do Apêndice 14 do Regulamento de Rádio da UIT (Nadazero, Unaone, Bissotwo…, mais Decimal e Stop, com a ressalva do item 3 que permite a estações de um mesmo país usarem outra tabela reconhecida pela administração). O texto foi conferido na fonte primária, o RR REV.WRC-23 da UIT, e está correto — mas foi descartado antes de entrar no banco: o dono do repositório apontou que isso não aparece em nenhum material da Anatel. A tabela 6.2 da Cartilha traz só as letras, de A a Z, e o material de apoio que circula usa \"Zero, One, Two\". Questão fiel à norma a montante e ausente do material de estudo cobra o que a prova não pede.",
+   "para_destravar": "Só reabrir se surgir material da Anatel que traga a tabela de algarismos — aí a fonte passa a ser esse material, e não o Apêndice 14. A regra geral que isso firma: o banco segue o que a Anatel publica, e norma internacional só entra pelo que o material brasileiro reproduz."
+  },
+  {
+   "o_que": "A tabela do Código RST tem lixo nas linhas 6 a 9 da coluna R.",
+   "detalhe": "No PDF Código RST e Alfabeto Fonético, a tabela tem nove linhas porque S e T precisam de nove, mas a legibilidade (R) só tem cinco níveis. As células R6 a R9 ficaram com \"Six\", \"Seven\", \"Eight\" e \"Nine\" — sobra não traduzida do gabarito da tabela, e não conteúdo. Quem gerar questão dali sem olhar vai ensinar que R vai até 9, o que contradiz o próprio banco (d9734f60710806a2 marca como falsa a afirmação de que R vai de 1 a 9).",
+   "para_destravar": "Nada a fazer enquanto o PDF não for fonte do gerador. Se virar, o passe de extração precisa ignorar essas quatro células, ou elas viram questão errada — é o mesmo tipo de defeito da Tabela I, em que a forma da tabela enganou a leitura."
   }
  ]
 }

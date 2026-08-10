@@ -1398,7 +1398,7 @@
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
     "afirmacao": "O batimento entre duas frequências próximas gera apenas uma componente na frequência soma das duas originais.",
     "resposta_correta": false,
-    "explicacao_curta": "Mistura/superposição produzem componentes de soma e de diferença; o batimento audível normalmente é a diferença.",
+    "explicacao_curta": "Errado. Somar duas senoides não cria frequência nenhuma: o espectro continua tendo só as duas originais, e o que se ouve é a envoltória pulsando na frequência de diferença. Componentes de soma e de diferença aparecem quando há um elemento não linear no caminho (mistura ou detecção). Em nenhum dos dois casos existe apenas a componente de soma, que é o que a afirmação propõe.",
     "pagina": 29,
     "origem": "ementa",
     "nivel": "B"
@@ -2029,6 +2029,17 @@
     "nivel": "B"
   },
   {
+    "id": "06809111c358ee82",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "No sistema RST, a legibilidade (R) tem cinco níveis, enquanto a intensidade (S) e o tom (T) têm nove cada.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. R vai de 1 (ilegível) a 5 (perfeitamente legível); S vai de 1 (apenas perceptível) a 9 (muito forte) e T, de 1 (nota muito rouca) a 9 (nota de corrente contínua pura).",
+    "pagina": 34,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "270989da567d1ee1",
     "tema": "Técnica e ética operacional",
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
@@ -2214,6 +2225,28 @@
     "afirmacao": "Para garantir que sua transmissão seja ouvida, recomenda-se utilizar sempre a potência máxima disponível do transmissor.",
     "resposta_correta": false,
     "explicacao_curta": "A ética recomenda a menor potência eficaz. Potência excessiva aumenta a probabilidade de interferência desnecessária a outros serviços e radioamadores.",
+    "pagina": 34,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "cbf87c5ee30a5d1e",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "No sistema RST, S1 indica sinal muito forte e S9, sinal apenas perceptível.",
+    "resposta_correta": false,
+    "explicacao_curta": "Errado, a escala é o inverso disso: S1 é o sinal apenas perceptível e S9 é o muito forte.",
+    "pagina": 34,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "cd1499117f85ca88",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "Um relatório RST 599 descreve um sinal perfeitamente legível, muito forte e com nota de corrente contínua pura.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. R5 é perfeitamente legível, S9 é muito forte e T9 é a nota de corrente contínua pura — o relatório clássico de telegrafia.",
     "pagina": 34,
     "origem": "ementa",
     "nivel": "B"
@@ -2583,6 +2616,17 @@
     "trecho_id": "25a22373a47329ec"
   },
   {
+    "id": "1cef9bfe5189e508",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "O código QAP está entre os que o radioamador pode empregar em suas comunicações.",
+    "resposta_correta": false,
+    "explicacao_curta": "Errado. O regulamento restringe o radioamador às séries QRA a QUZ, e QAP fica fora desse intervalo: é da faixa QAA-QNZ, de uso aeronáutico.",
+    "pagina": 36,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "23c6216246e6d056",
     "tema": "Técnica e ética operacional",
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
@@ -2666,6 +2710,17 @@
     "afirmacao": "O código QRK informa a intensidade dos sinais recebidos.",
     "resposta_correta": false,
     "explicacao_curta": "QRK refere-se à inteligibilidade (legibilidade) dos sinais. Intensidade é QSA.",
+    "pagina": 36,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "5c09a7a53315e9a7",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "O código QSX informa em qual frequência a estação está escutando.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. QSX é \"estou escutando ___ em ___ kHz\". É por ele que se anuncia a frequência de escuta na operação em split, comum em pile-up e DXpedição.",
     "pagina": 36,
     "origem": "ementa",
     "nivel": "B"
@@ -2993,12 +3048,34 @@
     "nivel": "B"
   },
   {
+    "id": "177c613d6f9abe8d",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "Sintonizar o transmissor na frequência de emissão ou na frequência de escuta (QSX) da estação de DX é aceitável, desde que se faça rapidamente.",
+    "resposta_correta": false,
+    "explicacao_curta": "Errado. O Código de Conduta DX veda interferir com a estação de DX ou com quem a chama, e sintonizar na frequência de emissão ou de escuta dela é exatamente isso — a pressa não muda a interferência causada.",
+    "pagina": 37,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
     "id": "33c695c657edfb61",
     "tema": "Técnica e ética operacional",
     "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
     "afirmacao": "Em repetidoras, é apropriado manter o PTT pressionado por longos períodos, sem pausas, para assegurar a continuidade da sua fala e evitar interrupções.",
     "resposta_correta": false,
     "explicacao_curta": "O correto é fazer pausas para permitir o tempo do repetidor, evitar travamentos e dar chance a estações com prioridade (inclusive emergências).",
+    "pagina": 37,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "352d6768108c2d07",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "Quando a estação de DX pede apenas um prefixo ou uma área geográfica diferente da sua, você pode chamar assim mesmo, desde que aguarde alguns segundos.",
+    "resposta_correta": false,
+    "explicacao_curta": "Errado. O Código de Conduta DX é explícito: nunca emitir quando o operador de DX solicita outro prefixo ou outra área geográfica que não a sua.",
     "pagina": 37,
     "origem": "ementa",
     "nivel": "B"
@@ -3014,6 +3091,17 @@
     "origem": "documento",
     "nivel": "B",
     "trecho_id": "25a22373a47329ec"
+  },
+  {
+    "id": "4bd322afa405a6a8",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "Só se deve chamar uma estação de DX quando ela está sendo recebida em condições aceitáveis.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. É a segunda regra do Código de Conduta DX: chamar sem receber a estação em condições aceitáveis gera interferência sem chance de completar o contato.",
+    "pagina": 37,
+    "origem": "ementa",
+    "nivel": "B"
   },
   {
     "id": "7263a050cfd160cf",
@@ -3055,6 +3143,28 @@
     "afirmacao": "Identificar-se com seu indicativo ao iniciar e ao encerrar cada comunicado, e em intervalos razoáveis durante QSOs longos, é procedimento correto e geralmente exigido.",
     "resposta_correta": true,
     "explicacao_curta": "A identificação clara permite responsabilidade pelo uso do espectro e facilita a coordenação entre estações.",
+    "pagina": 37,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "d345d2d765704ce3",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "Ao chamar uma estação de DX, deve-se sempre emitir o indicativo de chamada completo, e não apenas parte dele.",
+    "resposta_correta": true,
+    "explicacao_curta": "Correto. Emitir o indicativo completo é uma das regras do Código de Conduta DX; chamar só com o sufixo atrapalha a identificação e o registro do contato.",
+    "pagina": 37,
+    "origem": "ementa",
+    "nivel": "B"
+  },
+  {
+    "id": "f885aa53e6fd7b23",
+    "tema": "Técnica e ética operacional",
+    "arquivo_origem": "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf",
+    "afirmacao": "Antes de chamar uma estação de DX, basta a informação disponível no DX Cluster para dar o indicativo dela por identificado.",
+    "resposta_correta": false,
+    "explicacao_curta": "Errado. O Código de Conduta DX pede que não se baseie unicamente no DX Cluster e que se confirme com segurança o indicativo da estação antes de qualquer chamada.",
     "pagina": 37,
     "origem": "ementa",
     "nivel": "B"
