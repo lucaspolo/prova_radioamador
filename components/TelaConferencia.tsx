@@ -398,6 +398,7 @@ export default function TelaConferencia() {
           />
           <button
             onClick={baixar}
+            title="Baixa os achados para virarem conserto, e junto a revisão inteira — é este arquivo que se leva para continuar em outro computador."
             className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700"
           >
             Baixar revisão

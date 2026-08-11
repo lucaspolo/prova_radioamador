@@ -373,6 +373,92 @@ const storage = new StorageFalso();
   checar("importar rejeita não-objeto", revisoesDoArquivo("texto") === null);
 }
 
+// --- o arquivo leva a revisão para outro computador -------------------------
+//
+// O relatório guarda só o que precisa de ação, e por isso não servia de bagagem:
+// reconstruir a revisão a partir dele perdia a nota do achado já dado por visto e
+// perdia inteira a revisão que era só nota. O campo `revisoes` existe para o
+// ida-e-volta ser exato, e é isso que se mede aqui — questão a questão, e não por
+// contagem, que é o que deixava as duas perdas passarem.
+{
+  const em = "2026-01-01T00:00:00.000Z";
+  const outroDia = "2025-12-01T10:00:00.000Z";
+  const [q1, q2, q3, q4] = BANCO;
+
+  const antes: Revisoes = {
+    // Achado encerrado: o veredito volta por `estado`, mas a nota saía de `itens`
+    // junto com ele.
+    [q1.id]: {
+      veredito: q1.resposta_correta ? "V" : "F",
+      nota: "conferi contra a Tabela II",
+      em,
+      visto: em,
+    },
+    // Nota sem veredito e já vista: não cabia em `estado` nem em `itens`.
+    [q2.id]: { veredito: null, nota: "voltar aqui depois", em, visto: em },
+    // Revisada noutro dia: a data dizia antes de qual regeração isso foi feito, e
+    // virava a data da exportação.
+    [q3.id]: { veredito: q3.resposta_correta ? "V" : "F", nota: "", em: outroDia },
+    // Divergência comum, que o formato antigo já levava.
+    [q4.id]: { veredito: q4.resposta_correta ? "F" : "V", nota: "", em },
+  };
+
+  const arquivo = montarExportacao(
+    BANCO,
+    antes,
+    TRECHOS,
+    POR_OCR,
+    "2026-02-02T00:00:00.000Z",
+  );
+  const depois = revisoesDoArquivo(arquivo)!;
+
+  for (const [rotulo, id] of [
+    ["achado dado por visto", q1.id],
+    ["nota sem veredito dada por vista", q2.id],
+    ["revisada em outro dia", q3.id],
+    ["divergência simples", q4.id],
+  ] as const) {
+    checar(
+      `o arquivo devolve a revisão intacta: ${rotulo}`,
+      JSON.stringify(depois[id]) === JSON.stringify(antes[id]),
+      JSON.stringify(depois[id]),
+    );
+  }
+
+  checar(
+    "o backup não inventa revisão em questão não revisada",
+    Object.keys(depois).length === 4,
+    Object.keys(depois).length + " no arquivo",
+  );
+  checar(
+    "o relatório continua guardando só o que pede ação",
+    // q1 e q2 estão encerrados, q3 confere e não tem nota: sobra a divergência.
+    arquivo.itens.length === 1 && arquivo.itens[0]?.id === q4.id,
+  );
+
+  // Arquivo da versão 1, que é o que já está baixado por aí: sem `revisoes`, a
+  // reconstrução antiga tem de continuar valendo.
+  const antigo: Record<string, unknown> = { ...arquivo };
+  delete antigo.revisoes;
+  const doAntigo = revisoesDoArquivo(antigo)!;
+  checar(
+    "arquivo sem o campo novo ainda importa pelo caminho antigo",
+    doAntigo[q4.id]?.veredito === antes[q4.id].veredito &&
+      doAntigo[q1.id]?.visto !== undefined,
+  );
+  checar(
+    "arquivo com `revisoes` estragado cai na reconstrução antiga",
+    revisoesDoArquivo({ ...antigo, revisoes: "lixo" })?.[q4.id]?.veredito ===
+      antes[q4.id].veredito,
+  );
+  checar(
+    "entrada estragada no backup não derruba as outras",
+    Object.keys(
+      revisoesDoArquivo({ revisoes: { ...antes, [q1.id]: { veredito: "X" } } })!,
+    ).length === 3,
+  );
+}
+
 // --- criarDestacador() ------------------------------------------------------
 {
   checar("sem passagem não há destacador", criarDestacador(null) === null);
