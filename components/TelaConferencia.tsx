@@ -8,6 +8,7 @@ import {
   achadosTriados,
   agruparEmCapitulos,
   divergente,
+  mesclarRevisoes,
   montarExportacao,
   pendente,
   revisoesDoArquivo,
@@ -249,6 +250,15 @@ export default function TelaConferencia() {
     );
   }
 
+  /**
+   * Recebe a revisão feita em outra máquina.
+   *
+   * Mescla em vez de substituir, e a diferença aparece justamente no caso que a
+   * importação existe para atender: quem revisa nos dois computadores tem
+   * trabalho dos dois lados, e importar não pode ser escolher um. A regra inteira
+   * está em `mesclarRevisoes`; aqui só se conta ao usuário o que ela mexeu, que é
+   * o que substitui a confirmação que esta tela não dá.
+   */
   async function importar(arquivo: File) {
     try {
       const recuperadas = revisoesDoArquivo(JSON.parse(await arquivo.text()));
@@ -256,10 +266,26 @@ export default function TelaConferencia() {
         setMensagem("Arquivo não reconhecido — exporte pela própria tela.");
         return;
       }
-      substituir(recuperadas);
-      setMensagem(
-        `${Object.keys(recuperadas).length} revisões restauradas do arquivo.`,
-      );
+      const m = mesclarRevisoes(revisoes, recuperadas);
+      substituir(m.revisoes);
+
+      if (!m.novas && !m.atualizadas) {
+        setMensagem("Nada novo: o que veio no arquivo já estava aqui.");
+        return;
+      }
+      const partes: string[] = [];
+      if (m.novas) {
+        partes.push(
+          `${m.novas} ${m.novas === 1 ? "revisão nova" : "revisões novas"}`,
+        );
+      }
+      if (m.atualizadas) {
+        partes.push(`${m.atualizadas} atualizada${m.atualizadas === 1 ? "" : "s"}`);
+      }
+      if (m.mantidas) {
+        partes.push(`${m.mantidas} mantida${m.mantidas === 1 ? "" : "s"} daqui`);
+      }
+      setMensagem(partes.join(" · ") + ".");
     } catch {
       setMensagem("Arquivo não reconhecido — exporte pela própria tela.");
     }
@@ -381,6 +407,7 @@ export default function TelaConferencia() {
           )}
           <button
             onClick={() => arquivoRef.current?.click()}
+            title="Recebe um arquivo baixado aqui ou em outro computador. Nada é apagado: o que existe só neste navegador continua, e o arquivo manda no que os dois têm."
             className="text-xs text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
           >
             Importar
@@ -398,6 +425,7 @@ export default function TelaConferencia() {
           />
           <button
             onClick={baixar}
+            title="Baixa os achados para virarem conserto, e junto a revisão inteira — é este arquivo que se leva para continuar em outro computador."
             className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700"
           >
             Baixar revisão

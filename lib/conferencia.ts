@@ -101,7 +101,16 @@ export function agruparEmCapitulos(
 // --- O que o revisor anota --------------------------------------------------
 
 export const CHAVE_CONFERENCIA = "prova-radioamador:conferencia";
-export const VERSAO_CONFERENCIA = 1;
+
+/**
+ * Versão do formato. A 2 acrescentou `revisoes` à exportação — ver `Exportacao`.
+ *
+ * Subir o número não pede migração de nada: `lerRevisoes()` nunca leu este campo
+ * (o envelope no storage só existe para o dia em que a forma mudar de verdade), e
+ * `revisoesDoArquivo()` decide pelo que o arquivo tem, e não pelo que ele diz ter.
+ * O número serve para quem lê o JSON de fora saber qual formato esperar.
+ */
+export const VERSAO_CONFERENCIA = 2;
 
 /**
  * O veredito do revisor sobre uma questão.
@@ -390,8 +399,35 @@ export interface Exportacao {
    * encerrados.
    */
   vistas: string[];
-  /** Mapa compacto `id -> veredito` de tudo que foi revisado; serve de backup. */
+  /**
+   * Mapa compacto `id -> veredito` de tudo que foi revisado.
+   *
+   * É a lente do relatório: quem processa o arquivo cruza isto com os achados já
+   * triados sem carregar nota nem data. Como backup ele não basta — um veredito
+   * não é uma revisão —, e esse trabalho passou para `revisoes`.
+   */
   estado: Record<string, Veredito>;
+  /**
+   * As revisões como estão no navegador, para continuar em outra máquina.
+   *
+   * O resto do arquivo é relatório: existe para virar conserto em
+   * `scripts/correcoes.json`, e por isso guarda só o que precisa de ação. Levar a
+   * revisão para outro computador é o problema oposto — o que não vira achado
+   * ainda é trabalho, e perdê-lo é refazer horas de leitura.
+   *
+   * Reconstruir a revisão a partir do relatório foi o que se tentou antes, e a
+   * conta não fecha: a nota de um achado dado por visto não sai em `itens` (ele é
+   * retido de propósito), e uma nota sem veredito não tem onde caber em `estado`.
+   * As duas sumiam calado. Este campo é o storage tal e qual — sem projeção, não
+   * há o que reconstruir e não há o que perder.
+   *
+   * Custa ~95 bytes por questão revisada — com o banco inteiro revisado o arquivo
+   * sai de 25 KB para 114 KB — e duplica `estado`, o que é barato ao lado de
+   * reler 900 questões. Os dois campos ficam porque são dois leitores: o agente
+   * que tria quer o resumo, e a skill manda lê-lo por script justamente para o
+   * tamanho não importar; a outra máquina quer o original.
+   */
+  revisoes: Revisoes;
 }
 
 /**
@@ -422,6 +458,7 @@ export function montarExportacao(
   const itens: ItemExportado[] = [];
   const vistas: string[] = [];
   const estado: Record<string, Veredito> = {};
+  const backup: Revisoes = {};
   let divergencias = 0;
   let problemas = 0;
   let comNota = 0;
@@ -436,6 +473,11 @@ export function montarExportacao(
 
     const r = revisoes[q.id];
     if (!r) continue;
+
+    // Antes de qualquer filtro: o backup é do que existe, e não do que interessa
+    // ao relatório. Todo `continue` daqui para baixo tira a questão do relatório,
+    // e é exatamente aí que a revisão se perdia.
+    backup[q.id] = r;
 
     if (r.veredito !== null) {
       arquivo.revisadas++;
@@ -505,16 +547,28 @@ export function montarExportacao(
     itens,
     vistas,
     estado,
+    revisoes: backup,
   };
 }
 
 /**
- * Recupera revisões a partir do `estado` de um arquivo exportado.
+ * Recupera as revisões de um arquivo exportado.
  *
- * O que volta é menos do que saiu: `estado` guarda o veredito, não a
- * justificativa — quem tinha as notas eram os `itens`, e esses só trazem o que
- * era achado. Por isso as duas fontes se somam aqui, com o item mandando na
- * justificativa quando existir.
+ * Dois caminhos, porque há dois formatos no mundo. A partir da versão 2 o
+ * arquivo traz `revisoes`, que é o storage tal e qual: nada a deduzir, nada a
+ * perder, e é ele que manda quando existe.
+ *
+ * Abaixo dele fica a reconstrução dos arquivos antigos, que continua valendo
+ * para qualquer JSON já baixado — e continua sendo aproximada. `estado` guarda o
+ * veredito, não a justificativa; quem tinha as notas eram os `itens`, e esses só
+ * trazem o que era achado. As duas fontes se somam, com o item mandando na
+ * justificativa. O que ela não alcança é o que motivou a versão 2: a nota de um
+ * achado retido em `vistas`, e a revisão que era só nota, sem veredito, e também
+ * foi dada por vista — essa não deixa rastro em nenhum dos dois campos.
+ *
+ * A validação é item a item, e não do arquivo inteiro, pela mesma razão de
+ * `lerRevisoes()`: o arquivo é editável, e descartar horas de revisão por causa
+ * de uma entrada estragada seria pior do que ignorar a entrada.
  */
 export function revisoesDoArquivo(dados: unknown): Revisoes | null {
   if (typeof dados !== "object" || dados === null) return null;
@@ -523,7 +577,17 @@ export function revisoesDoArquivo(dados: unknown): Revisoes | null {
     itens?: unknown;
     vistas?: unknown;
     exportadoEm?: unknown;
+    revisoes?: unknown;
   };
+
+  const backup = d.revisoes;
+  if (typeof backup === "object" && backup !== null && !Array.isArray(backup)) {
+    const limpo: Revisoes = {};
+    for (const [id, r] of Object.entries(backup)) {
+      if (revisaoValida(r)) limpo[id] = r;
+    }
+    return limpo;
+  }
 
   const estado = d.estado;
   if (typeof estado !== "object" || estado === null || Array.isArray(estado)) {
@@ -568,4 +632,73 @@ export function revisoesDoArquivo(dados: unknown): Revisoes | null {
   }
 
   return revisoes;
+}
+
+// --- Importação -------------------------------------------------------------
+
+export interface Mesclagem {
+  revisoes: Revisoes;
+  /** Vieram do arquivo e não existiam aqui. */
+  novas: number;
+  /** Existiam aqui com outro conteúdo, e o arquivo passou por cima. */
+  atualizadas: number;
+  /** Existem só aqui, e continuam onde estavam. */
+  mantidas: number;
+}
+
+function mesmaRevisao(a: Revisao, b: Revisao): boolean {
+  return (
+    a.veredito === b.veredito &&
+    a.nota === b.nota &&
+    a.em === b.em &&
+    a.visto === b.visto
+  );
+}
+
+/**
+ * Junta a revisão de um arquivo com a que já está neste navegador.
+ *
+ * Importar substituía tudo, e substituir é o que torna a ida-e-volta entre dois
+ * computadores perigosa: bastava importar na máquina errada, ou o backup estar um
+ * dia atrasado, para as questões revisadas só aqui sumirem sem aviso. Mesclando,
+ * nenhum caminho apaga trabalho — o que existe só de um lado sobrevive dos dois.
+ *
+ * No que os dois lados têm, o arquivo ganha. Não é arbitragem, é o que o clique
+ * quis dizer: quem escolheu um arquivo e mandou importar pediu o que está nele.
+ *
+ * Decidir por data foi descartado, e o motivo é `aoAnotar()`: reescrever a
+ * justificativa preserva o `em` da decisão original, de propósito. Uma nota
+ * editada hoje carrega o carimbo da semana passada, então "mais recente vence"
+ * seria uma regra que perde justamente o trabalho mais novo, e perde calada. É
+ * pior ter um critério errado do que não ter critério nenhum: sem ele, o que a
+ * mesclagem faz cabe numa frase, e a tela diz em números o que mexeu.
+ */
+export function mesclarRevisoes(
+  locais: Revisoes,
+  doArquivo: Revisoes,
+): Mesclagem {
+  const revisoes: Revisoes = { ...locais };
+  let novas = 0;
+  let atualizadas = 0;
+
+  for (const [id, r] of Object.entries(doArquivo)) {
+    const atual = revisoes[id];
+    if (!atual) {
+      novas++;
+    } else if (mesmaRevisao(atual, r)) {
+      // Reimportar o mesmo arquivo não é mudança nenhuma, e contá-la faria a
+      // tela relatar trabalho que não houve.
+      continue;
+    } else {
+      atualizadas++;
+    }
+    revisoes[id] = r;
+  }
+
+  let mantidas = 0;
+  for (const id of Object.keys(locais)) {
+    if (!(id in doArquivo)) mantidas++;
+  }
+
+  return { revisoes, novas, atualizadas, mantidas };
 }

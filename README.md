@@ -315,9 +315,31 @@ barra de progresso mede sempre sobre o banco inteiro, e não sobre o filtro.
 Tudo fica no `localStorage`, e **Baixar revisão** produz um JSON com o resumo e
 o detalhe só do que precisa de ação — cada item já com afirmação, gabarito,
 veredito, arquivo, página e a passagem de origem, para virar entrada de
-`scripts/correcoes.json` sem abrir mais nada. O arquivo também serve de backup:
-o campo `estado` traz o veredito de todas as revisões, inclusive as que
-conferem, e **Importar** restaura a partir dele.
+`scripts/correcoes.json` sem abrir mais nada.
+
+#### Continuar em outro computador
+
+O `localStorage` é de um navegador só, e a conferência não cabe numa sentada. O
+mesmo arquivo do **Baixar revisão** é a bagagem: além do relatório, ele leva o
+campo `revisoes`, que é a revisão inteira como está no navegador — veredito,
+justificativa, data e as marcas de visto, inclusive das questões que conferiram e
+não têm o que dizer. **Importar** na outra máquina recomeça de onde parou.
+
+O relatório sozinho não servia para isso, e é essa a razão de o campo existir:
+ele guarda só o que precisa de ação, então a nota de um achado já dado por visto
+e a anotação escrita antes de decidir não tinham por onde voltar. Sumiam em
+silêncio, que é o pior jeito de perder três horas de leitura.
+
+**Importar não apaga.** Ele mescla: o que existe só neste navegador continua
+onde está, o que vem só no arquivo entra, e no que os dois têm o arquivo manda —
+é o que o clique quis dizer. A tela conta em números o que mexeu (`novas`,
+`atualizadas`, `mantidas daqui`), porque não há confirmação nem desfazer. Decidir
+por data foi descartado de propósito: reescrever uma justificativa preserva o
+carimbo da decisão original, então "mais recente vence" perderia justamente o
+trabalho mais novo.
+
+Arquivos baixados antes disso (versão 1, sem `revisoes`) continuam importando
+pela reconstrução antiga, aproximada — com as perdas acima.
 
 #### O que já foi decidido não volta a pedir trabalho
 

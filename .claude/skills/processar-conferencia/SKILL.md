@@ -56,6 +56,13 @@ todos constam em `achados` — um id em `vistas` sem decisão registrada seria
 achado sumindo em silêncio, e aí o assunto é esse. O caminho de volta existe: o
 revisor tira a marca reabrindo o veredito na tela.
 
+**`revisoes` não é para esta skill.** A partir da versão 2 o arquivo carrega a
+revisão inteira como está no navegador, para o revisor continuar em outro
+computador. São centenas de entradas, quase todas de questões que conferiram e
+não pedem nada. O que precisa de ação continua sendo `itens`; não trate o que só
+aparece em `revisoes` como achado, ou você vai triar 900 questões que ninguém
+questionou.
+
 ### 2. Conferir cada achado antes de agir
 
 **O revisor também erra.** Nunca escreva um conserto só porque o veredito
