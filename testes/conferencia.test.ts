@@ -9,6 +9,7 @@ import {
   divergente,
   gravarRevisoes,
   lerRevisoes,
+  mesclarRevisoes,
   montarExportacao,
   ordenar,
   ordenarCapitulos,
@@ -456,6 +457,63 @@ const storage = new StorageFalso();
     Object.keys(
       revisoesDoArquivo({ revisoes: { ...antes, [q1.id]: { veredito: "X" } } })!,
     ).length === 3,
+  );
+}
+
+// --- mesclarRevisoes() ------------------------------------------------------
+//
+// Importar substituía tudo, e era isso que tornava a ida-e-volta entre dois
+// computadores capaz de apagar trabalho.
+{
+  const em = "2026-01-01T00:00:00.000Z";
+  const [q1, q2, q3] = BANCO;
+  const v = (q: Questao): Revisoes[string] => ({
+    veredito: q.resposta_correta ? "V" : "F",
+    nota: "",
+    em,
+  });
+
+  const locais: Revisoes = { [q1.id]: v(q1), [q2.id]: v(q2) };
+  const doArquivo: Revisoes = {
+    [q2.id]: { ...v(q2), nota: "revisto no outro computador" },
+    [q3.id]: v(q3),
+  };
+  const m = mesclarRevisoes(locais, doArquivo);
+
+  checar("o que só existe aqui sobrevive à importação", !!m.revisoes[q1.id]);
+  checar("o que só existe no arquivo entra", !!m.revisoes[q3.id]);
+  checar(
+    "no que os dois têm, o arquivo manda",
+    m.revisoes[q2.id]?.nota === "revisto no outro computador",
+  );
+  checar(
+    "a tela consegue dizer o que mexeu",
+    m.novas === 1 && m.atualizadas === 1 && m.mantidas === 1,
+    `novas ${m.novas}, atualizadas ${m.atualizadas}, mantidas ${m.mantidas}`,
+  );
+  checar(
+    "mesclar não muda o que estava aqui",
+    Object.keys(locais).length === 2 && locais[q2.id]?.nota === "",
+  );
+
+  // Reimportar o mesmo arquivo é o gesto mais provável de todos — clicar duas
+  // vezes, ou voltar ao computador de onde o arquivo saiu.
+  const repetido = mesclarRevisoes(m.revisoes, doArquivo);
+  checar(
+    "reimportar o mesmo arquivo não relata mudança",
+    repetido.novas === 0 && repetido.atualizadas === 0,
+  );
+  checar(
+    "reimportar o mesmo arquivo não muda nada",
+    JSON.stringify(repetido.revisoes) === JSON.stringify(m.revisoes),
+  );
+
+  const emBranco = mesclarRevisoes({}, doArquivo);
+  checar(
+    "no computador novo a mesclagem é a restauração inteira",
+    Object.keys(emBranco.revisoes).length === 2 &&
+      emBranco.novas === 2 &&
+      emBranco.mantidas === 0,
   );
 }
 

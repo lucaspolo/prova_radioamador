@@ -633,3 +633,72 @@ export function revisoesDoArquivo(dados: unknown): Revisoes | null {
 
   return revisoes;
 }
+
+// --- Importação -------------------------------------------------------------
+
+export interface Mesclagem {
+  revisoes: Revisoes;
+  /** Vieram do arquivo e não existiam aqui. */
+  novas: number;
+  /** Existiam aqui com outro conteúdo, e o arquivo passou por cima. */
+  atualizadas: number;
+  /** Existem só aqui, e continuam onde estavam. */
+  mantidas: number;
+}
+
+function mesmaRevisao(a: Revisao, b: Revisao): boolean {
+  return (
+    a.veredito === b.veredito &&
+    a.nota === b.nota &&
+    a.em === b.em &&
+    a.visto === b.visto
+  );
+}
+
+/**
+ * Junta a revisão de um arquivo com a que já está neste navegador.
+ *
+ * Importar substituía tudo, e substituir é o que torna a ida-e-volta entre dois
+ * computadores perigosa: bastava importar na máquina errada, ou o backup estar um
+ * dia atrasado, para as questões revisadas só aqui sumirem sem aviso. Mesclando,
+ * nenhum caminho apaga trabalho — o que existe só de um lado sobrevive dos dois.
+ *
+ * No que os dois lados têm, o arquivo ganha. Não é arbitragem, é o que o clique
+ * quis dizer: quem escolheu um arquivo e mandou importar pediu o que está nele.
+ *
+ * Decidir por data foi descartado, e o motivo é `aoAnotar()`: reescrever a
+ * justificativa preserva o `em` da decisão original, de propósito. Uma nota
+ * editada hoje carrega o carimbo da semana passada, então "mais recente vence"
+ * seria uma regra que perde justamente o trabalho mais novo, e perde calada. É
+ * pior ter um critério errado do que não ter critério nenhum: sem ele, o que a
+ * mesclagem faz cabe numa frase, e a tela diz em números o que mexeu.
+ */
+export function mesclarRevisoes(
+  locais: Revisoes,
+  doArquivo: Revisoes,
+): Mesclagem {
+  const revisoes: Revisoes = { ...locais };
+  let novas = 0;
+  let atualizadas = 0;
+
+  for (const [id, r] of Object.entries(doArquivo)) {
+    const atual = revisoes[id];
+    if (!atual) {
+      novas++;
+    } else if (mesmaRevisao(atual, r)) {
+      // Reimportar o mesmo arquivo não é mudança nenhuma, e contá-la faria a
+      // tela relatar trabalho que não houve.
+      continue;
+    } else {
+      atualizadas++;
+    }
+    revisoes[id] = r;
+  }
+
+  let mantidas = 0;
+  for (const id of Object.keys(locais)) {
+    if (!(id in doArquivo)) mantidas++;
+  }
+
+  return { revisoes, novas, atualizadas, mantidas };
+}
