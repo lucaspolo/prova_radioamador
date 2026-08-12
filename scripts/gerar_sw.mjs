@@ -7,8 +7,11 @@
 //
 // Estratégias, decididas por rota:
 // - navegação (HTML): rede primeiro, cache como reserva offline;
-// - /_next/static e /pdfs: cache primeiro (nomes com hash são imutáveis, e os
-//   PDFs somam ~5 MB — baixam uma vez, ficam para leitura offline);
+// - /_next/static: cache primeiro (nomes com hash são imutáveis);
+// - /pdfs: cache primeiro também, mas honrando Range — o pdf.js lê por faixa,
+//   e cache-primeiro cru devolve o arquivo inteiro para quem pediu um pedaço
+//   (ver `comFaixa`). Os PDFs somam ~5 MB: baixam uma vez, ficam para leitura
+//   offline;
 // - demais GETs (trechos.json, worker do pdf.js): rede primeiro com reserva.
 //
 // Os PDFs ficam num cache próprio que sobrevive a deploys: o conteúdo deles
@@ -83,6 +86,49 @@ function cachePrimeiro(req, nomeCache) {
   );
 }
 
+// O PDF tem de honrar Range, ou o pdf.js quebra.
+//
+// \`caches.match()\` casa só pela URL: o header Range é ignorado, e o cache
+// devolve o arquivo inteiro para quem pediu um pedaço. O pdf.js pede o último
+// pedaço da Cartilha (9.855 bytes a partir do byte 1.507.328), recebe 1.517.183,
+// e aborta com "Bad end offset: 3024511" — a soma dos dois. Cache-primeiro cru
+// não serve para arquivo que se lê por faixa.
+//
+// A busca na rede é sempre da URL sem o header, de propósito: o Cache Storage
+// recusa guardar 206, e é o arquivo inteiro que interessa para a leitura
+// offline. O recorte sai de \`blob.slice()\`, que é uma vista e não uma cópia —
+// fatiar 23 pedaços não relê 1,5 MB vinte e três vezes.
+async function comFaixa(req, nomeCache) {
+  const cache = await caches.open(nomeCache);
+  let inteiro = await cache.match(req.url);
+  if (!inteiro) {
+    inteiro = await fetch(req.url);
+    if (inteiro.ok) await cache.put(req.url, inteiro.clone());
+  }
+
+  const faixa = req.headers.get("range");
+  const m = faixa && /^bytes=(\\d*)-(\\d*)$/.exec(faixa);
+  if (!m || !inteiro.ok) return inteiro;
+
+  const blob = await inteiro.blob();
+  const total = blob.size;
+  // "bytes=-500" são os últimos 500, e não os 500 primeiros.
+  const inicio = m[1] ? Number(m[1]) : Math.max(0, total - Number(m[2] || 0));
+  const fim = m[1] && m[2] ? Math.min(Number(m[2]), total - 1) : total - 1;
+  if (inicio > fim) return inteiro;
+
+  return new Response(blob.slice(inicio, fim + 1), {
+    status: 206,
+    statusText: "Partial Content",
+    headers: {
+      "Content-Type": inteiro.headers.get("Content-Type") || "application/pdf",
+      "Content-Length": String(fim - inicio + 1),
+      "Content-Range": \`bytes \${inicio}-\${fim}/\${total}\`,
+      "Accept-Ranges": "bytes",
+    },
+  });
+}
+
 function redePrimeiro(req, fallback) {
   return fetch(req)
     .then((resp) => {
@@ -103,7 +149,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   if (url.pathname.startsWith("/pdfs/")) {
-    e.respondWith(cachePrimeiro(e.request, CACHE_PDFS));
+    e.respondWith(comFaixa(e.request, CACHE_PDFS));
     return;
   }
   if (url.pathname.startsWith("/_next/static/")) {
