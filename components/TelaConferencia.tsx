@@ -20,7 +20,7 @@ import { caminhoPdf } from "@/lib/pdfs";
 import { BANCO } from "@/lib/questoes";
 import { carregarTrechos, localizarPassagem } from "@/lib/trechos";
 import ocrVisao from "@/lib/ocr-visao.json";
-import type { Tema, Trecho } from "@/lib/tipos";
+import type { Nivel, Tema, Trecho } from "@/lib/tipos";
 
 /**
  * O pdf.js depende de DOM, Canvas e Worker, e quebraria a geração estática —
@@ -74,6 +74,12 @@ export default function TelaConferencia() {
   const [trechos, setTrechos] = useState<Record<string, Trecho>>({});
   const [arquivoFiltro, setArquivoFiltro] = useState("");
   const [temaFiltro, setTemaFiltro] = useState<Tema | "">("");
+  // O filtro de classes é pelo `nivel`, e não uma opção por classe: C e B
+  // sorteiam o mesmo acervo (nível "B") e a Classe A sorteia o banco inteiro,
+  // então "filtrar pela C", "pela B" e "pela A" seriam três nomes para duas
+  // listas — uma delas o banco todo. O que separa questões é o nível, e as
+  // opções o dizem na língua das classes.
+  const [nivelFiltro, setNivelFiltro] = useState<Nivel | "">("");
   const [filtro, setFiltro] = useState<Filtro>("todas");
   const [modoCego, setModoCego] = useState(false);
   const [selBruto, setSel] = useState(0);
@@ -104,6 +110,7 @@ export default function TelaConferencia() {
       .filter((q) => {
         if (arquivoFiltro && q.arquivo_origem !== arquivoFiltro) return false;
         if (temaFiltro && q.tema !== temaFiltro) return false;
+        if (nivelFiltro && q.nivel !== nivelFiltro) return false;
         const r = revisoes[q.id];
         if (filtro === "triadas") return IDS_TRIADOS.has(q.id);
         if (filtro === "pendentes") return !r?.veredito;
@@ -128,7 +135,7 @@ export default function TelaConferencia() {
         trocouPagina: trocouArquivo || anterior?.pagina !== q.pagina,
       };
     });
-  }, [capitulos, arquivoFiltro, temaFiltro, filtro, revisoes]);
+  }, [capitulos, arquivoFiltro, temaFiltro, nivelFiltro, filtro, revisoes]);
 
   // O índice é preso à lista no momento da leitura: trocar de filtro pode
   // encurtá-la, e corrigir isso num efeito custaria um render com o painel
@@ -367,6 +374,16 @@ export default function TelaConferencia() {
               {t}
             </option>
           ))}
+        </select>
+
+        <select
+          value={nivelFiltro}
+          onChange={(e) => setNivelFiltro(e.target.value as Nivel | "")}
+          className="max-w-48 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        >
+          <option value="">todas as classes</option>
+          <option value="B">valem para C, B e A</option>
+          <option value="A">só o acréscimo da Classe A</option>
         </select>
 
         <div className="flex gap-1">

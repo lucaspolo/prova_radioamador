@@ -102,6 +102,24 @@ export default function ItemConferencia({
           )}
         </span>
 
+        {/* O acervo comum é 9 em cada 10 questões, então ele fica em cinza e o
+            acréscimo da Classe A ganha a cor: o que vale a pena saltar aos
+            olhos é a exceção, não a regra. */}
+        <span
+          className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+            q.nivel === "A"
+              ? "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"
+              : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+          }`}
+          title={
+            q.nivel === "A"
+              ? "Acréscimo exclusivo da Classe A — não cai nas provas das classes B e C"
+              : "Está no programa até a Classe B — cai nas provas das classes C, B e A"
+          }
+        >
+          {q.nivel === "A" ? "só classe A" : "classes C · B · A"}
+        </span>
+
         {diverge && (
           // Sob triagem o vermelho sai: a divergência continua sendo verdade,
           // mas deixou de ser pendência, e pintá-la de alarme faria a tela
