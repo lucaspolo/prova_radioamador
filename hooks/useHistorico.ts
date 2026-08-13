@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Resposta } from "@/lib/tipos";
+import type { Classe, Resposta } from "@/lib/tipos";
 import {
   gravar,
   ler,
@@ -49,7 +49,11 @@ export function useHistorico() {
   }, []);
 
   const registrar = useCallback(
-    (escolha: EscolhaRegistro, respostas: Resposta[]) => {
+    (
+      escolha: EscolhaRegistro,
+      respostas: Resposta[],
+      extras?: { classe?: Classe },
+    ) => {
       if (respostas.length === 0) return;
       // Calculado fora do updater, como no `importar`: o resultado de
       // `gravar()` precisa virar estado, e updater é função pura. Não há
@@ -58,10 +62,10 @@ export function useHistorico() {
       persistir({
         ...historico,
         // Os mais recentes ficam à frente; o excedente antigo é descartado.
-        simulados: [montarRegistro(escolha, respostas), ...historico.simulados].slice(
-          0,
-          MAX_SIMULADOS,
-        ),
+        simulados: [
+          montarRegistro(escolha, respostas, extras),
+          ...historico.simulados,
+        ].slice(0, MAX_SIMULADOS),
       });
     },
     [historico, persistir],
