@@ -27,6 +27,7 @@ export default function CriarDesafio({
   classe: Classe;
   onImprimir: (desafio: Desafio) => void;
 }) {
+  const [aberto, setAberto] = useState(false);
   const [link, setLink] = useState<string | null>(null);
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -63,15 +64,53 @@ export default function CriarDesafio({
     setTimeout(() => setAviso(null), 2500);
   }
 
+  // Recolhido por padrão: organizar prova para outras pessoas é o que menos se
+  // faz nesta tela. O rótulo fechado precisa anunciar as DUAS saídas — quem
+  // procura "imprimir a prova" não adivinharia que ela mora atrás de
+  // "desafiar".
+  if (!aberto) {
+    return (
+      <button
+        onClick={() => setAberto(true)}
+        aria-expanded={false}
+        className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left transition hover:border-slate-400 dark:border-slate-800 dark:hover:border-slate-500"
+      >
+        <span>
+          <span className="font-semibold">Desafiar o radioclube</span>
+          <span className="block text-sm text-slate-500 dark:text-slate-400">
+            Um link com a mesma bateria para todos — ou a prova impressa, em
+            branco e com gabarito.
+          </span>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-slate-400">
+          ▼
+        </span>
+      </button>
+    );
+  }
+
   return (
     <section className="rounded-xl border-2 border-slate-300 p-4 dark:border-slate-700">
-      <h3 className="font-semibold">Desafiar o radioclube</h3>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-semibold">Desafiar o radioclube</h3>
+        <button
+          onClick={() => setAberto(false)}
+          aria-expanded={true}
+          className="text-xs font-medium text-slate-500 underline dark:text-slate-400"
+        >
+          recolher
+        </button>
+      </div>
       <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
         Um link, a mesma bateria para todos: {ROTULO_CURTO[tema]},{" "}
         {quantidade} questões da Classe {classe}, em modo prova e com o
         cronômetro oficial. As questões saem da semente do link, e não do
-        histórico de cada um — por isso dá para comparar os resultados. Dá para
-        imprimir a mesma bateria em branco, para aplicar em papel.
+        histórico de cada um — por isso dá para comparar os resultados.
+      </p>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        A mesma bateria também sai <strong>impressa</strong>: folha em branco
+        para marcar V ou F à caneta e gabarito em página separada. Quem faltou à
+        aula responde pelo link e cai nas mesmas questões.
       </p>
 
       {link === null ? (
@@ -79,7 +118,7 @@ export default function CriarDesafio({
           onClick={criar}
           className="mt-3 rounded-lg border-2 border-slate-300 px-4 py-2 text-sm font-semibold transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
         >
-          Criar link do desafio
+          Criar a bateria
         </button>
       ) : (
         <div className="mt-3 space-y-2">

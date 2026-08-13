@@ -315,6 +315,25 @@ function h(...simulados: SimuladoSalvo[]): Historico {
     "preferência gravada antes de a classe existir cai no padrão",
     validarPreferencias({ tema: "claro", escala: "grande" }).classe === "B",
   );
+  // Regime e cronômetro passaram a ser lembrados quando a tela inicial
+  // recolheu "Como conduzir": esconder um controle sem lembrar a escolha
+  // obrigaria a reabrir o bloco toda sessão.
+  checar(
+    "os dois regimes são aceitos",
+    (["treino", "cego"] as const).every(
+      (r) => validarPreferencias({ regime: r }).regime === r,
+    ),
+  );
+  checar(
+    "regime desconhecido cai no treino",
+    validarPreferencias({ regime: "meio-termo" }).regime === "treino",
+  );
+  checar(
+    "só false desliga o cronômetro",
+    validarPreferencias({ cronometrar: false }).cronometrar === false &&
+      validarPreferencias({ cronometrar: "sim" }).cronometrar === true &&
+      validarPreferencias({}).cronometrar === true,
+  );
   checar(
     "a escala normal não mexe no tamanho",
     FATOR_ESCALA.normal === 1 &&
