@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/estudo.test.ts && tsx testes/bateria.test.ts && tsx testes/prioridade.test.ts && tsx testes/pdfs.test.ts && tsx testes/paginas.test.ts && tsx testes/trechos.test.ts && tsx testes/classes.test.ts && tsx testes/cobertura.test.ts && tsx testes/calculos.test.ts && tsx testes/referencia.test.ts && tsx testes/conferencia.test.ts && tsx testes/render.test.tsx",
     "predev": "node scripts/preparar_worker.mjs",
     "prebuild": "node scripts/preparar_worker.mjs",
