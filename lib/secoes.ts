@@ -27,9 +27,12 @@ export interface Secao {
   ancora?: string;
 }
 
-const CARTILHA = "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf";
+// Exportados os dois que outros módulos endereçam por nome (lib/atalhos.ts):
+// o nome do arquivo é a chave de `lib/mapa-pdfs.json`, e repeti-lo à mão em
+// outro arquivo é errata esperando acontecer.
+export const CARTILHA = "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf";
 const ATO_926 = "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf";
-const ATO_3448 = "SEI_ANATEL - 15307586 - Ato_orginal.pdf";
+export const ATO_3448 = "SEI_ANATEL - 15307586 - Ato_orginal.pdf";
 const RES_777 = "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf";
 const ATO_3445 = "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf";
 const ATO_926_UHF = "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf";

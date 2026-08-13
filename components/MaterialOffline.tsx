@@ -39,7 +39,6 @@ export default function MaterialOffline() {
     let vivo = true;
     void contarBaixados().then((baixados) => {
       if (!vivo) return;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEstado(
         baixados >= ARQUIVOS.length
           ? { fase: "completo" }
