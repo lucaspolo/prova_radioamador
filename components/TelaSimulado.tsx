@@ -71,10 +71,19 @@ export default function TelaSimulado({
   // de 20 questões, a mão não precisa sair do teclado.
   useEffect(() => {
     function aoTeclar(e: KeyboardEvent) {
+      const alvo = e.target as HTMLElement | null;
+      if (alvo?.closest("input, textarea, select")) return;
+      // Com um botão em foco, Enter e espaço pertencem a ele — senão quem
+      // navega por Tab até "Consultar material" ou "Marcar como suspeita"
+      // pula de questão em vez de acionar o botão. O botão de avançar tem
+      // autoFocus e onClick, então o Enter nele continua avançando, agora
+      // pelo clique nativo.
+      const emBotao = alvo?.closest("button, a") != null;
+
       const k = e.key.toLowerCase();
       if (!respondida && (k === "v" || k === "1")) responder(true);
       else if (!respondida && (k === "f" || k === "2")) responder(false);
-      else if (respondida && (k === "enter" || k === " ")) {
+      else if (!emBotao && respondida && (k === "enter" || k === " ")) {
         e.preventDefault();
         avancar();
       }
