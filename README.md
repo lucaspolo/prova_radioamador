@@ -55,9 +55,9 @@ scripts/      processar_pdfs.py — gerador do banco de questões
               auditar_ocr.py — segundo leitor dos PDFs digitalizados
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
               exportar_tabelas.ts — tabelas de referência para o gerador
-testes/       sorteio, histórico, estudo, bateria, prioridade, PDFs, páginas,
-              trechos, classes, cobertura, cálculos, referência, conferência
-              e render
+testes/       sorteio, histórico, estudo, bateria, prioridade, prontidão,
+              PDFs, páginas, trechos, seções, atalhos, classes, cobertura,
+              cálculos, referência, dataset, conferência e render
 public/       banco_questoes.json, trechos.json e pdfs/
 ```
 
@@ -386,19 +386,100 @@ os 5,4 MB dos seis arquivos antes da primeira questão —, então
 `npm run conferencia` materializa o resultado em `lib/ocr-visao.json`, como
 `npm run pdfs` faz com `lib/mapa-pdfs.json`.
 
-## Formato do banco
+## O banco como dataset aberto
 
-```json
-{
-  "id": "uuid",
-  "tema": "Legislação de Telecomunicações",
-  "arquivo_origem": "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf",
-  "afirmacao": "Texto da afirmação",
-  "resposta_correta": true,
-  "explicacao_curta": "Justificativa",
-  "pagina": 5
-}
+Tudo que está em `public/` vai inteiro para o export estático, então o banco não
+é só um arquivo do repositório: ele é **servido pelo site**, sem chave e sem
+CORS no caminho.
+
+| Arquivo | URL | Tamanho |
+| --- | --- | --- |
+| Banco de questões | <https://prova-radioamador.vercel.app/banco_questoes.json> | ~535 KB |
+| Trechos de origem | <https://prova-radioamador.vercel.app/trechos.json> | ~258 KB |
+
+```bash
+curl -s https://prova-radioamador.vercel.app/banco_questoes.json |
+  jq '[.[] | select(.nivel == "B" and .tema == "Legislação de Telecomunicações")] | length'
 ```
+
+Serve para baralho de flashcards, bot de estudo de radioclube, análise de
+cobertura da ementa — ou qualquer coisa que hoje começaria raspando PDF do zero.
+
+O `id` é estável de propósito: é o sha1 da afirmação normalizada, truncado em 16
+caracteres. Regerar o banco não embaralha as chaves, e quem guardar o progresso
+por `id` continua apontando para a mesma questão depois de uma atualização.
+Idem para `trecho_id`, que deriva de arquivo + página + texto — se a extração
+mudar, o id muda junto, e nenhuma questão passa a citar um trecho que não foi o
+que a gerou.
+
+### Formato
+
+`banco_questoes.json` é um array de objetos. `lib/tipos.ts` é a versão
+normativa disto (com o porquê de cada campo).
+
+| Campo | Tipo | Sempre? | O que é |
+| --- | --- | --- | --- |
+| `id` | string | sim | sha1 da afirmação normalizada, 16 caracteres |
+| `tema` | string | sim | uma das três matérias da prova |
+| `afirmacao` | string | sim | a proposição a julgar |
+| `resposta_correta` | boolean | sim | o gabarito |
+| `explicacao_curta` | string | sim | a justificativa mostrada depois da resposta |
+| `arquivo_origem` | string | sim | nome do PDF oficial de onde saiu |
+| `pagina` | number | sim | página nesse PDF |
+| `origem` | `"documento"` \| `"ementa"` | sim | `documento`: a página é a fonte literal da afirmação. `ementa`: a questão nasceu de um tópico do conteúdo programático, e a página é o capítulo que trata do assunto |
+| `nivel` | `"B"` \| `"A"` | sim | `A` marca o que só a Classe A cobra; `B` vale também para a Classe C |
+| `trecho_id` | string | só `documento` | chave em `trechos.json` do texto que gerou a afirmação |
+| `topico` | string | só `ementa` | o tópico da ementa que dirigiu a geração |
+| `peso` | number | raro | peso fixo no sorteio, quando ≠ 1 (ver `lib/tipos.ts`) |
+
+`trechos.json` é um objeto indexado por `trecho_id`, com `arquivo`, `pagina`,
+`fim` e `texto` — a passagem exatamente como foi enviada ao modelo.
+
+### Números
+
+| Recorte | Quantidade |
+| --- | --- |
+| Afirmações | 914 |
+| De trecho literal (`origem: "documento"`) | 480 |
+| Da ementa (`origem: "ementa"`) | 434 |
+| Exclusivas da Classe A (`nivel: "A"`) | 82 |
+| Legislação de Telecomunicações | 350 |
+| Conhecimentos de Eletrônica e Eletricidade | 308 |
+| Técnica e ética operacional | 256 |
+| Trechos em `trechos.json` | 55 |
+| PDFs de origem | 6 |
+
+`testes/dataset.test.ts` confere esta tabela contra o próprio banco: número que
+envelhece aqui derruba a suíte, porque quem consome um dataset lê a
+documentação e acredita nela.
+
+### Antes de usar
+
+As questões são geradas por LLM e revisadas por amostragem — **em divergência, o
+documento oficial da Anatel prevalece**. Quem redistribuir o dataset herda essa
+ressalva e faz bem em repassá-la: cada questão traz `arquivo_origem` e `pagina`
+justamente para que a conferência na fonte seja um clique, e os seis PDFs estão
+em `public/pdfs/`. O estado da revisão humana está em
+`scripts/conferencia_triado.json`.
+
+### Licença do dado
+
+O banco (afirmações, explicações, classificação e metadados) está sob
+[**CC BY 4.0**](https://creativecommons.org/licenses/by/4.0/deed.pt-BR): use,
+adapte e redistribua, inclusive comercialmente, citando a origem. Atribuição
+sugerida:
+
+> Banco de questões de *Simulados — Radioamador (Anatel)*, de Lucas Polo
+> (github.com/lucaspolo/prova_radioamador), sob CC BY 4.0.
+
+Duas fronteiras que a licença **não** atravessa, e é bom dizer em voz alta:
+
+- O `texto` de `trechos.json` é citação literal do material da Anatel. Sobre ele
+  o projeto não reivindica direito nenhum — a licença cobre a curadoria (o
+  recorte, os ids, a ligação com cada questão). Para o texto, a fonte é a
+  Anatel.
+- Os PDFs em `public/pdfs/` são documentos oficiais reproduzidos como material
+  de estudo; não são obra do projeto e não estão sob CC BY 4.0.
 
 ## De onde vem cada tabela de consulta
 
@@ -446,6 +527,13 @@ Anatel prevalece** — use o campo `arquivo_origem` para conferir na fonte.
 
 ## Licença
 
-Código aberto sob a licença [MIT](LICENSE). Sinta-se à vontade para usar,
-modificar e redistribuir. O código-fonte está em
+Não é uma licença só, porque não é tudo do projeto:
+
+| O quê | Licença |
+| --- | --- |
+| Código | [MIT](LICENSE) |
+| Banco de questões (`banco_questoes.json`) e a curadoria de `trechos.json` | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-BR) — ver [Licença do dado](#licença-do-dado) |
+| Texto citado em `trechos.json` e os PDFs de `public/pdfs/` | material oficial da Anatel; não é obra do projeto |
+
+O código-fonte está em
 [github.com/lucaspolo/prova_radioamador](https://github.com/lucaspolo/prova_radioamador).
