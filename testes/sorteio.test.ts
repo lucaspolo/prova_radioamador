@@ -130,5 +130,48 @@ checar(
   checar("mas continua aparecendo", media > 0.2, `${media.toFixed(2)} por bateria`);
 }
 
+// 9. Modo "só inéditas": cobre o que o sorteio ponderado não garante
+{
+  const tema: Tema = "Legislação de Telecomunicações";
+  const doTema = acervo("B").filter((q) => q.tema === tema);
+  // Vistas: todas menos 15 — sobra um resto inédito conhecido.
+  const vistas = doTema.slice(0, doTema.length - 15);
+  const idsVistas = new Set(vistas.map((q) => q.id));
+  const historico = {
+    versao: 1,
+    simulados: [
+      {
+        id: "cobertura",
+        data: "2026-08-01T00:00:00.000Z",
+        escolha: tema,
+        total: vistas.length,
+        acertos: vistas.length,
+        itens: vistas.map((q) => ({
+          questaoId: q.id,
+          tema: q.tema,
+          acertou: true,
+        })),
+      },
+    ],
+  };
+
+  const so = sortearSimulado(tema, 10, historico, "B", { soIneditas: true });
+  checar(
+    "com inéditas de sobra, a bateria sai só delas",
+    so.length === 10 && so.every((q) => !idsVistas.has(q.id)),
+  );
+
+  const cheia = sortearSimulado(tema, 20, historico, "B", { soIneditas: true });
+  checar("faltando inéditas, a bateria ainda sai completa", cheia.length === 20);
+  checar(
+    "as 15 inéditas restantes entram todas",
+    cheia.filter((q) => !idsVistas.has(q.id)).length === 15,
+  );
+  checar(
+    "o completamento não repete questão",
+    new Set(cheia.map((q) => q.id)).size === 20,
+  );
+}
+
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

@@ -13,7 +13,13 @@ import {
   assinar,
   haAtualizacao,
 } from "@/lib/atualizacao-sw";
-import { acervo, questoesParaRevisao, BANCO } from "@/lib/questoes";
+import {
+  acervo,
+  cobertura,
+  questoesIneditas,
+  questoesParaRevisao,
+  BANCO,
+} from "@/lib/questoes";
 import { REPO, urlDeReporte } from "@/lib/reportar";
 import { resumoDeTexto, URL_PROJETO } from "@/lib/compartilhar";
 import {
@@ -135,6 +141,39 @@ function h(...simulados: SimuladoSalvo[]): Historico {
   );
 
   checar("histórico vazio revisa nada", questoesParaRevisao(h(), "B").length === 0);
+}
+
+// --- questoesIneditas e cobertura: o que nunca foi visto ------------------
+{
+  const [a, b] = acervo("B").slice(0, 2);
+  const historico = h(
+    simulado("s1", "2026-08-01", [
+      { questaoId: a.id, tema: a.tema, acertou: true },
+      { questaoId: b.id, tema: b.tema, acertou: false },
+    ]),
+  );
+
+  const ineditas = questoesIneditas(historico, "B");
+  const ids = new Set(ineditas.map((q) => q.id));
+  checar(
+    "questão vista sai das inéditas — acertada ou errada",
+    !ids.has(a.id) && !ids.has(b.id),
+  );
+  checar(
+    "o resto do acervo continua inédito",
+    ineditas.length === acervo("B").length - 2,
+  );
+  checar(
+    "o filtro por tema devolve só o tema",
+    questoesIneditas(historico, "B", a.tema).every((q) => q.tema === a.tema),
+  );
+
+  const c = cobertura(historico, "B");
+  checar(
+    "cobertura conta as vistas sobre o acervo da classe",
+    c.vistas === 2 && c.total === acervo("B").length,
+  );
+  checar("histórico vazio não cobre nada", cobertura(h(), "B").vistas === 0);
 }
 
 // --- suspeitas: sem navegador, degrada em silêncio ------------------------
