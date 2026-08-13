@@ -269,7 +269,7 @@ apareceram porque alguém leu uma questão e desconfiou.
 npm run conferencia   # -> relatorios/conferencia.md
 ```
 
-O relatório traz as 903 questões na ordem em que o assunto aparece nos PDFs,
+O relatório traz todas as questões na ordem em que o assunto aparece nos PDFs,
 cada uma com o gabarito, a explicação, a passagem do trecho que a produziu e o
 `id`. Dá para abrir um PDF, ir descendo as páginas e conferir de uma vez tudo o
 que o banco cobra de cada uma. Quem achar uma questão errada já tem o `id` em
@@ -284,11 +284,12 @@ entre camada de texto e OCR — não de uma lista de nomes, para que um PDF novo
 sem camada de texto suba sozinho para o começo da fila.
 
 A passagem citada é aproximada: sai da mesma função que grifa a origem no app
-(`localizarPassagem`), por sobreposição de termos. Acha o lugar em 474 das 488
+(`localizarPassagem`), por sobreposição de termos. Acha o lugar em 466 das 480
 questões de documento; nas outras o relatório diz que não achou, em vez de
-chutar. As 415 questões da ementa não têm texto de origem nenhum — nasceram de
+chutar. As 434 questões da ementa não têm texto de origem nenhum — nasceram de
 um tópico, não de um trecho —, e ali a página é só o capítulo onde estudar o
-assunto. O relatório marca cada uma.
+assunto. O relatório marca cada uma. Esses números envelhecem com o banco: a
+contagem da rodada é a que o próprio `npm run conferencia` imprime ao final.
 
 `relatorios/` fica fora do histórico: é derivado de dois JSON já versionados, e
 regerar custa menos que carregar meio megabyte de prosa em cada `git diff`.

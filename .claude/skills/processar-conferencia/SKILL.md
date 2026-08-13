@@ -172,6 +172,9 @@ commit já pronto.
 3. A cobertura: quais arquivos ainda têm questões não revisadas, e quantas.
 
 Nunca diga que a revisão terminou enquanto `cobertura` mostrar arquivo com
-`revisadas < total`. O banco tem 903 questões e a conferência é para ser feita
-em várias sessões; um relatório que dá por encerrado o que está pela metade é
-pior que nenhum, porque passa a sensação de cobertura sem ela.
+`revisadas < total`. O banco tem mais de 900 questões e a conferência é para
+ser feita em várias sessões; um relatório que dá por encerrado o que está pela
+metade é pior que nenhum, porque passa a sensação de cobertura sem ela. Os
+totais de `cobertura` são conferidos contra o banco por
+`testes/conferencia.test.ts` — ao atualizar a cobertura, o total certo é o que
+o teste imprime.
