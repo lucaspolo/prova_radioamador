@@ -345,6 +345,28 @@ const PROPS_INICIO = {
   );
   checar("11 de 20 aprova (nota de corte exata)", html3.includes("Aprovado") && !html3.includes("Reprovado"));
 
+  // O navegador recusou gravar (modo privado, cota): o resultado avisa e
+  // manda exportar; sem recusa, o aviso não existe.
+  const htmlRecusa = renderToStaticMarkup(
+    <TelaResultado
+      respostas={respostas}
+      onReiniciar={() => {}}
+      gravacaoRecusada
+    />,
+  );
+  checar(
+    "com gravação recusada, o resultado avisa",
+    htmlRecusa.includes("Este resultado não foi salvo"),
+  );
+  checar(
+    "o aviso manda exportar o histórico",
+    htmlRecusa.includes("exporte o histórico"),
+  );
+  checar(
+    "sem recusa, nenhum aviso de gravação",
+    !html.includes("Este resultado não foi salvo"),
+  );
+
   // Tempo esgotado: questões em branco contam como erro e são identificadas.
   const comBranco: Resposta[] = questoes.map((q, i) => ({
     questao: q,
