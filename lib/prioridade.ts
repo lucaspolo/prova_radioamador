@@ -112,18 +112,24 @@ export function peso(desempenho: Desempenho | undefined): number {
  * Cada item recebe a chave `random^(1/peso)` e ficam os `quantidade` maiores.
  * Isso produz exatamente uma amostra ponderada sem repetição, num único passe
  * e sem sortear de novo em caso de colisão.
+ *
+ * `rand` injetável é o que torna o desafio por link possível: com o gerador de
+ * `lib/semente.ts`, a mesma semente produz a mesma bateria em qualquer
+ * aparelho. A ordem de consumo é fixa (uma chamada por item, na ordem do
+ * banco), então o resultado depende só da semente e do acervo.
  */
 export function amostrarPonderado<T>(
   itens: T[],
   pesos: (item: T) => number,
   quantidade: number,
+  rand: () => number = Math.random,
 ): T[] {
-  if (quantidade >= itens.length) return embaralharSimples(itens);
+  if (quantidade >= itens.length) return embaralharSimples(itens, rand);
 
   return itens
     .map((item) => {
       const p = Math.max(pesos(item), 1e-6); // peso zero nunca sairia
-      return { item, chave: Math.random() ** (1 / p) };
+      return { item, chave: rand() ** (1 / p) };
     })
     .sort((a, b) => b.chave - a.chave)
     .slice(0, quantidade)

@@ -21,6 +21,11 @@ export interface ResumoBateria {
   aprovado?: boolean;
   /** Presente só na prova completa. */
   materias?: MateriaResumo[];
+  /**
+   * Bateria de desafio: o link volta no texto para quem receber poder fazer a
+   * mesma, e o código da bateria denuncia bancos divergentes.
+   */
+  desafio?: { semente: string; link: string; codigo: string };
 }
 
 function placar(acertos: number, total: number): string {
@@ -61,6 +66,15 @@ export function resumoDeTexto(r: ResumoBateria): string {
         r.acertos,
         r.total,
       )}${veredito}`,
+    );
+  }
+
+  // O link do desafio vem antes do link do projeto: quem lê a mensagem no
+  // grupo quer fazer a MESMA bateria, e é o primeiro que faz isso acontecer.
+  if (r.desafio) {
+    linhas.push(
+      `Desafio ${r.desafio.semente} · bateria ${r.desafio.codigo}`,
+      r.desafio.link,
     );
   }
 

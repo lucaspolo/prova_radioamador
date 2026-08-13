@@ -9,6 +9,7 @@ import {
   peso,
   type Desempenho,
 } from "./prioridade";
+import { randDaSemente } from "./semente";
 
 /**
  * O JSON é importado estaticamente: vira parte do bundle, sem fetch e sem
@@ -98,6 +99,33 @@ export function sortearSimulado(
 /** O peso fixo da questão; 1 quando ela não declara nenhum. */
 function pesoProprio(q: Questao): number {
   return q.peso ?? 1;
+}
+
+/**
+ * A bateria de um desafio por link: determinada pela semente, e por mais nada.
+ *
+ * O histórico **não** entra, e é o ponto: se entrasse, cada pessoa do
+ * radioclube receberia uma bateria moldada pelos próprios erros, e comparar
+ * os resultados não significaria nada. Aqui todo mundo que abrir o mesmo link
+ * responde às mesmas questões, na mesma ordem.
+ *
+ * O peso próprio da questão continua valendo — ele é fixo, igual para todos, e
+ * é o que impede a bateria de encher de variações do mesmo molde do plano de
+ * bandas.
+ */
+export function sortearDesafio(
+  tema: Tema,
+  quantidade: number,
+  classe: Classe,
+  semente: string,
+): Questao[] {
+  const candidatas = acervo(classe).filter((q) => q.tema === tema);
+  return amostrarPonderado(
+    candidatas,
+    pesoProprio,
+    quantidade,
+    randDaSemente(semente),
+  );
 }
 
 /**

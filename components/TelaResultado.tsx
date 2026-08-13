@@ -27,6 +27,11 @@ interface Props {
   tema?: Tema;
   /** O navegador recusou gravar o registro desta bateria no histórico. */
   gravacaoRecusada?: boolean;
+  /**
+   * Bateria de desafio: o código entra na tela e o link vai junto no
+   * compartilhamento, para o grupo comparar a mesma bateria.
+   */
+  desafio?: { semente: string; link: string; codigo: string };
 }
 
 export default function TelaResultado({
@@ -38,6 +43,7 @@ export default function TelaResultado({
   motivoFim = "tempo",
   tema,
   gravacaoRecusada = false,
+  desafio,
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -138,8 +144,27 @@ export default function TelaResultado({
 
       {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
+      {desafio && (
+        <div className="rounded-xl border border-slate-300 p-4 text-sm dark:border-slate-700">
+          <div>
+            Desafio <span className="font-mono font-bold">{desafio.semente}</span>{" "}
+            · bateria{" "}
+            <span className="font-mono font-bold">{desafio.codigo}</span>
+          </div>
+          {/* O código é a impressão digital das questões sorteadas. Se dois
+              resultados do mesmo desafio trouxerem códigos diferentes, os
+              aparelhos estão em versões diferentes do banco — e comparar as
+              notas não faria sentido. Melhor descobrir aqui do que na
+              discussão sobre quem foi melhor. */}
+          <p className="mt-1 text-slate-500 dark:text-slate-400">
+            Compare com quem abriu o mesmo link. Código de bateria diferente
+            significa banco de questões diferente — aí não são a mesma prova.
+          </p>
+        </div>
+      )}
+
       <AcoesResultado
-        resumo={{ classe, tema, acertos, total, aprovado }}
+        resumo={{ classe, tema, acertos, total, aprovado, desafio }}
       />
 
       <Gabarito respostas={respostas} permitirTodas={cega} />

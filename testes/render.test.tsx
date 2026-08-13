@@ -11,12 +11,15 @@ import ItemConferencia from "@/components/ItemConferencia";
 import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import Relampago from "@/components/Relampago";
+import TelaDesafio from "@/components/TelaDesafio";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
 import { ATALHOS_DA_PROVA } from "@/lib/atalhos";
 import { BARALHOS } from "@/lib/drill";
-import { sortearSimulado, BANCO } from "@/lib/questoes";
+import { sortearDesafio, sortearSimulado, BANCO } from "@/lib/questoes";
+import { codigoDaBateria } from "@/lib/semente";
 import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
+import { TEMAS } from "@/lib/constantes";
 import type { Resposta } from "@/lib/tipos";
 
 let falhas = 0;
@@ -124,6 +127,11 @@ const PROPS_INICIO = {
   // A consulta rápida virou item de menu: a tela inicial é sobre fazer prova.
   checar("a consulta rápida saiu da tela inicial", !html.includes("Consulta rápida"));
   checar("oferece estudar por assunto", html.includes("Estudar por assunto"));
+  // O link do desafio nasce da configuração escolhida logo acima — e a semente
+  // só é sorteada no clique: sortear no render divergiria entre a build e o
+  // navegador.
+  checar("oferece criar o desafio", html.includes("Desafiar o radioclube"));
+  checar("não sorteia semente na renderização", !html.includes("?desafio="));
 }
 
 // --- Material offline -----------------------------------------------------
@@ -346,6 +354,64 @@ const PROPS_INICIO = {
   // A honestidade do modo é parte dele: memorizar tabela não é estar pronto
   // para o exame, e a tela diz isso antes da primeira pergunta.
   checar("o drill avisa que não é a prova", html.includes("não é a prova"));
+}
+
+// --- Desafio por link -----------------------------------------------------
+{
+  const desafio = {
+    semente: "PY2-SP",
+    tema: TEMAS[0],
+    quantidade: 20,
+    classe: "B" as const,
+  };
+  const html = renderToStaticMarkup(
+    <TelaDesafio desafio={desafio} onComecar={() => {}} onIgnorar={() => {}} />,
+  );
+  checar("a tela do desafio se anuncia", html.includes("Desafio recebido"));
+  checar("mostra a semente", html.includes("PY2-SP"));
+  // Quem clica num link precisa saber que vai entrar numa prova cronometrada
+  // ANTES de o cronômetro começar.
+  checar(
+    "avisa o formato antes de começar",
+    html.includes("modo prova") && html.includes("30 min"),
+  );
+  checar(
+    "deixa recusar",
+    html.includes("Agora não") && html.includes("Começar o desafio"),
+  );
+
+  // No resultado, o código da bateria é o que denuncia banco divergente.
+  const questoes = sortearDesafio(TEMAS[0], 5, "B", "PY2-SP");
+  const respostas: Resposta[] = questoes.map((q) => ({
+    questao: q,
+    respondeu: q.resposta_correta,
+    acertou: true,
+  }));
+  const resultado = renderToStaticMarkup(
+    <TelaResultado
+      respostas={respostas}
+      onReiniciar={() => {}}
+      classe="B"
+      cega
+      desafio={{
+        semente: "PY2-SP",
+        link: "https://exemplo.app/?desafio=PY2-SP&t=legislacao&n=5&c=B",
+        codigo: codigoDaBateria(questoes.map((q) => q.id)),
+      }}
+    />,
+  );
+  checar(
+    "o resultado do desafio mostra semente e código",
+    resultado.includes("PY2-SP") &&
+      resultado.includes(codigoDaBateria(questoes.map((q) => q.id))),
+  );
+  const semDesafio = renderToStaticMarkup(
+    <TelaResultado respostas={respostas} onReiniciar={() => {}} classe="B" />,
+  );
+  checar(
+    "bateria comum não mostra código de bateria",
+    !semDesafio.includes("bateria "),
+  );
 }
 
 // --- Rótulo de procedência ------------------------------------------------
