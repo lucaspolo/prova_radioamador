@@ -35,7 +35,11 @@ function historicoCom(
 ): Historico {
   const simulados: SimuladoSalvo[] = rodadas.map((r, i) => ({
     id: `sim-${i}`,
-    data: new Date(2026, 0, i + 1).toISOString(),
+    // Relativa a agora, um dia por rodada, coerente com a posição no array
+    // (depois do reverse, o índice 0 é o mais recente E o mais novo). Data
+    // fixa no passado ligaria o decaimento por dias em todas as fixtures e
+    // os testes estatísticos mediriam o resgate, não a priorização.
+    data: new Date(Date.now() - (rodadas.length - 1 - i) * 86_400_000).toISOString(),
     escolha: TEMA,
     total: r.erradas.length + r.certas.length,
     acertos: r.certas.length,
@@ -51,17 +55,78 @@ function historicoCom(
 // --- Escala de pesos ------------------------------------------------------
 {
   const nunca = peso(undefined);
-  const errouAgora = peso({ vistas: 1, erros: 1, errouNaUltima: true, simuladosAtras: 5 });
-  const acertouUma = peso({ vistas: 1, erros: 0, errouNaUltima: false, simuladosAtras: 5 });
-  const dominada = peso({ vistas: 4, erros: 0, errouNaUltima: false, simuladosAtras: 5 });
+  const errouAgora = peso({ vistas: 1, erros: 1, errouNaUltima: true, simuladosAtras: 5, diasAtras: 0 });
+  const acertouUma = peso({ vistas: 1, erros: 0, errouNaUltima: false, simuladosAtras: 5, diasAtras: 0 });
+  const dominada = peso({ vistas: 4, erros: 0, errouNaUltima: false, simuladosAtras: 5, diasAtras: 0 });
 
   checar("errada pesa mais que inédita", errouAgora > nunca, `${errouAgora} > ${nunca}`);
   checar("inédita pesa mais que já acertada", nunca > acertouUma, `${nunca} > ${acertouUma}`);
   checar("dominada é a de menor peso", dominada < acertouUma, `${dominada} < ${acertouUma}`);
   checar("nenhum peso é zero ou negativo", [nunca, errouAgora, acertouUma, dominada].every((p) => p > 0));
 
-  const recem = peso({ vistas: 1, erros: 1, errouNaUltima: true, simuladosAtras: 0 });
+  const recem = peso({ vistas: 1, erros: 1, errouNaUltima: true, simuladosAtras: 0, diasAtras: 0 });
   checar("questão recém-vista é despriorizada, mesmo errada", recem < errouAgora, `${recem} < ${errouAgora}`);
+}
+
+// --- Decaimento por dias: a memória de longo prazo do peso ----------------
+{
+  // A dominada de hoje quase sai do sorteio; a dominada de três semanas atrás
+  // volta com peso de questão neutra — a curva do esquecimento já cobrou.
+  const fresca = peso({ vistas: 4, erros: 0, errouNaUltima: false, simuladosAtras: 5, diasAtras: 2 });
+  const esquecida = peso({ vistas: 4, erros: 0, errouNaUltima: false, simuladosAtras: 5, diasAtras: 21 });
+  checar("dominada há 3 semanas volta ao sorteio", esquecida >= 1, String(esquecida));
+  checar("dominada recente continua rareando", fresca === 0.5, String(fresca));
+
+  const erroDeHoje = peso({ vistas: 2, erros: 1, errouNaUltima: true, simuladosAtras: 2, diasAtras: 0 });
+  const erroEsquecido = peso({ vistas: 2, erros: 1, errouNaUltima: true, simuladosAtras: 2, diasAtras: 3 });
+  checar(
+    "erro esquecido há 3 dias volta antes do erro de hoje",
+    erroEsquecido > erroDeHoje,
+    `${erroEsquecido} > ${erroDeHoje}`,
+  );
+
+  // O resgate é PISO, não multiplicador: vence até o damping de recência
+  // quando os dias mandam (uma bateria única feita há um mês).
+  const dampedMasVelha = peso({ vistas: 4, erros: 0, errouNaUltima: false, simuladosAtras: 0, diasAtras: 30 });
+  checar("resgate vence o damping quando os dias mandam", dampedMasVelha >= 1, String(dampedMasVelha));
+
+  // E o intra-sessão continua intacto: tudo com diasAtras 0 se comporta como
+  // antes do campo existir.
+  const intraSessao = peso({ vistas: 1, erros: 1, errouNaUltima: true, simuladosAtras: 0, diasAtras: 0 });
+  checar("intra-sessão inalterado (8 × 0,35)", Math.abs(intraSessao - 2.8) < 1e-9, String(intraSessao));
+}
+
+// --- diasAtras sai da data do simulado ------------------------------------
+{
+  const [x, y] = doTema.slice(0, 2).map((q) => q.id);
+  const agora = new Date("2026-08-10T12:00:00Z");
+  const h: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      {
+        id: "novo", data: "2026-08-08T00:00:00.000Z", escolha: TEMA,
+        total: 1, acertos: 1,
+        itens: [{ questaoId: x, tema: TEMA, acertou: true }],
+      },
+      {
+        id: "velho", data: "2026-07-01T00:00:00.000Z", escolha: TEMA,
+        total: 1, acertos: 0,
+        itens: [{ questaoId: y, tema: TEMA, acertou: false }],
+      },
+    ],
+  };
+  const d = desempenhoPorQuestao(h, agora);
+  checar("dias contados da aparição mais recente", d.get(x)!.diasAtras === 2, String(d.get(x)!.diasAtras));
+  checar("aparição antiga acumula os dias", d.get(y)!.diasAtras === 40, String(d.get(y)!.diasAtras));
+
+  const invalida: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [{ id: "z", data: "não-é-data", escolha: TEMA, total: 1, acertos: 1, itens: [{ questaoId: x, tema: TEMA, acertou: true }] }],
+  };
+  checar(
+    "data ilegível conta como hoje (sem resgate, sem dano)",
+    desempenhoPorQuestao(invalida, agora).get(x)!.diasAtras === 0,
+  );
 }
 
 // --- Resumo do histórico --------------------------------------------------
