@@ -3,7 +3,7 @@
 import { FORMATO, ROTULO_CURTO } from "@/lib/constantes";
 import { minutosDoDesafio, type Desafio } from "@/lib/desafio";
 import { codigoDaBateria } from "@/lib/semente";
-import type { Questao } from "@/lib/tipos";
+import type { Questao, Tema } from "@/lib/tipos";
 
 /**
  * A bateria em papel: folha em branco para responder à caneta e gabarito em
@@ -19,18 +19,18 @@ import type { Questao } from "@/lib/tipos";
  */
 export default function TelaImpressao({
   desafio,
-  questoes,
+  baterias,
   link,
   onVoltar,
 }: {
   desafio: Desafio;
-  questoes: Questao[];
+  /** Uma bateria por matéria, na ordem em que serão aplicadas. */
+  baterias: { tema: Tema; questoes: Questao[] }[];
   link: string;
   onVoltar: () => void;
 }) {
   const formato = FORMATO[desafio.classe];
-  const codigo = codigoDaBateria(questoes.map((q) => q.id));
-  const cabecalho = `${ROTULO_CURTO[desafio.tema]} · ${questoes.length} questões · ${minutosDoDesafio(desafio)} min`;
+  const minutos = minutosDoDesafio(desafio);
 
   return (
     <div className="space-y-6">
@@ -43,6 +43,9 @@ export default function TelaImpressao({
             e guardar a outra.
           </p>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            {baterias.length > 1
+              ? `São ${baterias.length} matérias, uma folha cada — exames separados, como a Anatel aplica. `
+              : ""}
             É a mesma bateria do link <span className="font-mono">{link}</span>:
             quem faltou responde pelo celular e cai exatamente nestas questões.
           </p>
@@ -63,81 +66,119 @@ export default function TelaImpressao({
         </div>
       </div>
 
-      {/* --- Folha de prova ------------------------------------------------ */}
-      <section>
-        <header className="border-b-2 border-current pb-3">
-          <h1 className="text-xl font-bold">
-            Simulado de Radioamador — Classe {desafio.classe}
-          </h1>
-          <p className="mt-1 text-sm">{cabecalho}</p>
-          <p className="text-sm">
-            Mínimo para aprovação: {formato.minimo} de {formato.questoes} na
-            prova real da Classe {desafio.classe}.
-          </p>
-          {/* O instrutor recolhe as folhas: sem identificação, vira pilha. */}
-          <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-            <Campo rotulo="Nome" />
-            <Campo rotulo="Indicativo" />
-            <Campo rotulo="Data" />
-          </dl>
-        </header>
+      {/* --- Uma folha por matéria: são exames separados, e é assim que se
+             aplica. A primeira não leva quebra de página; as demais, sim. --- */}
+      {baterias.map(({ tema, questoes }, indice) => (
+        <section
+          key={`folha-${tema}`}
+          className={indice > 0 ? "pagina-nova" : undefined}
+        >
+          <header className="border-b-2 border-current pb-3">
+            <h1 className="text-xl font-bold">
+              {ROTULO_CURTO[tema]} — Classe {desafio.classe}
+            </h1>
+            <p className="mt-1 text-sm">
+              {questoes.length} questões · {minutos} min
+              {baterias.length > 1 &&
+                ` · matéria ${indice + 1} de ${baterias.length}`}
+            </p>
+            <p className="text-sm">
+              Mínimo para aprovação: {formato.minimo} de {formato.questoes} na
+              prova real da Classe {desafio.classe}.
+            </p>
+            {/* O instrutor recolhe as folhas: sem identificação, vira pilha. */}
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+              <Campo rotulo="Nome" />
+              <Campo rotulo="Indicativo" />
+              <Campo rotulo="Data" />
+            </dl>
+          </header>
 
-        <ol className="mt-4">
-          {questoes.map((q, i) => (
-            <li
-              key={q.id}
-              className="flex gap-3 border-b border-current/20 py-2.5 text-sm"
-            >
-              <span className="w-6 shrink-0 text-right font-semibold tabular-nums">
-                {i + 1}.
-              </span>
-              <span className="flex shrink-0 gap-2 font-mono text-xs">
-                <Quadrado letra="V" />
-                <Quadrado letra="F" />
-              </span>
-              <span className="leading-snug">{q.afirmacao}</span>
-            </li>
-          ))}
-        </ol>
+          <ol className="mt-4">
+            {questoes.map((q, i) => (
+              <li
+                key={q.id}
+                className="flex gap-3 border-b border-current/20 py-2.5 text-sm"
+              >
+                <span className="w-6 shrink-0 text-right font-semibold tabular-nums">
+                  {i + 1}.
+                </span>
+                <span className="flex shrink-0 gap-2 font-mono text-xs">
+                  <Quadrado letra="V" />
+                  <Quadrado letra="F" />
+                </span>
+                <span className="leading-snug">{q.afirmacao}</span>
+              </li>
+            ))}
+          </ol>
 
-        <p className="mt-4 text-xs">
-          Desafio <span className="font-mono font-bold">{desafio.semente}</span>{" "}
-          · bateria <span className="font-mono font-bold">{codigo}</span> ·{" "}
-          {link}
-        </p>
-      </section>
+          <Rodape desafio={desafio} questoes={questoes} link={link} />
+        </section>
+      ))}
 
-      {/* --- Gabarito, sempre em folha própria ------------------------------ */}
-      <section className="pagina-nova">
-        <header className="border-b-2 border-current pb-3">
-          <h1 className="text-xl font-bold">
-            Gabarito — Classe {desafio.classe}
-          </h1>
-          <p className="mt-1 text-sm">
-            {cabecalho} · desafio{" "}
-            <span className="font-mono font-bold">{desafio.semente}</span> ·
-            bateria <span className="font-mono font-bold">{codigo}</span>
-          </p>
-        </header>
+      {/* --- Gabaritos, sempre em folha própria ----------------------------- */}
+      {baterias.map(({ tema, questoes }) => (
+        <section key={`gabarito-${tema}`} className="pagina-nova">
+          <header className="border-b-2 border-current pb-3">
+            <h1 className="text-xl font-bold">
+              Gabarito · {ROTULO_CURTO[tema]} — Classe {desafio.classe}
+            </h1>
+            <p className="mt-1 text-sm">
+              {questoes.length} questões · desafio{" "}
+              <span className="font-mono font-bold">{desafio.semente}</span> ·
+              bateria{" "}
+              <span className="font-mono font-bold">
+                {codigoDaBateria(questoes.map((q) => q.id))}
+              </span>
+            </p>
+          </header>
 
-        <ol className="mt-4">
-          {questoes.map((q, i) => (
-            <li
-              key={q.id}
-              className="flex gap-3 border-b border-current/20 py-2 text-sm"
-            >
-              <span className="w-6 shrink-0 text-right font-semibold tabular-nums">
-                {i + 1}.
-              </span>
-              <span className="w-4 shrink-0 font-bold">
-                {q.resposta_correta ? "V" : "F"}
-              </span>
-              <span className="leading-snug">{q.explicacao_curta}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
+          <ol className="mt-4">
+            {questoes.map((q, i) => (
+              <li
+                key={q.id}
+                className="flex gap-3 border-b border-current/20 py-2 text-sm"
+              >
+                <span className="w-6 shrink-0 text-right font-semibold tabular-nums">
+                  {i + 1}.
+                </span>
+                <span className="w-4 shrink-0 font-bold">
+                  {q.resposta_correta ? "V" : "F"}
+                </span>
+                <span className="leading-snug">{q.explicacao_curta}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
     </div>
+  );
+}
+
+/**
+ * O rastro no rodapé de cada folha: semente, código da bateria e link.
+ *
+ * O código é por matéria, como o do resultado — é o que permite conferir que a
+ * folha impressa e a tela de quem respondeu pelo link são a mesma prova.
+ */
+function Rodape({
+  desafio,
+  questoes,
+  link,
+}: {
+  desafio: Desafio;
+  questoes: Questao[];
+  link: string;
+}) {
+  return (
+    <p className="mt-4 text-xs">
+      Desafio <span className="font-mono font-bold">{desafio.semente}</span> ·
+      bateria{" "}
+      <span className="font-mono font-bold">
+        {codigoDaBateria(questoes.map((q) => q.id))}
+      </span>{" "}
+      · {link}
+    </p>
   );
 }
 

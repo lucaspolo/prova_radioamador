@@ -1,4 +1,5 @@
 import {
+  bateriasDoDesafio,
   lerDesafio,
   linkDoDesafio,
   minutosDoDesafio,
@@ -127,7 +128,12 @@ const SEMENTE = "PY2-SP";
 
 // --- A URL -----------------------------------------------------------------
 {
-  const d: Desafio = { semente: "PY2-SP", tema: TEMA, quantidade: 20, classe: "B" };
+  const d: Desafio = {
+    semente: "PY2-SP",
+    temas: [TEMA],
+    quantidade: 20,
+    classe: "B",
+  };
   const link = linkDoDesafio(d, "https://exemplo.app/");
   checar(
     "o link traz os quatro parâmetros",
@@ -177,11 +183,81 @@ const SEMENTE = "PY2-SP";
   );
 }
 
+// --- Várias matérias no mesmo link -----------------------------------------
+// A prova completa é um desafio com os três temas: cada matéria é um exame
+// separado, e a quantidade é POR matéria.
+{
+  const tres: Desafio = {
+    semente: "PY2-SP",
+    temas: TEMAS,
+    quantidade: 20,
+    classe: "B",
+  };
+  const link = linkDoDesafio(tres, "https://exemplo.app/");
+  checar(
+    "o link lista as três matérias",
+    link.includes("t=legislacao,tecnica,eletronica"),
+    link,
+  );
+  const lido = lerDesafio(`?${paramsDoDesafio(tres)}`);
+  checar(
+    "ida e volta preserva as três",
+    JSON.stringify(lido) === JSON.stringify(tres),
+    JSON.stringify(lido?.temas),
+  );
+  checar(
+    "as matérias voltam na ordem do exame, não na do link",
+    JSON.stringify(
+      lerDesafio("?desafio=X&t=eletronica,legislacao&n=10&c=B")?.temas,
+    ) === JSON.stringify([TEMAS[0], TEMAS[2]]),
+  );
+  checar(
+    "matéria desconhecida derruba o desafio inteiro",
+    lerDesafio("?desafio=X&t=legislacao,morse&n=10&c=B") === null,
+  );
+  checar(
+    "lista de matérias vazia não é desafio",
+    lerDesafio("?desafio=X&t=&n=10&c=B") === null,
+  );
+  // O teto é o da matéria mais escassa: pedir 400 não pode dar baterias de
+  // tamanhos diferentes entre as matérias.
+  const demais = lerDesafio("?desafio=X&t=legislacao,tecnica&n=999&c=B");
+  checar(
+    "quantidade absurda cai no acervo da matéria mais escassa",
+    demais?.quantidade ===
+      Math.min(disponiveis(TEMAS[0], "B"), disponiveis(TEMAS[1], "B")),
+    String(demais?.quantidade),
+  );
+
+  const baterias = bateriasDoDesafio(tres);
+  checar(
+    "o desafio rende uma bateria por matéria",
+    baterias.length === 3 &&
+      baterias.every((b, i) => b.tema === TEMAS[i] && b.questoes.length === 20),
+  );
+  checar(
+    "cada bateria só tem questões da sua matéria",
+    baterias.every((b) => b.questoes.every((q) => q.tema === b.tema)),
+  );
+  // Acrescentar uma matéria ao link não pode reembaralhar as que já estavam
+  // lá: a semente de cada matéria deriva do slug dela.
+  const so = bateriasDoDesafio({ ...tres, temas: [TEMAS[0]] });
+  checar(
+    "acrescentar matérias não muda a bateria das outras",
+    JSON.stringify(so[0].questoes.map((q) => q.id)) ===
+      JSON.stringify(baterias[0].questoes.map((q) => q.id)),
+  );
+  checar(
+    "matérias diferentes não recebem o mesmo sorteio",
+    baterias[0].questoes[0].id !== baterias[1].questoes[0].id,
+  );
+}
+
 // --- O cronômetro ----------------------------------------------------------
 {
   const oficial: Desafio = {
     semente: "X",
-    tema: TEMA,
+    temas: [TEMA],
     quantidade: FORMATO.B.questoes,
     classe: "B",
   };

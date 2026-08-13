@@ -45,6 +45,38 @@ export function percentualAprovacao(classe: Classe): number {
 }
 
 /**
+ * Passou nesta matéria?
+ *
+ * O critério oficial é um número absoluto de acertos (11 de 20 na Classe B) e
+ * só vale no tamanho oficial. Numa bateria de outro tamanho, compara-se pela
+ * proporção equivalente — em inteiros, para não depender de arredondamento.
+ */
+export function aprovadoNaMateria(
+  classe: Classe,
+  acertos: number,
+  total: number,
+): boolean {
+  const f = FORMATO[classe];
+  if (total === f.questoes) return acertos >= f.minimo;
+  return acertos * f.questoes >= f.minimo * total;
+}
+
+/**
+ * Fatia curta e estável do tema na URL do desafio. O índice em `TEMAS` seria
+ * menor, mas um link já compartilhado tem de continuar valendo se a ordem do
+ * array mudar um dia — e "t=legislacao" se lê sem decodificar nada.
+ *
+ * Mora aqui, e não em `lib/desafio.ts`, porque `lib/questoes.ts` também
+ * precisa dela (a semente de cada matéria deriva do slug) e importar o desafio
+ * de lá fecharia um ciclo.
+ */
+export const SLUG_TEMA: Record<Tema, string> = {
+  "Legislação de Telecomunicações": "legislacao",
+  "Técnica e ética operacional": "tecnica",
+  "Conhecimentos de Eletrônica e Eletricidade": "eletronica",
+};
+
+/**
  * Segundos de prova para uma bateria de `n` questões, na proporção oficial da
  * classe. Na bateria do tamanho da prova real, dá exatamente o tempo oficial
  * (Classe B: 20 questões em 30 min); nos outros tamanhos, mantém o mesmo

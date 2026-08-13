@@ -1,6 +1,6 @@
-import type { Classe, Tema } from "./tipos";
-import { CLASSES, TEMAS, tempoDaBateria } from "./constantes";
-import { disponiveis } from "./questoes";
+import type { Classe, Questao, Tema } from "./tipos";
+import { CLASSES, SLUG_TEMA, TEMAS, tempoDaBateria } from "./constantes";
+import { disponiveis, sortearDesafio } from "./questoes";
 import { normalizarSemente } from "./semente";
 
 /**
@@ -23,21 +23,16 @@ import { normalizarSemente } from "./semente";
 export interface Desafio {
   /** Texto curto que semeia o sorteio; é o que identifica o desafio. */
   semente: string;
-  tema: Tema;
+  /**
+   * As matérias do desafio, na ordem de `TEMAS`. Uma só é uma bateria; as três
+   * são a prova completa. Cada matéria é um exame separado, com seu próprio
+   * cronômetro e seu próprio mínimo — como a Anatel aplica.
+   */
+  temas: Tema[];
+  /** Questões **por matéria**: duas matérias com 20 são 20 + 20. */
   quantidade: number;
   classe: Classe;
 }
-
-/**
- * Fatia curta e estável do tema na URL. O índice em `TEMAS` seria menor, mas
- * um link já compartilhado tem de continuar valendo se a ordem do array mudar
- * um dia — e "t=legislacao" se lê sem decodificar nada.
- */
-const SLUG_TEMA: Record<Tema, string> = {
-  "Legislação de Telecomunicações": "legislacao",
-  "Técnica e ética operacional": "tecnica",
-  "Conhecimentos de Eletrônica e Eletricidade": "eletronica",
-};
 
 const TEMA_DO_SLUG = new Map(
   TEMAS.map((t) => [SLUG_TEMA[t], t] as [string, Tema]),
@@ -46,14 +41,21 @@ const TEMA_DO_SLUG = new Map(
 /** Semente aceitável: curta, sem espaço e sem nada que exija escapar. */
 const SEMENTE_VALIDA = /^[A-Za-z0-9_-]{1,40}$/;
 
-/** Os parâmetros do desafio, para colar depois de `?`. */
+/**
+ * Os parâmetros do desafio, para colar depois de `?`.
+ *
+ * Montados à mão, e não com `URLSearchParams.toString()`, por causa da
+ * vírgula: o serializador a escaparia como `%2C`, e `t=legislacao%2Ctecnica`
+ * é ilegível num link que se dita no ar. A vírgula é caractere permitido na
+ * query (RFC 3986), e os slugs são ASCII puro — não há o que escapar.
+ */
 export function paramsDoDesafio(d: Desafio): string {
-  return new URLSearchParams({
-    desafio: d.semente,
-    t: SLUG_TEMA[d.tema],
-    n: String(d.quantidade),
-    c: d.classe,
-  }).toString();
+  return [
+    `desafio=${encodeURIComponent(d.semente)}`,
+    `t=${d.temas.map((t) => SLUG_TEMA[t]).join(",")}`,
+    `n=${d.quantidade}`,
+    `c=${d.classe}`,
+  ].join("&");
 }
 
 /** O link completo. `base` é a origem + caminho, sem query. */
@@ -64,35 +66,55 @@ export function linkDoDesafio(d: Desafio, base: string): string {
 /**
  * O desafio contido numa query string, ou null se não houver um válido.
  *
- * A quantidade é limitada ao que existe no acervo do tema — e o limite é
- * determinístico, então dois aparelhos com o mesmo link chegam ao mesmo
- * número mesmo que ele venha absurdo.
+ * A quantidade é limitada ao que existe na matéria mais escassa do desafio — e
+ * o limite é determinístico, então dois aparelhos com o mesmo link chegam ao
+ * mesmo número mesmo que ele venha absurdo.
  */
 export function lerDesafio(busca: string): Desafio | null {
   const p = new URLSearchParams(busca);
   const semente = p.get("desafio");
   if (!semente || !SEMENTE_VALIDA.test(semente)) return null;
 
-  const tema = TEMA_DO_SLUG.get(p.get("t") ?? "");
-  if (!tema) return null;
+  const pedidos = (p.get("t") ?? "").split(",").filter(Boolean);
+  const temas = pedidos.map((slug) => TEMA_DO_SLUG.get(slug));
+  // Slug desconhecido derruba o desafio inteiro em vez de sumir calado: quem
+  // recebeu o link faria uma prova menor do que a dos colegas sem saber.
+  if (temas.length === 0 || temas.some((t) => t === undefined)) return null;
+  const emOrdem = TEMAS.filter((t) => temas.includes(t));
 
   const classe = CLASSES.find((c) => c === p.get("c"));
   if (!classe) return null;
 
   const pedidas = Number(p.get("n"));
   if (!Number.isInteger(pedidas) || pedidas < 1) return null;
-  const quantidade = Math.min(pedidas, disponiveis(tema, classe));
+  const teto = Math.min(...emOrdem.map((t) => disponiveis(t, classe)));
+  const quantidade = Math.min(pedidas, teto);
   if (quantidade < 1) return null;
 
-  return { semente: normalizarSemente(semente), tema, quantidade, classe };
+  return {
+    semente: normalizarSemente(semente),
+    temas: emOrdem,
+    quantidade,
+    classe,
+  };
 }
 
 /**
- * Minutos do desafio, sempre no ritmo oficial da classe.
+ * Minutos de CADA matéria, sempre no ritmo oficial da classe.
  *
  * Desafio é cronometrado e cego por construção: sem o mesmo relógio e sem o
  * mesmo sigilo do gabarito, comparar os resultados não significaria nada.
  */
 export function minutosDoDesafio(d: Desafio): number {
   return Math.round(tempoDaBateria(d.classe, d.quantidade) / 60);
+}
+
+/** As baterias do desafio, uma por matéria, na ordem em que serão aplicadas. */
+export function bateriasDoDesafio(
+  d: Desafio,
+): { tema: Tema; questoes: Questao[] }[] {
+  return d.temas.map((tema) => ({
+    tema,
+    questoes: sortearDesafio(tema, d.quantidade, d.classe, d.semente),
+  }));
 }

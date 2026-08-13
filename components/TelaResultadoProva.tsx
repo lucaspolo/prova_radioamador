@@ -1,7 +1,12 @@
 "use client";
 
 import type { Classe, Resposta, Tema } from "@/lib/tipos";
-import { COR_TEMA, FORMATO, ROTULO_CURTO } from "@/lib/constantes";
+import {
+  aprovadoNaMateria,
+  COR_TEMA,
+  FORMATO,
+  ROTULO_CURTO,
+} from "@/lib/constantes";
 import Gabarito from "./Gabarito";
 import AcoesResultado from "./AcoesResultado";
 import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
@@ -20,10 +25,13 @@ interface Props {
 }
 
 /**
- * O veredito da prova completa: aprovado somente com o mínimo em CADA matéria.
+ * O veredito de uma bateria de várias matérias: aprovado somente com o mínimo
+ * em CADA uma.
  *
- * É o critério oficial que a antiga bateria mista escondia — média entre
- * matérias não existe na prova da Anatel.
+ * É o critério oficial que uma bateria mista esconderia — média entre matérias
+ * não existe na prova da Anatel. Com as três matérias no tamanho oficial, isto
+ * é a prova completa; com duas, ou com bateria curta, o veredito é por matéria
+ * do mesmo jeito, pela proporção equivalente ao mínimo oficial.
  */
 export default function TelaResultadoProva({
   classe,
@@ -34,8 +42,15 @@ export default function TelaResultadoProva({
   const formato = FORMATO[classe];
   const porMateria = materias.map((m) => {
     const acertos = m.respostas.filter((r) => r.acertou).length;
-    return { ...m, acertos, aprovado: acertos >= formato.minimo };
+    return {
+      ...m,
+      acertos,
+      aprovado: aprovadoNaMateria(classe, acertos, m.respostas.length),
+    };
   });
+  const provaCompleta =
+    materias.length === 3 &&
+    materias.every((m) => m.respostas.length === formato.questoes);
   const aprovadoGeral = porMateria.every((m) => m.aprovado);
   const reprovadas = porMateria.filter((m) => !m.aprovado);
   // A prova completa é cega: o gabarito das três matérias só aparece aqui, e
@@ -52,7 +67,8 @@ export default function TelaResultadoProva({
         }`}
       >
         <div className="text-xs font-semibold tracking-wide uppercase opacity-70">
-          Prova completa — Classe {classe}
+          {provaCompleta ? "Prova completa" : `${materias.length} matérias`} —
+          Classe {classe}
         </div>
         <div
           className={`mt-3 text-3xl font-bold ${
@@ -65,7 +81,7 @@ export default function TelaResultadoProva({
         </div>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           {aprovadoGeral
-            ? `Mínimo de ${formato.minimo} acertos atingido nas três matérias.`
+            ? `Mínimo atingido nas ${materias.length} matérias.`
             : `A aprovação exige ${formato.minimo} de ${formato.questoes} em cada matéria — faltou em ${reprovadas.map((m) => ROTULO_CURTO[m.tema]).join(" e ")}.`}
         </p>
       </div>
@@ -76,7 +92,9 @@ export default function TelaResultadoProva({
         <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
           Resultado por matéria
         </h2>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div
+          className={`grid gap-3 ${materias.length > 2 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+        >
           {porMateria.map((m) => (
             <div
               key={m.tema}

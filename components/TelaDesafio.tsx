@@ -28,13 +28,21 @@ export default function TelaDesafio({
           <span className="font-mono">{desafio.semente}</span>
         </h2>
         <p className="mt-3 leading-relaxed">
-          {ROTULO_CURTO[desafio.tema]} · {desafio.quantidade} questões · Classe{" "}
-          {desafio.classe} · {minutosDoDesafio(desafio)} min
+          {desafio.temas.map((t) => ROTULO_CURTO[t]).join(" · ")}
+        </p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          {desafio.quantidade} questões e {minutosDoDesafio(desafio)} min{" "}
+          {desafio.temas.length > 1 ? "em cada matéria" : "na matéria"} · Classe{" "}
+          {desafio.classe}
+          {desafio.temas.length > 1 &&
+            ` · ${desafio.quantidade * desafio.temas.length} questões no total`}
         </p>
         <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
           Todo mundo que abrir este link responde às mesmas questões, na mesma
           ordem — o sorteio vem da semente, não do seu histórico. Vale como
           bateria normal no seu desempenho.
+          {desafio.temas.length > 1 &&
+            " Cada matéria é um exame separado, com seu cronômetro e seu mínimo."}
         </p>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           Corre em <span className="font-medium">modo prova</span>: sem
