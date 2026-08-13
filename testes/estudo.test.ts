@@ -207,6 +207,20 @@ function h(...simulados: SimuladoSalvo[]): Historico {
       ),
   );
   checar(
+    "as três classes são aceitas",
+    (["A", "B", "C"] as const).every(
+      (c) => validarPreferencias({ classe: c }).classe === c,
+    ),
+  );
+  checar(
+    "classe desconhecida cai no padrão",
+    validarPreferencias({ classe: "D" }).classe === "B",
+  );
+  checar(
+    "preferência gravada antes de a classe existir cai no padrão",
+    validarPreferencias({ tema: "claro", escala: "grande" }).classe === "B",
+  );
+  checar(
     "a escala normal não mexe no tamanho",
     FATOR_ESCALA.normal === 1 &&
       FATOR_ESCALA.pequeno < 1 &&
