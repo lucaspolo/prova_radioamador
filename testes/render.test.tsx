@@ -12,6 +12,7 @@ import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import Relampago from "@/components/Relampago";
 import TelaDesafio from "@/components/TelaDesafio";
+import TelaImpressao from "@/components/TelaImpressao";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
 import { ATALHOS_DA_PROVA } from "@/lib/atalhos";
@@ -68,6 +69,7 @@ const PROPS_INICIO = {
   onProvaCompleta: () => {},
   onRevisar: () => {},
   onAssuntos: () => {},
+  onImprimir: () => {},
 };
 
 // --- Tela inicial ---------------------------------------------------------
@@ -413,6 +415,65 @@ const PROPS_INICIO = {
     !semDesafio.includes("bateria "),
   );
 }
+
+// --- Bateria em papel -----------------------------------------------------
+{
+  const desafio = {
+    semente: "PY2-SP",
+    tema: TEMAS[0],
+    quantidade: 20,
+    classe: "B" as const,
+  };
+  const questoes = sortearDesafio(TEMAS[0], 20, "B", "PY2-SP");
+  const html = renderToStaticMarkup(
+    <TelaImpressao
+      desafio={desafio}
+      questoes={questoes}
+      link="https://exemplo.app/?desafio=PY2-SP&t=legislacao&n=20&c=B"
+      onVoltar={() => {}}
+    />,
+  );
+  checar(
+    "a folha traz cabeçalho com classe, matéria e tempo",
+    html.includes("Classe B") &&
+      html.includes("Legislação") &&
+      html.includes("30 min"),
+  );
+  // Instrutor recolhe folha: sem identificação, vira pilha.
+  checar(
+    "tem onde escrever nome, indicativo e data",
+    ["Nome", "Indicativo", "Data"].every((s) => html.includes(s)),
+  );
+  checar(
+    "traz as 20 questões numeradas",
+    questoes.every((q) => contem(html, q.afirmacao)) && html.includes("20."),
+  );
+  // A folha do aluno é em branco: nada de gabarito misturado ao enunciado.
+  const folha = html.split("pagina-nova")[0];
+  checar(
+    "a folha do aluno não traz explicação nenhuma",
+    questoes.every((q) => !contem(folha, q.explicacao_curta)),
+  );
+  checar(
+    "o gabarito sai em página própria",
+    html.includes("pagina-nova") && html.includes("Gabarito"),
+  );
+  checar(
+    "o gabarito traz resposta e explicação de cada questão",
+    questoes.every((q) => contem(html, q.explicacao_curta)),
+  );
+  // Papel e link têm de ser rastreáveis um ao outro.
+  checar(
+    "folha e gabarito citam a semente e o código da bateria",
+    html.split("PY2-SP").length - 1 >= 2 &&
+      html.includes(codigoDaBateria(questoes.map((q) => q.id))),
+  );
+  checar(
+    "os controles não vão para o papel",
+    html.includes("nao-imprimir") && html.includes("Imprimir"),
+  );
+}
+
 
 // --- Rótulo de procedência ------------------------------------------------
 // 207 das 604 questões vieram da ementa, não de um trecho. Chamar a página de

@@ -21,6 +21,7 @@ import {
 import type { Historico } from "@/lib/historico";
 import { gravarPreferencias, lerPreferencias } from "@/lib/preferencias";
 import CriarDesafio from "./CriarDesafio";
+import type { Desafio } from "@/lib/desafio";
 
 interface Props {
   historico: Historico;
@@ -35,6 +36,7 @@ interface Props {
   onProvaCompleta: (classe: Classe) => void;
   onRevisar: (classe: Classe) => void;
   onAssuntos: () => void;
+  onImprimir: (desafio: Desafio) => void;
 }
 
 export default function TelaInicio({
@@ -43,6 +45,7 @@ export default function TelaInicio({
   onProvaCompleta,
   onRevisar,
   onAssuntos,
+  onImprimir,
 }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
@@ -273,7 +276,12 @@ export default function TelaInicio({
 
       {/* Usa a configuração escolhida acima: o desafio é esta bateria, com uma
           semente no lugar do sorteio de cada um. */}
-      <CriarDesafio tema={escolha} quantidade={limite} classe={classe} />
+      <CriarDesafio
+        tema={escolha}
+        quantidade={limite}
+        classe={classe}
+        onImprimir={onImprimir}
+      />
 
       <div className="grid gap-3 sm:grid-cols-2">
         {/* A prova completa é sempre cronometrada, cega e no formato oficial:

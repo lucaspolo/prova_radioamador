@@ -118,6 +118,12 @@ body {
     break-inside: avoid;
   }
 
+  /* O gabarito nunca divide a folha com a última questão: a folha em branco é
+     entregue ao aluno, e o gabarito fica com quem aplica. */
+  .pagina-nova {
+    break-before: page;
+  }
+
   a[href^="http"]::after {
     content: " (" attr(href) ")";
     font-size: 0.75em;
