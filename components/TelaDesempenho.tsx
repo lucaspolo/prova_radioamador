@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { COR_TEMA, PERCENTUAL_CORTE, ROTULO_CURTO } from "@/lib/constantes";
+import type { Classe } from "@/lib/tipos";
+import {
+  CLASSE_PADRAO,
+  COR_TEMA,
+  PERCENTUAL_CORTE,
+  ROTULO_CURTO,
+} from "@/lib/constantes";
 import { estatisticasPorTema, resumo, type Historico } from "@/lib/historico";
+import { cobertura } from "@/lib/questoes";
+import { lerPreferencias } from "@/lib/preferencias";
 import { useSuspeitas } from "@/hooks/useSuspeitas";
 import Evolucao from "./Evolucao";
 import ExportarImportar from "./ExportarImportar";
@@ -39,6 +47,7 @@ export default function TelaDesempenho({
   onVoltar,
 }: Props) {
   const [confirmando, setConfirmando] = useState(false);
+  const [classePreferida, setClassePreferida] = useState<Classe>(CLASSE_PADRAO);
   // Uma instância só do hook para a tela inteira: `Suspeitas` e
   // `ExportarImportar` mexem na mesma lista, e duas instâncias vivas teriam
   // cada uma o seu estado — importar um backup e depois desmarcar qualquer
@@ -50,9 +59,14 @@ export default function TelaDesempenho({
   // volta ao <body> e quem navega por teclado ou leitor recomeça do topo.
   useEffect(() => {
     titulo.current?.focus();
+    // Mesmo padrão de hidratação do resto do app: o storage só existe no
+    // cliente, e a classe preferida define o acervo da cobertura.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setClassePreferida(lerPreferencias().classe);
   }, []);
 
   const geral = resumo(historico);
+  const abrangencia = cobertura(historico, classePreferida);
   const estatisticas = estatisticasPorTema(historico);
   const atencao = estatisticas
     .filter((e) => e.respondidas > 0 && e.percentual < PERCENTUAL_CORTE)
@@ -154,6 +168,29 @@ export default function TelaDesempenho({
               . É onde o estudo rende mais agora.
             </p>
           )}
+
+          {/* O sorteio ponderado não garante visitar o banco inteiro; este
+              número transforma "será que já vi tudo?" em plano — o modo "só
+              inéditas" da tela inicial fecha o resto. A classe é a preferida
+              (a mesma da tela inicial), lida no efeito como todo storage. */}
+          <div>
+            <div className="mb-1 flex items-baseline justify-between text-sm">
+              <span className="font-medium">
+                Cobertura do banco · Classe {classePreferida}
+              </span>
+              <span className="text-slate-500 dark:text-slate-400">
+                viu {abrangencia.vistas} de {abrangencia.total}
+              </span>
+            </div>
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+              <div
+                className="h-full rounded-full bg-slate-900 dark:bg-slate-100"
+                style={{
+                  width: `${abrangencia.total > 0 ? Math.round((abrangencia.vistas / abrangencia.total) * 100) : 0}%`,
+                }}
+              />
+            </div>
+          </div>
 
           <Evolucao historico={historico} />
           <Suspeitas suspeitas={suspeitas} />

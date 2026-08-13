@@ -12,7 +12,12 @@ import {
   tempoDaBateria,
   TEMAS,
 } from "@/lib/constantes";
-import { contarPorTema, disponiveis, questoesParaRevisao } from "@/lib/questoes";
+import {
+  contarPorTema,
+  disponiveis,
+  questoesIneditas,
+  questoesParaRevisao,
+} from "@/lib/questoes";
 import type { Historico } from "@/lib/historico";
 import { gravarPreferencias, lerPreferencias } from "@/lib/preferencias";
 
@@ -24,6 +29,7 @@ interface Props {
     classe: Classe,
     cronometrar: boolean,
     cego: boolean,
+    soIneditas: boolean,
   ) => void;
   onProvaCompleta: (classe: Classe) => void;
   onRevisar: (classe: Classe) => void;
@@ -41,6 +47,7 @@ export default function TelaInicio({
   const [quantidade, setQuantidade] = useState(FORMATO[CLASSE_PADRAO].questoes);
   const [cronometrar, setCronometrar] = useState(true);
   const [cego, setCego] = useState(false);
+  const [soIneditas, setSoIneditas] = useState(false);
   const contagem = contarPorTema(classe);
   const total = disponiveis(escolha, classe);
   const opcoes = tamanhos(classe);
@@ -48,6 +55,7 @@ export default function TelaInicio({
   // Não dá para sortear mais questões do que existem no tema escolhido.
   const limite = Math.min(quantidade, total);
   const errosAbertos = questoesParaRevisao(historico, classe).length;
+  const ineditasNoTema = questoesIneditas(historico, classe, escolha).length;
 
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
   // ficaria selecionado um número que nem aparece mais entre as opções.
@@ -219,10 +227,42 @@ export default function TelaInicio({
               : "Sem limite de tempo; bom para estudar com calma."}
           </p>
         </button>
+        {/* Só aparece quando há histórico E resta o que cobrir: sem bateria
+            feita tudo é inédito (o toggle seria redundante), e com o tema
+            zerado ele não teria o que sortear. */}
+        {historico.simulados.length > 0 && ineditasNoTema > 0 && (
+          <button
+            onClick={() => setSoIneditas((v) => !v)}
+            aria-pressed={soIneditas}
+            className={`mt-3 w-full rounded-xl border-2 p-4 text-left transition ${
+              soIneditas
+                ? "border-slate-900 dark:border-slate-100"
+                : "border-slate-300 opacity-70 hover:opacity-100 dark:border-slate-700"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">
+                {soIneditas ? "Só questões inéditas" : "Priorizar inéditas"}
+              </span>
+              <span className="font-mono text-lg font-bold tabular-nums">
+                {ineditasNoTema}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {!soIneditas
+                ? `${ineditasNoTema} questões de ${ROTULO_CURTO[escolha]} que você nunca viu. Ligado, a bateria sai delas primeiro.`
+                : ineditasNoTema >= limite
+                  ? "A bateria inteira sai do que você ainda não viu."
+                  : `Restam só ${ineditasNoTema} inéditas — a bateria completa com questões já vistas.`}
+            </p>
+          </button>
+        )}
       </section>
 
       <button
-        onClick={() => onIniciar(escolha, limite, classe, cronometrar, cego)}
+        onClick={() =>
+          onIniciar(escolha, limite, classe, cronometrar, cego, soIneditas)
+        }
         className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões

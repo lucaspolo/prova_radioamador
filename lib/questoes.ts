@@ -56,6 +56,7 @@ export function sortearSimulado(
   quantidade: number,
   historico?: Historico,
   classe: Classe = CLASSE_PADRAO,
+  opcoes?: { soIneditas?: boolean },
 ): Questao[] {
   const candidatas = acervo(classe).filter((q) => q.tema === tema);
   const desempenho = historico
@@ -69,6 +70,24 @@ export function sortearSimulado(
   if (desempenho.size === 0) {
     return amostrarPonderado(candidatas, pesoProprio, quantidade);
   }
+
+  // "Só inéditas": primeiro o que nunca foi visto; faltando para a quantidade
+  // pedida, completa com o sorteio ponderado normal sobre as já vistas — uma
+  // bateria curta puniria justamente quem está terminando de cobrir o banco.
+  // O embaralhamento final desfaz o bloco de inéditas na frente.
+  if (opcoes?.soIneditas) {
+    const ineditas = candidatas.filter((q) => !desempenho.has(q.id));
+    const daFrente = amostrarPonderado(ineditas, pesoProprio, quantidade);
+    if (daFrente.length >= quantidade) return daFrente;
+    const vistas = candidatas.filter((q) => desempenho.has(q.id));
+    const complemento = amostrarPonderado(
+      vistas,
+      (q) => pesoProprio(q) * peso(desempenho.get(q.id)),
+      quantidade - daFrente.length,
+    );
+    return embaralharSimples([...daFrente, ...complemento]);
+  }
+
   return amostrarPonderado(
     candidatas,
     (q) => pesoProprio(q) * peso(desempenho.get(q.id)),
@@ -106,4 +125,37 @@ export function disponiveis(
   classe: Classe = CLASSE_PADRAO,
 ): number {
   return acervo(classe).filter((q) => q.tema === tema).length;
+}
+
+/**
+ * As questões do acervo da classe que o histórico nunca viu, opcionalmente de
+ * um tema só.
+ *
+ * Nada no sorteio ponderado garante cobertura: ele visita >90% de um tema em
+ * 40 baterias, mas o resíduo pode ficar de fora indefinidamente — e as
+ * questões de peso reduzido são as candidatas naturais. Esta lista transforma
+ * "será que já vi tudo?" em número e em bateria dirigida.
+ */
+export function questoesIneditas(
+  historico: Historico,
+  classe: Classe = CLASSE_PADRAO,
+  tema?: Tema,
+): Questao[] {
+  const desempenho = desempenhoPorQuestao(historico);
+  return acervo(classe).filter(
+    (q) => !desempenho.has(q.id) && (tema === undefined || q.tema === tema),
+  );
+}
+
+/** Quantas questões do acervo da classe o histórico já viu, e o total. */
+export function cobertura(
+  historico: Historico,
+  classe: Classe = CLASSE_PADRAO,
+): { vistas: number; total: number } {
+  const desempenho = desempenhoPorQuestao(historico);
+  const doAcervo = acervo(classe);
+  return {
+    vistas: doAcervo.filter((q) => desempenho.has(q.id)).length,
+    total: doAcervo.length,
+  };
 }

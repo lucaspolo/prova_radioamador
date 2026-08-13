@@ -75,13 +75,16 @@ export default function Home() {
     classe: Classe,
     cronometrar: boolean,
     cego: boolean,
+    soIneditas: boolean,
   ) {
     // O histórico entra no sorteio: o que você errou volta antes, o que já
     // domina rareia. Sem histórico, o sorteio é uniforme. A classe define o
     // acervo elegível — o acréscimo técnico da Classe A não cai em B nem em C.
     setModo("avulso");
     setRegime(cego ? "cego" : "treino");
-    setQuestoes(sortearSimulado(tema, quantidade, historico, classe));
+    setQuestoes(
+      sortearSimulado(tema, quantidade, historico, classe, { soIneditas }),
+    );
     setRespostas([]);
     setTemaAtual(tema);
     setClasseAtual(classe);

@@ -95,6 +95,10 @@ const PROPS_INICIO = {
     "com erro em aberto, revisão oferece a questão",
     html2.includes("Revisar erros") && !html2.includes("Nenhum erro em aberto"),
   );
+  // O toggle de inéditas só existe com histórico: sem bateria feita, tudo é
+  // inédito e o botão seria redundante.
+  checar("sem histórico, não oferece o modo inéditas", !html.includes("inéditas"));
+  checar("com histórico, oferece priorizar inéditas", html2.includes("Priorizar inéditas"));
   // Os dois regimes ficam visíveis ao mesmo tempo, com treino marcado: um
   // alternador de um botão só escondia a descrição da opção não escolhida.
   checar(
