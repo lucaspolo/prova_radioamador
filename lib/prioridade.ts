@@ -8,16 +8,27 @@ export interface Desempenho {
   errouNaUltima: boolean;
   /** Quantos simulados atrás ela apareceu pela última vez (0 = o mais recente). */
   simuladosAtras: number;
+  /**
+   * Dias corridos desde a aparição mais recente (0 = hoje). É a única noção
+   * de tempo REAL do peso: `simuladosAtras` conta baterias, e dez baterias
+   * numa tarde envelhecem tanto quanto dez em dois meses — a curva do
+   * esquecimento só se mede em dias.
+   */
+  diasAtras: number;
 }
+
+const MS_POR_DIA = 86_400_000;
 
 /**
  * Percorre o histórico uma vez e resume o desempenho por questão.
  *
  * `historico.simulados` vem do mais recente para o mais antigo, então o índice
- * do simulado já é a distância em simulados.
+ * do simulado já é a distância em simulados. `agora` existe para os testes
+ * serem determinísticos; em produção é o relógio.
  */
 export function desempenhoPorQuestao(
   historico: Historico,
+  agora: Date = new Date(),
 ): Map<string, Desempenho> {
   const mapa = new Map<string, Desempenho>();
 
@@ -26,11 +37,14 @@ export function desempenhoPorQuestao(
       const atual = mapa.get(item.questaoId);
       if (!atual) {
         // Primeira vez que encontramos a questão = aparição mais recente.
+        const ms = agora.getTime() - Date.parse(simulado.data);
         mapa.set(item.questaoId, {
           vistas: 1,
           erros: item.acertou ? 0 : 1,
           errouNaUltima: !item.acertou,
           simuladosAtras: indice,
+          // Data ilegível ou no futuro conta como hoje: sem resgate, sem dano.
+          diasAtras: Number.isFinite(ms) && ms > 0 ? Math.floor(ms / MS_POR_DIA) : 0,
         });
       } else {
         atual.vistas += 1;
@@ -59,13 +73,17 @@ export function peso(desempenho: Desempenho | undefined): number {
   // o banco inteiro sem transformar cada bateria só em conteúdo inédito.
   if (!desempenho) return 4;
 
-  const { vistas, erros, errouNaUltima, simuladosAtras } = desempenho;
+  const { vistas, erros, errouNaUltima, simuladosAtras, diasAtras } = desempenho;
 
   let p: number;
   if (errouNaUltima) {
     // Erro é uma lacuna conhecida; questão inédita é uma incógnita. A lacuna
     // conhecida vem primeiro — daí o dobro do peso de uma questão nunca vista.
     p = 8;
+    // O erro ESQUECIDO vem antes do erro de hoje: três dias sem rever uma
+    // lacuna conhecida é quando a curva do esquecimento começa a cobrar.
+    // Somado, e não multiplicado — a escala continua suave.
+    if (diasAtras >= 3) p += 2;
   } else {
     // Acertou por último. Quanto mais acertos consecutivos, menos necessária.
     const taxaErro = erros / vistas;
@@ -77,6 +95,13 @@ export function peso(desempenho: Desempenho | undefined): number {
   // questão errada precisa de algum intervalo para o estudo render.
   if (simuladosAtras === 0) p *= 0.35;
   else if (simuladosAtras === 1) p *= 0.7;
+
+  // Resgate por esquecimento, como PISO e não multiplicador — não compõe com
+  // o damping acima nem estica a escala. Três semanas sem ver uma questão
+  // acertada (inclusive a dominada de 0,5, que sem isto rareava para sempre)
+  // devolvem-na ao sorteio com peso de questão neutra: era o que separava o
+  // simulado de véspera do preparo de semanas.
+  if (!errouNaUltima && diasAtras >= 21) p = Math.max(p, 1);
 
   return p;
 }

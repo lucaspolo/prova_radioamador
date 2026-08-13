@@ -523,6 +523,17 @@ const PROPS_INICIO = {
   checar("matérias sem dados aparecem como tal", comDados.includes("sem dados"));
   checar("oferece limpar histórico", comDados.includes("Limpar histórico"));
   checar("oferece exportar o histórico", comDados.includes("Exportar histórico"));
+  // Prontidão: fatos da janela recente, nunca previsão — 6/20 fica abaixo.
+  checar(
+    "prontidão diz o corte da classe e a janela",
+    comDados.includes("corte da Classe") &&
+      comDados.includes("acima do corte em 0 de 1"),
+  );
+  checar(
+    "prontidão não promete aprovação",
+    !comDados.includes("você passaria") && !comDados.includes("Passaria"),
+  );
+  checar("mostra a cobertura do banco", comDados.includes("Cobertura do banco"));
 
   // Acima do corte, sem alerta.
   const forte = sortearSimulado("Legislação de Telecomunicações", 20);
