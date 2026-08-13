@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useSuspeitas } from "@/hooks/useSuspeitas";
-import { validar, type Historico } from "@/lib/historico";
+import { migrar, type Historico } from "@/lib/historico";
 import {
   aplicarPreferencias,
   gravarPreferencias,
@@ -63,12 +63,13 @@ export default function ExportarImportar({
     try {
       const dados = JSON.parse(await arquivo.text()) as unknown;
       // Aceita o envelope do exportar ou um histórico cru: a validação real
-      // é a mesma que protege o storage.
+      // é a mesma que protege o storage — inclusive a leitura leniente de
+      // versão futura, para um backup de app mais novo não ser recusado.
       const bruto =
         typeof dados === "object" && dados !== null && "historico" in dados
           ? (dados as Envelope).historico
           : dados;
-      const valido = validar(bruto);
+      const valido = migrar(bruto);
       if (!valido) {
         setMensagem("Arquivo não reconhecido — exporte pelo próprio app.");
         return;

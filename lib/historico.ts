@@ -1,11 +1,20 @@
-import type { Resposta, Tema } from "./tipos";
+import type { Classe, Resposta, Tema } from "./tipos";
 import { TEMAS } from "./constantes";
 
 export const CHAVE_STORAGE = "prova-radioamador:historico";
 
 /**
- * Versão do formato salvo. Se um dia o formato mudar, um histórico gravado
- * pela versão antiga é descartado em vez de quebrar a leitura.
+ * Versão do formato salvo.
+ *
+ * REGRA DE BUMP — leia antes de aumentar este número. Campo novo NÃO pede
+ * versão nova: `validar()` filtra sem mapear, então campos opcionais que um
+ * cliente antigo não conhece sobrevivem à releitura e à regravação dele
+ * (`respondeu` e `classe` entraram assim). Um bump de verdade — mudança
+ * incompatível — só é seguro quando não houver mais cascas antigas vivas
+ * gravando por cima: o fluxo de atualização do service worker com aviso
+ * (PR #40) precisa estar em produção há pelo menos um ciclo de deploy, senão
+ * uma aba velha lê a versão nova como inválida, cai no vazio e a primeira
+ * bateria concluída regrava o formato antigo por cima de tudo.
  */
 export const VERSAO_HISTORICO = 1;
 
@@ -21,6 +30,13 @@ export interface ItemSalvo {
   questaoId: string;
   tema: Tema;
   acertou: boolean;
+  /**
+   * O que foi respondido: `null` = deixada em branco (o cronômetro esgotou ou
+   * a prova foi encerrada antes). Em branco e errada são pedagogicamente
+   * opostas — uma pede gestão de tempo, a outra pede estudo — e `acertou`
+   * sozinho não as distingue. Ausente = registro anterior ao campo.
+   */
+  respondeu?: boolean | null;
 }
 
 /**
@@ -39,6 +55,13 @@ export interface SimuladoSalvo {
   total: number;
   acertos: number;
   itens: ItemSalvo[];
+  /**
+   * Classe da bateria (C/B/A). Habilita estatística contra o corte oficial da
+   * classe certa. Ausente = registro anterior ao campo; quem consome guarda —
+   * os campos opcionais aditivos não são validados em `validar()`, de
+   * propósito (ver o comentário dela).
+   */
+  classe?: Classe;
 }
 
 export interface Historico {
@@ -63,6 +86,7 @@ function novoId(): string {
 export function montarRegistro(
   escolha: EscolhaRegistro,
   respostas: Resposta[],
+  extras?: { classe?: Classe },
 ): SimuladoSalvo {
   return {
     id: novoId(),
@@ -74,7 +98,9 @@ export function montarRegistro(
       questaoId: r.questao.id,
       tema: r.questao.tema,
       acertou: r.acertou,
+      respondeu: r.respondeu,
     })),
+    ...(extras?.classe ? { classe: extras.classe } : {}),
   };
 }
 
@@ -82,6 +108,12 @@ export function montarRegistro(
  * Valida um histórico vindo de fora do nosso controle — storage sujo, arquivo
  * importado, versão antiga. Devolve null quando o formato não serve; registros
  * individualmente malformados são descartados em silêncio.
+ *
+ * FILTRA, não mapeia — e disso depende a compatibilidade para a frente: um
+ * campo que esta versão do app não conhece atravessa a releitura e a
+ * regravação intactos. É o que permite acrescentar campos opcionais sem bump
+ * de versão; o preço é que campos opcionais não são validados aqui — quem os
+ * consome trata valor estranho como ausente.
  */
 export function validar(dados: unknown): Historico | null {
   if (
@@ -104,16 +136,37 @@ export function validar(dados: unknown): Historico | null {
 }
 
 /**
+ * Porta de entrada de qualquer histórico externo: storage, arquivo importado.
+ *
+ * Hoje é uma corrente de um elo só, mas o contrato importa mais que o código:
+ * versão DESCONHECIDA (maior que a atual) tenta leitura leniente — lê os
+ * campos que esta versão entende e descarta registro a registro o que não
+ * reconhece — em vez de jogar o histórico inteiro fora. Descartar tudo era o
+ * defeito original: uma casca antiga lendo formato novo zerava o storage e a
+ * primeira bateria regravava por cima. Versões futuras acrescentam elos aqui.
+ */
+export function migrar(dados: unknown): Historico | null {
+  if (typeof dados !== "object" || dados === null) return null;
+  const versao = (dados as { versao?: unknown }).versao;
+  if (versao === VERSAO_HISTORICO) return validar(dados);
+  if (typeof versao === "number" && versao > VERSAO_HISTORICO) {
+    return validar({ ...(dados as object), versao: VERSAO_HISTORICO });
+  }
+  // Menor que a primeira versão não existe; qualquer outra coisa é lixo.
+  return null;
+}
+
+/**
  * Lê e valida o histórico. Qualquer coisa fora do esperado — JSON corrompido,
- * versão diferente, formato inesperado — devolve um histórico vazio, de modo
- * que um storage sujo nunca derrube a aplicação.
+ * formato inesperado — devolve um histórico vazio, de modo que um storage
+ * sujo nunca derrube a aplicação.
  */
 export function ler(): Historico {
   if (typeof window === "undefined") return HISTORICO_VAZIO;
   try {
     const bruto = window.localStorage.getItem(CHAVE_STORAGE);
     if (!bruto) return HISTORICO_VAZIO;
-    return validar(JSON.parse(bruto)) ?? HISTORICO_VAZIO;
+    return migrar(JSON.parse(bruto)) ?? HISTORICO_VAZIO;
   } catch {
     return HISTORICO_VAZIO;
   }

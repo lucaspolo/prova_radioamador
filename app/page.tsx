@@ -127,7 +127,9 @@ export default function Home() {
     setMotivoFim(motivo);
     // Só entra no histórico a bateria terminada; abandonar não conta. A
     // revisão também registra: acertar ali tira a questão da lista de erros.
-    registrar(modo === "revisao" ? "revisao" : temaAtual, finais);
+    registrar(modo === "revisao" ? "revisao" : temaAtual, finais, {
+      classe: classeAtual,
+    });
 
     if (modo !== "prova") {
       setEtapa("resultado");

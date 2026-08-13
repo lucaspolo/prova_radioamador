@@ -5,6 +5,7 @@ import {
   estatisticasPorTema,
   gravar,
   ler,
+  migrar,
   montarRegistro,
   resumo,
   type Historico,
@@ -65,14 +66,72 @@ function respostasFalsas(qtd: number, acertos: number): Resposta[] {
   checar("guarda o resultado de cada questão", lido.simulados[0].itens.length === 20);
 }
 
+// --- Campos aditivos: respondeu e classe ----------------------------------
+{
+  storage.clear();
+  const respostas = respostasFalsas(3, 2);
+  respostas[2] = { ...respostas[2], respondeu: null, acertou: false };
+  const registro = montarRegistro(
+    "Legislação de Telecomunicações",
+    respostas,
+    { classe: "A" },
+  );
+
+  checar("montarRegistro guarda a classe", registro.classe === "A");
+  checar(
+    "em branco e errada deixam de ser a mesma coisa",
+    registro.itens[2].respondeu === null &&
+      typeof registro.itens[0].respondeu === "boolean" &&
+      !registro.itens[2].acertou,
+  );
+  checar(
+    "sem extras, o registro sai sem classe",
+    montarRegistro("revisao", respostas).classe === undefined,
+  );
+
+  // Round-trip: os campos novos sobrevivem à gravação e à releitura — e um
+  // registro antigo, sem eles, continua válido ao lado.
+  const antigo = { ...montarRegistro("revisao", respostasFalsas(2, 1)) } as SimuladoSalvo;
+  delete antigo.classe;
+  antigo.itens = antigo.itens.map(({ questaoId, tema, acertou }) => ({ questaoId, tema, acertou }));
+  gravar({ versao: VERSAO_HISTORICO, simulados: [registro, antigo] });
+  const relido = ler();
+  checar(
+    "round-trip preserva classe e respondeu",
+    relido.simulados[0].classe === "A" && relido.simulados[0].itens[2].respondeu === null,
+  );
+  checar(
+    "registro antigo sem os campos continua válido",
+    relido.simulados.length === 2 && relido.simulados[1].itens[0].respondeu === undefined,
+  );
+}
+
+// --- migrar(): o contrato que protege a próxima versão --------------------
+{
+  const valido = montarRegistro("Legislação de Telecomunicações", respostasFalsas(5, 3));
+
+  checar("versão atual delega à validação normal", migrar({ versao: VERSAO_HISTORICO, simulados: [valido] })?.simulados.length === 1);
+  // O defeito original: casca antiga lendo formato novo descartava TUDO e a
+  // primeira bateria regravava por cima. O contrato agora é leniente: lê o
+  // que entende, registro a registro.
+  checar(
+    "versão futura tenta leitura leniente em vez de descartar",
+    migrar({ versao: 99, simulados: [valido, { lixo: true }] })?.simulados.length === 1,
+  );
+  checar("lixo continua sendo lixo", migrar("banana") === null && migrar(null) === null);
+  checar("versão que não é número não passa", migrar({ versao: "x", simulados: [] }) === null);
+}
+
 // --- Resiliência a storage sujo -------------------------------------------
 {
   storage.clear();
   storage.setItem(CHAVE_STORAGE, "{ isto não é json");
   checar("JSON corrompido não quebra a leitura", ler().simulados.length === 0);
 
+  // Versão futura passa pela leitura leniente de migrar(): registros que esta
+  // versão não reconhece são filtrados um a um — aqui, todos.
   storage.setItem(CHAVE_STORAGE, JSON.stringify({ versao: 99, simulados: [{}] }));
-  checar("versão desconhecida é descartada", ler().simulados.length === 0);
+  checar("versão futura sem registro legível fica vazia", ler().simulados.length === 0);
 
   storage.setItem(CHAVE_STORAGE, JSON.stringify({ versao: VERSAO_HISTORICO, simulados: "nada" }));
   checar("campo simulados inválido é descartado", ler().simulados.length === 0);
