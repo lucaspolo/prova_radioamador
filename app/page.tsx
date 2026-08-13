@@ -11,6 +11,7 @@ import TelaResultadoProva, {
 } from "@/components/TelaResultadoProva";
 import AvisoAtualizacao from "@/components/AvisoAtualizacao";
 import MenuPrincipal from "@/components/MenuPrincipal";
+import TelaAssuntos from "@/components/TelaAssuntos";
 import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
@@ -21,6 +22,7 @@ import type { Classe, MotivoFim, Questao, Resposta, Tema } from "@/lib/tipos";
 
 type Etapa =
   | "inicio"
+  | "assuntos"
   | "simulado"
   | "resultado"
   | "intervalo"
@@ -30,11 +32,12 @@ type Etapa =
 
 /**
  * O que está sendo jogado agora. "avulso" é a bateria de uma matéria;
- * "revisao" recruta só os erros em aberto e não recebe veredito; "prova"
+ * "revisao" recruta só os erros em aberto e não recebe veredito; "assunto" é
+ * o estudo dirigido por uma seção do material, também sem veredito; "prova"
  * encadeia as três matérias no formato oficial, cada uma com seu cronômetro
  * e seu mínimo — aprovação só com as três.
  */
-type Modo = "avulso" | "revisao" | "prova";
+type Modo = "avulso" | "revisao" | "prova" | "assunto";
 
 /**
  * Como a bateria é conduzida. "treino" dá o gabarito questão a questão, que é
@@ -92,6 +95,17 @@ export default function Home() {
     setEtapa("simulado");
   }
 
+  function iniciarAssunto(sorteadas: Questao[]) {
+    // Estudo dirigido: como a revisão — treino, sem cronômetro, sem veredito.
+    // A bateria é a seção inteira; quem escolheu o assunto quer esgotá-lo.
+    setModo("assunto");
+    setRegime("treino");
+    setQuestoes(sorteadas);
+    setRespostas([]);
+    setTempoSegundos(null);
+    setEtapa("simulado");
+  }
+
   function iniciarRevisao(classe: Classe) {
     // Revisão é estudo dirigido: sem cronômetro, sem veredito e sempre com o
     // gabarito na hora — esconder a resposta aqui seria esconder o estudo.
@@ -129,10 +143,13 @@ export default function Home() {
     setRespostas(finais);
     setMotivoFim(motivo);
     // Só entra no histórico a bateria terminada; abandonar não conta. A
-    // revisão também registra: acertar ali tira a questão da lista de erros.
-    registrar(modo === "revisao" ? "revisao" : temaAtual, finais, {
-      classe: classeAtual,
-    });
+    // revisão e o estudo por assunto também registram: acertar ali tira a
+    // questão da lista de erros e alimenta o desempenho por questão.
+    registrar(
+      modo === "revisao" || modo === "assunto" ? modo : temaAtual,
+      finais,
+      { classe: classeAtual },
+    );
 
     if (modo !== "prova") {
       setEtapa("resultado");
@@ -162,10 +179,11 @@ export default function Home() {
             uma tela de resultado seria porta de mão única — "Voltar ao início"
             das telas de consulta descarta o gabarito recém-conquistado. */}
         {(etapa === "inicio" ||
+          etapa === "assuntos" ||
           etapa === "desempenho" ||
           etapa === "ferramentas") && (
           <MenuPrincipal
-            atual={etapa}
+            atual={etapa === "assuntos" ? "inicio" : etapa}
             onInicio={() => setEtapa("inicio")}
             onDesempenho={() => setEtapa("desempenho")}
             onFerramentas={() => setEtapa("ferramentas")}
@@ -177,6 +195,7 @@ export default function Home() {
           bateria e de resultado. Recarregar no meio descartaria a bateria; o
           componente em si nunca recarrega sozinho. */}
       {(etapa === "inicio" ||
+        etapa === "assuntos" ||
         etapa === "desempenho" ||
         etapa === "ferramentas") && <AvisoAtualizacao />}
 
@@ -192,8 +211,17 @@ export default function Home() {
             onIniciar={iniciar}
             onProvaCompleta={iniciarProva}
             onRevisar={iniciarRevisao}
+            onAssuntos={() => setEtapa("assuntos")}
           />
         </div>
+      )}
+
+      {etapa === "assuntos" && (
+        <TelaAssuntos
+          historico={historico}
+          onEstudar={iniciarAssunto}
+          onVoltar={() => setEtapa("inicio")}
+        />
       )}
 
       {/* A `key` amarra a tela à bateria: as três matérias da prova completa
@@ -224,10 +252,12 @@ export default function Home() {
           respostas={respostas}
           onReiniciar={() => setEtapa("inicio")}
           classe={classeAtual}
-          modo={modo === "revisao" ? "revisao" : "prova"}
+          modo={modo === "revisao" || modo === "assunto" ? modo : "prova"}
           cega={regime === "cego"}
           motivoFim={motivoFim}
-          tema={modo === "revisao" ? undefined : temaAtual}
+          tema={
+            modo === "revisao" || modo === "assunto" ? undefined : temaAtual
+          }
           gravacaoRecusada={gravacaoRecusada}
         />
       )}

@@ -40,12 +40,17 @@ export interface ItemSalvo {
 }
 
 /**
- * O que originou um registro: uma matéria, ou a revisão de erros. Registros
- * antigos, de quando existia bateria mista, guardam "todos" aqui; nada lê
- * este campo para decidir coisa alguma — as estatísticas saem do tema de
- * cada item —, então não vale queimar o histórico do usuário para limpar.
+ * O que originou um registro: uma matéria, a revisão de erros ou o estudo
+ * dirigido por assunto. Registros antigos, de quando existia bateria mista,
+ * guardam "todos" aqui; nada lê este campo para decidir coisa alguma — as
+ * estatísticas saem do tema de cada item —, então não vale queimar o
+ * histórico do usuário para limpar.
+ *
+ * "assunto" fica fora da prontidão e da evolução por construção (elas filtram
+ * `escolha === tema`): estudo dirigido é enviesado por definição e mediria
+ * errado — mas os itens contam normalmente para o desempenho por questão.
  */
-export type EscolhaRegistro = Tema | "revisao";
+export type EscolhaRegistro = Tema | "revisao" | "assunto";
 
 export interface SimuladoSalvo {
   id: string;

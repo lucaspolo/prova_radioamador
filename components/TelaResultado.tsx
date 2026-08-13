@@ -15,10 +15,11 @@ interface Props {
   onReiniciar: () => void;
   classe?: Classe;
   /**
-   * "revisao" é estudo, não prova: sem veredito de aprovação — o placar diz
-   * quantos erros antigos foram corrigidos.
+   * "revisao" e "assunto" são estudo, não prova: sem veredito de aprovação —
+   * na revisão o placar diz quantos erros antigos foram corrigidos; no
+   * assunto, quanto da seção você já domina.
    */
-  modo?: "prova" | "revisao";
+  modo?: "prova" | "revisao" | "assunto";
   /** Bateria feita no modo cego: o gabarito abre completo. */
   cega?: boolean;
   motivoFim?: MotivoFim;
@@ -51,7 +52,7 @@ export default function TelaResultado({
   const bateriaOficial = total === formato.questoes;
   const naoRespondidas = respostas.filter((r) => r.respondeu === null).length;
 
-  if (modo === "revisao") {
+  if (modo === "revisao" || modo === "assunto") {
     return (
       <div className="space-y-8">
         <div className="rounded-2xl border-2 border-slate-300 p-8 text-center dark:border-slate-700">
@@ -60,13 +61,18 @@ export default function TelaResultado({
             <span className="text-2xl font-normal opacity-50">/{total}</span>
           </div>
           <div className="mt-4 text-lg font-semibold">
-            {acertos === total
-              ? "Todos os erros corrigidos"
-              : `${acertos} ${acertos === 1 ? "erro corrigido" : "erros corrigidos"}, ${total - acertos} para revisar de novo`}
+            {modo === "assunto"
+              ? acertos === total
+                ? "Assunto dominado — por hoje"
+                : `${acertos} de ${total} no assunto, ${total - acertos} para rever`
+              : acertos === total
+                ? "Todos os erros corrigidos"
+                : `${acertos} ${acertos === 1 ? "erro corrigido" : "erros corrigidos"}, ${total - acertos} para revisar de novo`}
           </div>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Revisão não tem veredito de aprovação: o que você acertou sai da
-            lista de erros; o que errou volta a aparecer.
+            {modo === "assunto"
+              ? "Estudo por assunto não tem veredito de aprovação: o que você errou entra na revisão de erros."
+              : "Revisão não tem veredito de aprovação: o que você acertou sai da lista de erros; o que errou volta a aparecer."}
           </p>
         </div>
 

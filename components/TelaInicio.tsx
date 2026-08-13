@@ -33,6 +33,7 @@ interface Props {
   ) => void;
   onProvaCompleta: (classe: Classe) => void;
   onRevisar: (classe: Classe) => void;
+  onAssuntos: () => void;
 }
 
 export default function TelaInicio({
@@ -40,6 +41,7 @@ export default function TelaInicio({
   onIniciar,
   onProvaCompleta,
   onRevisar,
+  onAssuntos,
 }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
@@ -299,6 +301,16 @@ export default function TelaInicio({
             {errosAbertos === 0
               ? "Nenhum erro em aberto — errou, aparece aqui."
               : "Só as questões que você errou e ainda não corrigiu."}
+          </div>
+        </button>
+        <button
+          onClick={onAssuntos}
+          className="rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 sm:col-span-2 dark:border-slate-700 dark:hover:border-slate-500"
+        >
+          <div className="font-semibold">Estudar por assunto</div>
+          <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+            As seções reais do material — plano de bandas, propagação,
+            indicativos — cada uma com sua bateria própria, em modo treino.
           </div>
         </button>
       </div>

@@ -1,4 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import TelaAssuntos from "@/components/TelaAssuntos";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaProvaCega from "@/components/TelaProvaCega";
@@ -60,6 +61,7 @@ const PROPS_INICIO = {
   onIniciar: () => {},
   onProvaCompleta: () => {},
   onRevisar: () => {},
+  onAssuntos: () => {},
 };
 
 // --- Tela inicial ---------------------------------------------------------
@@ -118,6 +120,31 @@ const PROPS_INICIO = {
   checar("botão inicia no regime escolhido", html.includes("Iniciar modo treino"));
   // A consulta rápida virou item de menu: a tela inicial é sobre fazer prova.
   checar("a consulta rápida saiu da tela inicial", !html.includes("Consulta rápida"));
+  checar("oferece estudar por assunto", html.includes("Estudar por assunto"));
+}
+
+// --- Estudar por assunto --------------------------------------------------
+{
+  const html = renderToStaticMarkup(
+    <TelaAssuntos historico={H_VAZIO} onEstudar={() => {}} onVoltar={() => {}} />,
+  );
+  checar("TelaAssuntos renderiza", html.includes("Estudar por assunto"));
+  checar(
+    "lista seções reais do material",
+    html.includes("Plano de faixas por banda") && html.includes("Propagação"),
+  );
+  checar(
+    "agrupa por documento",
+    html.includes("Cartilha do Radioamador") && html.includes("Ato 926/2024"),
+  );
+  checar(
+    "diz quantas questões cada assunto tem",
+    /\d+ quest(ão|ões)/.test(html),
+  );
+  checar(
+    "sem histórico, não inventa aproveitamento",
+    !html.includes("sabe 0") && !html.includes("viu 0"),
+  );
 }
 
 // --- Tela de simulado -----------------------------------------------------
