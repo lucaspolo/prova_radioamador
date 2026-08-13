@@ -609,6 +609,22 @@ const storage = new StorageFalso();
     fantasmas.length === 0,
     fantasmas.join(", "),
   );
+
+  // Os totais de cobertura são escritos à mão e o banco continua crescendo:
+  // total defasado subestima a pendência e direciona mal a próxima rodada de
+  // leitura. Aconteceu — a Cartilha ficou registrada com 647 quando o banco
+  // já tinha 658 questões dela, e a pendência real era 227, não 216.
+  const triado = JSON.parse(
+    readFileSync(join(RAIZ, "scripts/conferencia_triado.json"), "utf8"),
+  ) as { cobertura?: Record<string, { revisadas: number; total: number }> };
+  for (const [arquivo, c] of Object.entries(triado.cobertura ?? {})) {
+    const doArquivo = BANCO.filter((q) => q.arquivo_origem === arquivo).length;
+    checar(
+      `cobertura de "${arquivo.slice(0, 28)}…" bate com o banco`,
+      c.total === doArquivo && c.revisadas <= c.total,
+      `registrado ${c.revisadas}/${c.total}, banco tem ${doArquivo}`,
+    );
+  }
 }
 
 // --- pendente(), achadosTriados() e darPorVistas() ---------------------------
