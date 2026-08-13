@@ -20,6 +20,7 @@ import {
 } from "@/lib/questoes";
 import type { Historico } from "@/lib/historico";
 import { gravarPreferencias, lerPreferencias } from "@/lib/preferencias";
+import CriarDesafio from "./CriarDesafio";
 
 interface Props {
   historico: Historico;
@@ -269,6 +270,10 @@ export default function TelaInicio({
       >
         Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões
       </button>
+
+      {/* Usa a configuração escolhida acima: o desafio é esta bateria, com uma
+          semente no lugar do sorteio de cada um. */}
+      <CriarDesafio tema={escolha} quantidade={limite} classe={classe} />
 
       <div className="grid gap-3 sm:grid-cols-2">
         {/* A prova completa é sempre cronometrada, cega e no formato oficial:

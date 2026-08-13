@@ -242,6 +242,35 @@ function h(...simulados: SimuladoSalvo[]): Historico {
   checar("e o veredito de cada uma", prova.includes("25/30") && prova.includes("reprovado"));
 
   checar("bateria vazia não divide por zero", resumoDeTexto({ classe: "B", acertos: 0, total: 0 }).includes("(0%)"));
+
+  // Desafio: o texto compartilhado tem de convidar à mesma bateria, e o código
+  // é o que denuncia bancos divergentes antes de a comparação virar discussão.
+  const desafio = resumoDeTexto({
+    classe: "B",
+    tema: "Legislação de Telecomunicações",
+    acertos: 15,
+    total: 20,
+    aprovado: true,
+    desafio: {
+      semente: "PY2-SP",
+      link: "https://exemplo.app/?desafio=PY2-SP&t=legislacao&n=20&c=B",
+      codigo: "ABC1234",
+    },
+  });
+  checar(
+    "desafio leva semente, código e link",
+    desafio.includes("PY2-SP") &&
+      desafio.includes("ABC1234") &&
+      desafio.includes("?desafio=PY2-SP"),
+  );
+  checar(
+    "o link do desafio vem antes do link do projeto",
+    desafio.indexOf("?desafio=") < desafio.indexOf(URL_PROJETO),
+  );
+  checar(
+    "bateria comum não fala em desafio",
+    !avulso.toLowerCase().includes("desafio"),
+  );
 }
 
 // --- preferências: tema e tamanho de texto --------------------------------

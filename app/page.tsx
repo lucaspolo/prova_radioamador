@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaProvaCega from "@/components/TelaProvaCega";
@@ -15,14 +15,22 @@ import TelaAssuntos from "@/components/TelaAssuntos";
 import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
+import TelaDesafio from "@/components/TelaDesafio";
 import { useHistorico } from "@/hooks/useHistorico";
-import { questoesParaRevisao, sortearSimulado } from "@/lib/questoes";
+import {
+  questoesParaRevisao,
+  sortearDesafio,
+  sortearSimulado,
+} from "@/lib/questoes";
+import { lerDesafio, linkDoDesafio, type Desafio } from "@/lib/desafio";
+import { codigoDaBateria } from "@/lib/semente";
 import { CLASSE_PADRAO, FORMATO, TEMAS, tempoDaBateria } from "@/lib/constantes";
 import type { Classe, MotivoFim, Questao, Resposta, Tema } from "@/lib/tipos";
 
 type Etapa =
   | "inicio"
   | "assuntos"
+  | "desafio"
   | "simulado"
   | "resultado"
   | "intervalo"
@@ -35,9 +43,11 @@ type Etapa =
  * "revisao" recruta só os erros em aberto e não recebe veredito; "assunto" é
  * o estudo dirigido por uma seção do material, também sem veredito; "prova"
  * encadeia as três matérias no formato oficial, cada uma com seu cronômetro
- * e seu mínimo — aprovação só com as três.
+ * e seu mínimo — aprovação só com as três; "desafio" é a bateria de um link,
+ * igual à avulsa no registro e no veredito, mas que rende link e código no
+ * resultado.
  */
-type Modo = "avulso" | "revisao" | "prova" | "assunto";
+type Modo = "avulso" | "revisao" | "prova" | "assunto" | "desafio";
 
 /**
  * Como a bateria é conduzida. "treino" dá o gabarito questão a questão, que é
@@ -69,8 +79,30 @@ export default function Home() {
   const [tempoSegundos, setTempoSegundos] = useState<number | null>(null);
   const [materiasProva, setMateriasProva] = useState<MateriaConcluida[]>([]);
   const [motivoFim, setMotivoFim] = useState<MotivoFim>("manual");
+  const [desafio, setDesafio] = useState<Desafio | null>(null);
+  const [linkDesafio, setLinkDesafio] = useState<string | null>(null);
   const { historico, carregado, gravacaoRecusada, registrar, importar, limpar } =
     useHistorico();
+
+  /**
+   * O desafio chega pela query string, lida com `URLSearchParams` num efeito —
+   * e não com `useSearchParams`, que num export estático exigiria envolver a
+   * página em Suspense (ver o comentário acima). Efeito também é o lugar certo
+   * por outro motivo: `window` não existe na geração do HTML, e ler ali
+   * divergiria do que o navegador renderiza.
+   *
+   * A URL não é limpa depois: recarregar o link tem de reoferecer o mesmo
+   * desafio, que é o que se espera de um endereço.
+   */
+  useEffect(() => {
+    const d = lerDesafio(window.location.search);
+    if (!d) return;
+    const base = `${window.location.origin}${window.location.pathname}`;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDesafio(d);
+    setLinkDesafio(linkDoDesafio(d, base));
+    setEtapa("desafio");
+  }, []);
 
   function iniciar(
     tema: Tema,
@@ -103,6 +135,19 @@ export default function Home() {
     setQuestoes(sorteadas);
     setRespostas([]);
     setTempoSegundos(null);
+    setEtapa("simulado");
+  }
+
+  function iniciarDesafio(d: Desafio) {
+    // Cego e cronometrado por construção: é o que torna os resultados
+    // comparáveis. Registra no histórico como qualquer bateria da matéria.
+    setModo("desafio");
+    setRegime("cego");
+    setQuestoes(sortearDesafio(d.tema, d.quantidade, d.classe, d.semente));
+    setRespostas([]);
+    setTemaAtual(d.tema);
+    setClasseAtual(d.classe);
+    setTempoSegundos(tempoDaBateria(d.classe, d.quantidade));
     setEtapa("simulado");
   }
 
@@ -224,6 +269,14 @@ export default function Home() {
         />
       )}
 
+      {etapa === "desafio" && desafio && (
+        <TelaDesafio
+          desafio={desafio}
+          onComecar={() => iniciarDesafio(desafio)}
+          onIgnorar={() => setEtapa("inicio")}
+        />
+      )}
+
       {/* A `key` amarra a tela à bateria: as três matérias da prova completa
           têm o mesmo `tempoSegundos`, então sem ela um dia em que a etapa de
           intervalo saia do caminho o cronômetro herdaria o prazo da matéria
@@ -259,6 +312,15 @@ export default function Home() {
             modo === "revisao" || modo === "assunto" ? undefined : temaAtual
           }
           gravacaoRecusada={gravacaoRecusada}
+          desafio={
+            modo === "desafio" && desafio && linkDesafio
+              ? {
+                  semente: desafio.semente,
+                  link: linkDesafio,
+                  codigo: codigoDaBateria(questoes.map((q) => q.id)),
+                }
+              : undefined
+          }
         />
       )}
 
