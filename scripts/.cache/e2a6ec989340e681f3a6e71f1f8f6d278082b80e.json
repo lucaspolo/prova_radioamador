@@ -1,0 +1,1 @@
+{"veredito": [{"indice": 0, "consistente": true, "motivo": "B≈2Rb=2×2 kbit/s=4 kHz; nulos em fc±Rb."}, {"indice": 1, "consistente": true, "motivo": "Tc=10 µs, Tb=1 ms; RC=2 ms não satisfaz RC≪Tb. Ex.: RC≈0,2 ms atenderia."}]}
