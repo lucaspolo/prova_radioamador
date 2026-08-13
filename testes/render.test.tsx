@@ -12,6 +12,7 @@ import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
+import { ATALHOS_DA_PROVA } from "@/lib/atalhos";
 import { sortearSimulado, BANCO } from "@/lib/questoes";
 import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
 import type { Resposta } from "@/lib/tipos";
@@ -315,6 +316,15 @@ const PROPS_INICIO = {
   // A ausência declarada precisa continuar visível: some com ela e a próxima
   // pessoa preenche a escala RST de memória.
   checar("anuncia o RST como pendente de fonte", html.includes("sem fonte"));
+  // Os atalhos administrativos: a pergunta que o banco não responde de
+  // propósito, respondida pela página do material.
+  checar("traz os atalhos do procedimento do exame", html.includes("A prova em si"));
+  checar(
+    "cada atalho aponta a página",
+    ATALHOS_DA_PROVA.every(
+      (a) => html.includes(a.rotulo) && html.includes(`página ${a.pagina}`),
+    ),
+  );
   checar("permite voltar", html.includes("Voltar ao início"));
 }
 

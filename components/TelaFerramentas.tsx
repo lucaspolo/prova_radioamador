@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { RST_SEM_FONTE, TABELAS, type TabelaReferencia } from "@/lib/referencia";
+import AtalhosDaProva from "./AtalhosDaProva";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
 import MaterialOffline from "./MaterialOffline";
@@ -63,8 +64,10 @@ export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) 
         <Calculadoras />
       )}
 
-      {/* Fora das abas: baixar o material vale para a tela inteira — e para
-          o "Consultar material" de qualquer questão, offline. */}
+      {/* Fora das abas: nem atalho nem download são consulta de tabela, e os
+          dois valem para a tela inteira — inclusive para o "Consultar
+          material" de qualquer questão, offline. */}
+      <AtalhosDaProva />
       <MaterialOffline />
 
       <button
