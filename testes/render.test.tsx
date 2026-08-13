@@ -134,6 +134,39 @@ const PROPS_INICIO = {
   // navegador.
   checar("oferece criar o desafio", html.includes("Desafiar o radioclube"));
   checar("não sorteia semente na renderização", !html.includes("?desafio="));
+
+  // A tela é longa, e a ordem é o que a organiza: primeiro a bateria de hoje,
+  // depois os outros modos de estudo, e por último organizar prova para os
+  // outros — o que menos se faz aqui.
+  checar(
+    "o desafio fica depois dos atalhos de estudo",
+    html.indexOf("Desafiar o radioclube") > html.indexOf("Estudar por assunto"),
+  );
+  checar(
+    "o desafio nasce recolhido",
+    !html.includes("Criar a bateria") && !html.includes("Semente"),
+  );
+  // Quem procura "imprimir a prova" não adivinharia que ela mora atrás de
+  // "desafiar": o rótulo fechado anuncia as duas saídas.
+  checar(
+    "o rótulo fechado anuncia a prova impressa",
+    html.includes("prova impressa"),
+  );
+
+  // Primeira visita: os dois regimes abertos, porque a descrição do NÃO
+  // escolhido é justamente a que falta para decidir.
+  checar(
+    "na primeira visita, os regimes vêm abertos",
+    html.includes("Gabarito e explicação a cada questão"),
+  );
+  // Com histórico, vira uma linha — e só porque regime e cronômetro passaram a
+  // ser lembrados: recolher sem lembrar esconderia um controle de toda sessão.
+  checar(
+    "com histórico, como conduzir vem recolhido num resumo",
+    html2.includes("ajustar") &&
+      !html2.includes("Gabarito e explicação a cada questão") &&
+      html2.includes("cronômetro 30 min"),
+  );
 }
 
 // --- Material offline -----------------------------------------------------

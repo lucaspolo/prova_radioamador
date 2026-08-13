@@ -1,4 +1,4 @@
-import type { Classe } from "./tipos";
+import type { Classe, Regime } from "./tipos";
 import { CLASSES, CLASSE_PADRAO } from "./constantes";
 
 export const CHAVE_PREFERENCIAS = "prova-radioamador:preferencias";
@@ -13,16 +13,28 @@ export interface Preferencias {
   /**
    * A classe para a qual o candidato estuda. Quem prepara a C ou a A estuda
    * para ela por semanas — re-selecionar a cada volta ao início era atrito
-   * diário. Regime e cronômetro ficam de fora de propósito: são escolha de
-   * sessão, um toque cada; a classe é a que muda formato, acervo e critério.
+   * diário.
    */
   classe: Classe;
+  /**
+   * Regime e cronômetro da bateria.
+   *
+   * Ficavam de fora por serem "escolha de sessão, um toque cada". Passaram a
+   * ser gravados quando a tela inicial recolheu o bloco "Como conduzir" num
+   * resumo de uma linha: esconder um controle que a pessoa precisa tocar toda
+   * vez seria pior do que a tela comprida. Recolher e lembrar andam juntos —
+   * um sem o outro não vale.
+   */
+  regime: Regime;
+  cronometrar: boolean;
 }
 
 export const PREFERENCIAS_PADRAO: Preferencias = {
   tema: "automatico",
   escala: "normal",
   classe: CLASSE_PADRAO,
+  regime: "treino",
+  cronometrar: true,
 };
 
 /** Multiplicador do tamanho de fonte da raiz. */
@@ -34,6 +46,7 @@ export const FATOR_ESCALA: Record<Escala, number> = {
 
 const TEMAS: PreferenciaTema[] = ["claro", "escuro", "automatico"];
 const ESCALAS: Escala[] = ["pequeno", "normal", "grande"];
+const REGIMES: Regime[] = ["treino", "cego"];
 
 /** Aceita o que reconhece e ignora o resto, como o resto do storage do app. */
 export function validarPreferencias(dados: unknown): Preferencias {
@@ -51,6 +64,15 @@ export function validarPreferencias(dados: unknown): Preferencias {
     classe: CLASSES.includes(bruto.classe as Classe)
       ? (bruto.classe as Classe)
       : PREFERENCIAS_PADRAO.classe,
+    regime: REGIMES.includes(bruto.regime as Regime)
+      ? (bruto.regime as Regime)
+      : PREFERENCIAS_PADRAO.regime,
+    // Só `false` desliga: qualquer outro valor (ausente, "sim", null) cai no
+    // padrão, que é cronometrar — a prova real tem relógio.
+    cronometrar:
+      typeof bruto.cronometrar === "boolean"
+        ? bruto.cronometrar
+        : PREFERENCIAS_PADRAO.cronometrar,
   };
 }
 

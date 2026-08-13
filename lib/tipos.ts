@@ -105,3 +105,12 @@ export interface Resposta {
   acertou: boolean;
 }
 
+/**
+ * Como a bateria é conduzida. "treino" dá o gabarito questão a questão, que é
+ * como se aprende; "cego" esconde tudo até o fim e libera a navegação entre as
+ * questões, que é como a Anatel aplica.
+ *
+ * Mora aqui, e não na máquina de estados, porque virou preferência gravada
+ * (`lib/preferencias.ts`) além de estado de sessão.
+ */
+export type Regime = "treino" | "cego";
