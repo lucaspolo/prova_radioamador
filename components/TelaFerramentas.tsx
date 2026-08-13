@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { RST_SEM_FONTE, TABELAS, type TabelaReferencia } from "@/lib/referencia";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
+import MaterialOffline from "./MaterialOffline";
 
 /**
  * Consulta rápida offline: as tabelas que o radioamador usa a vida toda e as
@@ -61,6 +62,10 @@ export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) 
       ) : (
         <Calculadoras />
       )}
+
+      {/* Fora das abas: baixar o material vale para a tela inteira — e para
+          o "Consultar material" de qualquer questão, offline. */}
+      <MaterialOffline />
 
       <button
         onClick={onVoltar}

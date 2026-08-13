@@ -123,6 +123,17 @@ const PROPS_INICIO = {
   checar("oferece estudar por assunto", html.includes("Estudar por assunto"));
 }
 
+// --- Material offline -----------------------------------------------------
+{
+  // Sem service worker controlando (SSR, dev, primeiro acesso), baixar não
+  // deixaria nada no cache: a seção não pode nem aparecer.
+  const html = renderToStaticMarkup(<TelaFerramentas onVoltar={() => {}} />);
+  checar(
+    "sem service worker, o pré-download não aparece",
+    !html.includes("Material para consulta offline"),
+  );
+}
+
 // --- Estudar por assunto --------------------------------------------------
 {
   const html = renderToStaticMarkup(
