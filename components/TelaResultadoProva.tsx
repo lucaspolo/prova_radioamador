@@ -4,6 +4,7 @@ import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import { COR_TEMA, FORMATO, ROTULO_CURTO } from "@/lib/constantes";
 import Gabarito from "./Gabarito";
 import AcoesResultado from "./AcoesResultado";
+import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
 
 export interface MateriaConcluida {
   tema: Tema;
@@ -14,6 +15,8 @@ interface Props {
   classe: Classe;
   materias: MateriaConcluida[];
   onReiniciar: () => void;
+  /** O navegador recusou gravar o registro de alguma matéria no histórico. */
+  gravacaoRecusada?: boolean;
 }
 
 /**
@@ -26,6 +29,7 @@ export default function TelaResultadoProva({
   classe,
   materias,
   onReiniciar,
+  gravacaoRecusada = false,
 }: Props) {
   const formato = FORMATO[classe];
   const porMateria = materias.map((m) => {
@@ -65,6 +69,8 @@ export default function TelaResultadoProva({
             : `A aprovação exige ${formato.minimo} de ${formato.questoes} em cada matéria — faltou em ${reprovadas.map((m) => ROTULO_CURTO[m.tema]).join(" e ")}.`}
         </p>
       </div>
+
+      {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
       <section>
         <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">

@@ -65,7 +65,8 @@ export default function Home() {
   const [tempoSegundos, setTempoSegundos] = useState<number | null>(null);
   const [materiasProva, setMateriasProva] = useState<MateriaConcluida[]>([]);
   const [motivoFim, setMotivoFim] = useState<MotivoFim>("manual");
-  const { historico, carregado, registrar, importar, limpar } = useHistorico();
+  const { historico, carregado, gravacaoRecusada, registrar, importar, limpar } =
+    useHistorico();
 
   function iniciar(
     tema: Tema,
@@ -211,6 +212,7 @@ export default function Home() {
           cega={regime === "cego"}
           motivoFim={motivoFim}
           tema={modo === "revisao" ? undefined : temaAtual}
+          gravacaoRecusada={gravacaoRecusada}
         />
       )}
 
@@ -246,6 +248,7 @@ export default function Home() {
           classe={classeAtual}
           materias={materiasProva}
           onReiniciar={() => setEtapa("inicio")}
+          gravacaoRecusada={gravacaoRecusada}
         />
       )}
     </main>

@@ -2,6 +2,7 @@
 
 import type { Classe, MotivoFim, Resposta, Tema } from "@/lib/tipos";
 import AcoesResultado from "./AcoesResultado";
+import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
 import {
   CLASSE_PADRAO,
   FORMATO,
@@ -23,6 +24,8 @@ interface Props {
   motivoFim?: MotivoFim;
   /** Matéria da bateria, para o texto de compartilhamento. */
   tema?: Tema;
+  /** O navegador recusou gravar o registro desta bateria no histórico. */
+  gravacaoRecusada?: boolean;
 }
 
 export default function TelaResultado({
@@ -33,6 +36,7 @@ export default function TelaResultado({
   cega = false,
   motivoFim = "tempo",
   tema,
+  gravacaoRecusada = false,
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -65,6 +69,8 @@ export default function TelaResultado({
             lista de erros; o que errou volta a aparecer.
           </p>
         </div>
+
+        {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
         <AcoesResultado
           resumo={{ classe, tema, acertos, total }}
@@ -124,6 +130,7 @@ export default function TelaResultado({
         )}
       </div>
 
+      {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
       <AcoesResultado
         resumo={{ classe, tema, acertos, total, aprovado }}

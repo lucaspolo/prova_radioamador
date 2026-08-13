@@ -26,6 +26,7 @@ import {
 export function useHistorico() {
   const [historico, setHistorico] = useState<Historico>(HISTORICO_VAZIO);
   const [carregado, setCarregado] = useState(false);
+  const [gravacaoRecusada, setGravacaoRecusada] = useState(false);
 
   useEffect(() => {
     // O storage só existe no cliente: ler aqui e ajustar o estado é o padrão
@@ -36,23 +37,34 @@ export function useHistorico() {
     setCarregado(true);
   }, []);
 
+  /**
+   * Atualiza o estado e grava, com o resultado da gravação à vista: recusa
+   * (cota, modo privado) acende `gravacaoRecusada` para a interface avisar —
+   * o dado continua válido nesta aba, mas morre com ela. Sucesso limpa o
+   * aviso: se o navegador voltou a aceitar, o alerta antigo viraria mentira.
+   */
+  const persistir = useCallback((novo: Historico) => {
+    setHistorico(novo);
+    setGravacaoRecusada(!gravar(novo));
+  }, []);
+
   const registrar = useCallback(
     (escolha: EscolhaRegistro, respostas: Resposta[]) => {
       if (respostas.length === 0) return;
-      setHistorico((atual) => {
-        const novo: Historico = {
-          ...atual,
-          // Os mais recentes ficam à frente; o excedente antigo é descartado.
-          simulados: [montarRegistro(escolha, respostas), ...atual.simulados].slice(
-            0,
-            MAX_SIMULADOS,
-          ),
-        };
-        gravar(novo);
-        return novo;
+      // Calculado fora do updater, como no `importar`: o resultado de
+      // `gravar()` precisa virar estado, e updater é função pura. Não há
+      // concorrência — toda escrita passa por este hook e é disparada por
+      // interação.
+      persistir({
+        ...historico,
+        // Os mais recentes ficam à frente; o excedente antigo é descartado.
+        simulados: [montarRegistro(escolha, respostas), ...historico.simulados].slice(
+          0,
+          MAX_SIMULADOS,
+        ),
       });
     },
-    [],
+    [historico, persistir],
   );
 
   /**
@@ -66,17 +78,15 @@ export function useHistorico() {
       // passa por este hook e é disparada por interação.
       const unido = mesclar(historico, outro);
       const novos = unido.simulados.length - historico.simulados.length;
-      gravar(unido);
-      setHistorico(unido);
+      persistir(unido);
       return novos;
     },
-    [historico],
+    [historico, persistir],
   );
 
   const limpar = useCallback(() => {
-    setHistorico(HISTORICO_VAZIO);
-    gravar(HISTORICO_VAZIO);
-  }, []);
+    persistir(HISTORICO_VAZIO);
+  }, [persistir]);
 
-  return { historico, carregado, registrar, importar, limpar };
+  return { historico, carregado, gravacaoRecusada, registrar, importar, limpar };
 }

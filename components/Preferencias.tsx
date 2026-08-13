@@ -37,6 +37,7 @@ const ESCALAS: { valor: Escala; rotulo: string }[] = [
 export default function Preferencias() {
   const [prefs, setPrefs] = useState<Prefs>(PREFERENCIAS_PADRAO);
   const [carregado, setCarregado] = useState(false);
+  const [recusou, setRecusou] = useState(false);
 
   useEffect(() => {
     // Mesmo padrão de hidratação de `useHistorico`: o storage só existe no
@@ -51,7 +52,10 @@ export default function Preferencias() {
   function trocar(mudanca: Partial<Prefs>) {
     const novo = { ...prefs, ...mudanca };
     setPrefs(novo);
-    gravarPreferencias(novo);
+    // Recusa (modo privado, cota) não é silenciosa: a preferência aplica na
+    // aba, mas não sobrevive a ela — o aviso diz exatamente isso. Sucesso
+    // limpa o aviso, senão ele viraria mentira na primeira gravação aceita.
+    setRecusou(!gravarPreferencias(novo));
     aplicarPreferencias(novo);
   }
 
@@ -87,6 +91,11 @@ export default function Preferencias() {
           ))}
         </div>
       </div>
+      {recusou && (
+        <p role="alert" className="text-xs text-amber-700 dark:text-amber-300">
+          O navegador recusou gravar — a escolha vale só nesta aba.
+        </p>
+      )}
     </div>
   );
 }
