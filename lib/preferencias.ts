@@ -1,3 +1,6 @@
+import type { Classe } from "./tipos";
+import { CLASSES, CLASSE_PADRAO } from "./constantes";
+
 export const CHAVE_PREFERENCIAS = "prova-radioamador:preferencias";
 
 /** "automatico" segue o `prefers-color-scheme` do sistema. */
@@ -7,11 +10,19 @@ export type Escala = "pequeno" | "normal" | "grande";
 export interface Preferencias {
   tema: PreferenciaTema;
   escala: Escala;
+  /**
+   * A classe para a qual o candidato estuda. Quem prepara a C ou a A estuda
+   * para ela por semanas — re-selecionar a cada volta ao início era atrito
+   * diário. Regime e cronômetro ficam de fora de propósito: são escolha de
+   * sessão, um toque cada; a classe é a que muda formato, acervo e critério.
+   */
+  classe: Classe;
 }
 
 export const PREFERENCIAS_PADRAO: Preferencias = {
   tema: "automatico",
   escala: "normal",
+  classe: CLASSE_PADRAO,
 };
 
 /** Multiplicador do tamanho de fonte da raiz. */
@@ -35,6 +46,11 @@ export function validarPreferencias(dados: unknown): Preferencias {
     escala: ESCALAS.includes(bruto.escala as Escala)
       ? (bruto.escala as Escala)
       : PREFERENCIAS_PADRAO.escala,
+    // Preferência gravada antes de a classe existir não tem o campo: cai no
+    // padrão, como qualquer valor que a validação não reconheça.
+    classe: CLASSES.includes(bruto.classe as Classe)
+      ? (bruto.classe as Classe)
+      : PREFERENCIAS_PADRAO.classe,
   };
 }
 

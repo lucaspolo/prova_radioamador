@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Classe, Tema } from "@/lib/tipos";
 import {
   CLASSES,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/constantes";
 import { contarPorTema, disponiveis, questoesParaRevisao } from "@/lib/questoes";
 import type { Historico } from "@/lib/historico";
+import { gravarPreferencias, lerPreferencias } from "@/lib/preferencias";
 
 interface Props {
   historico: Historico;
@@ -55,6 +56,27 @@ export default function TelaInicio({
     setQuantidade(FORMATO[nova].questoes);
   }
 
+  // A classe escolhida sobrevive à bateria e ao recarregamento: quem estuda
+  // para a C ou a A estuda para ela todo dia, e o componente é desmontado a
+  // cada bateria — sem isto, cada volta ao início recomeçava na B.
+  useEffect(() => {
+    // Mesmo padrão de hidratação de `useHistorico`: o storage só existe no
+    // cliente, e ler durante o render divergiria do HTML da build.
+    const salva = lerPreferencias().classe;
+    if (salva !== CLASSE_PADRAO) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      trocarClasse(salva);
+    }
+  }, []);
+
+  function escolherClasse(nova: Classe) {
+    trocarClasse(nova);
+    // Mescla por cima do storage atual, e não do estado local: tema e escala
+    // pertencem ao painel de preferências, que tem o próprio estado vivo —
+    // gravar o objeto daqui apagaria uma escolha feita lá nesta mesma sessão.
+    gravarPreferencias({ ...lerPreferencias(), classe: nova });
+  }
+
   return (
     <div className="space-y-8">
       <section>
@@ -65,7 +87,7 @@ export default function TelaInicio({
           {CLASSES.map((c) => (
             <button
               key={c}
-              onClick={() => trocarClasse(c)}
+              onClick={() => escolherClasse(c)}
               className={`flex-1 rounded-xl border-2 px-3 py-3 transition ${
                 classe === c
                   ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
