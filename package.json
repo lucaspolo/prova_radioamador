@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/estudo.test.ts && tsx testes/bateria.test.ts && tsx testes/prioridade.test.ts && tsx testes/prontidao.test.ts && tsx testes/pdfs.test.ts && tsx testes/paginas.test.ts && tsx testes/trechos.test.ts && tsx testes/secoes.test.ts && tsx testes/atalhos.test.ts && tsx testes/classes.test.ts && tsx testes/cobertura.test.ts && tsx testes/calculos.test.ts && tsx testes/referencia.test.ts && tsx testes/dataset.test.ts &&tsx testes/conferencia.test.ts && tsx testes/render.test.tsx",
+    "test": "tsx testes/sorteio.test.ts && tsx testes/historico.test.ts && tsx testes/estudo.test.ts && tsx testes/bateria.test.ts && tsx testes/prioridade.test.ts && tsx testes/prontidao.test.ts && tsx testes/pdfs.test.ts && tsx testes/paginas.test.ts && tsx testes/trechos.test.ts && tsx testes/secoes.test.ts && tsx testes/atalhos.test.ts && tsx testes/classes.test.ts && tsx testes/cobertura.test.ts && tsx testes/calculos.test.ts && tsx testes/drill.test.ts && tsx testes/referencia.test.ts && tsx testes/dataset.test.ts && tsx testes/conferencia.test.ts && tsx testes/render.test.tsx",
     "predev": "node scripts/preparar_worker.mjs",
     "prebuild": "node scripts/preparar_worker.mjs",
     "postbuild": "node scripts/gerar_sw.mjs",
