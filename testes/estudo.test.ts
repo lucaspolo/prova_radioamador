@@ -7,6 +7,12 @@ import {
   type SimuladoSalvo,
 } from "@/lib/historico";
 import { lerSuspeitas, gravarSuspeitas } from "@/lib/suspeitas";
+import {
+  anunciarEspera,
+  aplicarAtualizacao,
+  assinar,
+  haAtualizacao,
+} from "@/lib/atualizacao-sw";
 import { acervo, questoesParaRevisao, BANCO } from "@/lib/questoes";
 import { REPO, urlDeReporte } from "@/lib/reportar";
 import { resumoDeTexto, URL_PROJETO } from "@/lib/compartilhar";
@@ -135,6 +141,27 @@ function h(...simulados: SimuladoSalvo[]): Historico {
 {
   checar("ler sem navegador devolve lista vazia", lerSuspeitas().length === 0);
   checar("gravar sem navegador só sinaliza", gravarSuspeitas(["x"]) === false);
+}
+
+// --- atualização do SW: a ponte entre registro e aviso --------------------
+{
+  checar("sem anúncio, não há atualização", haAtualizacao() === false);
+
+  let avisos = 0;
+  const cancelar = assinar(() => avisos++);
+  anunciarEspera({} as ServiceWorker);
+  checar("quem assina é notificado do anúncio", avisos === 1);
+  checar("o anúncio fica acumulado para quem chegar depois", haAtualizacao());
+
+  cancelar();
+  anunciarEspera({} as ServiceWorker);
+  checar("assinatura cancelada não recebe mais", avisos === 1);
+
+  // O Node moderno tem `navigator` global, mas sem `serviceWorker` — mesmo
+  // ambiente destes testes. A chamada precisa degradar em silêncio, como o
+  // resto do storage do app.
+  aplicarAtualizacao();
+  checar("aplicar sem serviceWorker no ambiente não lança", true);
 }
 
 // --- compartilhar: o resultado em uma linha -------------------------------
