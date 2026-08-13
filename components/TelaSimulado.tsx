@@ -158,7 +158,12 @@ export default function TelaSimulado({
         </div>
       ) : (
         <div className="space-y-4">
+          {/* role="status" = região viva educada: o leitor de tela anuncia o
+              veredito e a explicação quando o cartão aparece — sem isto, quem
+              responde de teclado só ouvia o botão que ganhou o foco. Mesmo
+              padrão dos avisos do app (role="alert"/"status"). */}
           <div
+            role="status"
             className={`rounded-xl border-2 p-5 ${
               acertou
                 ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40"

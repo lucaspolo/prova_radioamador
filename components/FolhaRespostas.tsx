@@ -51,6 +51,11 @@ export default function FolhaRespostas({
             <button
               key={i}
               onClick={() => onIr(i)}
+              // Tabindex rotativo: a grade inteira é UMA parada de Tab (a
+              // célula atual), senão até 30 botões separavam a questão do
+              // "Encerrar" para quem navega por teclado. Dentro da folha,
+              // ← / → já andam pelas questões — e movem esta parada junto.
+              tabIndex={ehAtual ? 0 : -1}
               aria-current={ehAtual ? "true" : undefined}
               aria-label={`Questão ${i + 1}, ${
                 respondida ? "respondida" : "em branco"

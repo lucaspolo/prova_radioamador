@@ -153,7 +153,7 @@ export default function ItemConferencia({
         )}
 
         <code
-          className="ml-auto cursor-pointer text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          className="ml-auto cursor-pointer text-[11px] text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
           title="Copiar o id — é a chave de scripts/correcoes.json"
           onClick={(e) => {
             e.stopPropagation();

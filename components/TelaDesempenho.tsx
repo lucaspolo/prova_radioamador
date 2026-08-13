@@ -111,7 +111,7 @@ export default function TelaDesempenho({
                     <span
                       className={
                         e.respondidas === 0
-                          ? "text-slate-400 dark:text-slate-500"
+                          ? "text-slate-500 dark:text-slate-400"
                           : aprovando
                             ? "font-medium text-emerald-600 dark:text-emerald-400"
                             : "font-medium text-rose-600 dark:text-rose-400"

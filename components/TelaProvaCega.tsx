@@ -256,7 +256,7 @@ export default function TelaProvaCega({
         onIr={ir}
       />
 
-      <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+      <p className="text-center text-xs text-slate-500 dark:text-slate-400">
         Teclado: V/F responde · ← → navega · M marca · Backspace limpa
       </p>
 

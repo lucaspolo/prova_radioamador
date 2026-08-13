@@ -184,12 +184,12 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
           )}
 
           {tabela.nota && (
-            <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-500">
+            <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-400">
               {tabela.nota}
             </p>
           )}
 
-          <div className="mt-3 border-t border-slate-200 pt-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500">
+          <div className="mt-3 border-t border-slate-200 pt-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
             <span className="font-medium">Fonte:</span> {tabela.fonte.arquivo}
             <span className="opacity-70">
               {" "}

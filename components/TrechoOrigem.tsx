@@ -55,7 +55,7 @@ export default function TrechoOrigem({ trechoId, afirmacao }: Props) {
 
   if (estado.fase === "erro") {
     return (
-      <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-500">
+      <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-400">
         Não foi possível carregar o trecho de origem.
       </p>
     );
@@ -128,7 +128,7 @@ function TextoDoTrecho({
         {partes[2]}
       </div>
 
-      <p className="mt-1.5 text-xs text-slate-500 italic dark:text-slate-500">
+      <p className="mt-1.5 text-xs text-slate-500 italic dark:text-slate-400">
         {passagem
           ? "Texto extraído do PDF, como foi lido para elaborar a questão. O destaque é uma aproximação por palavras em comum."
           : "Texto extraído do PDF, como foi lido para elaborar a questão."}

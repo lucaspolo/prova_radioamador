@@ -67,7 +67,7 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               {r.questao.explicacao_curta}
             </p>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
               {r.questao.origem === "documento"
                 ? "Fonte: "
                 : "Estude o tema em: "}

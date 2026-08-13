@@ -143,7 +143,7 @@ function Ohm() {
         ]}
       />
       {res === null && (
-        <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
           Faltam dados, ou o par informado não determina o circuito —
           resistência zero com tensão conhecida deixa a corrente indefinida.
         </p>
@@ -252,7 +252,7 @@ function Resistor() {
         ]}
       />
       {res === null && (
-        <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
           Ouro, prata e &quot;nenhuma&quot; não valem como dígito nas duas
           primeiras faixas.
         </p>
@@ -281,7 +281,7 @@ function Onda() {
           ["Vertical de ¼ de onda", `${fmt(f === null ? null : quartoDeOnda(f), 3)} m`],
         ]}
       />
-      <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
         Sem fator de encurtamento: nenhum dos documentos oficiais publicados
         aqui traz um. Fio real precisa de ajuste na prática.
       </p>

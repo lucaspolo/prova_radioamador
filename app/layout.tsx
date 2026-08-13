@@ -56,9 +56,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className="h-full antialiased" suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <script dangerouslySetInnerHTML={{ __html: ANTI_FLASH }} />
+        {/* Primeiro alvo do Tab: quem navega por teclado pula direto para o
+            conteúdo em vez de atravessar o cabeçalho a cada tela. Invisível
+            até receber foco. */}
+        <a
+          href="#conteudo"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-slate-900 focus:px-4 focus:py-2 focus:font-semibold focus:text-white dark:focus:bg-slate-100 dark:focus:text-slate-900"
+        >
+          Pular para o conteúdo
+        </a>
         <RegistroSW />
         {children}
-        <footer className="nao-imprimir mx-auto w-full max-w-2xl px-4 pb-6 text-center text-xs text-slate-400 dark:text-slate-500">
+        <footer className="nao-imprimir mx-auto w-full max-w-2xl px-4 pb-6 text-center text-xs text-slate-500 dark:text-slate-400">
           Código aberto sob a licença MIT —{" "}
           <a
             href="https://github.com/lucaspolo/prova_radioamador"
