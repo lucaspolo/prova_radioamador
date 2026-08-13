@@ -1,6 +1,6 @@
 import bancoBruto from "@/public/banco_questoes.json";
 import type { Classe, Questao, Tema } from "./tipos";
-import { CLASSE_PADRAO, FORMATO, TEMAS } from "./constantes";
+import { CLASSE_PADRAO, FORMATO, SLUG_TEMA, TEMAS } from "./constantes";
 import type { Historico } from "./historico";
 import {
   amostrarPonderado,
@@ -102,7 +102,8 @@ function pesoProprio(q: Questao): number {
 }
 
 /**
- * A bateria de um desafio por link: determinada pela semente, e por mais nada.
+ * A bateria de UMA matéria de um desafio: determinada pela semente, e por mais
+ * nada.
  *
  * O histórico **não** entra, e é o ponto: se entrasse, cada pessoa do
  * radioclube receberia uma bateria moldada pelos próprios erros, e comparar
@@ -112,6 +113,11 @@ function pesoProprio(q: Questao): number {
  * O peso próprio da questão continua valendo — ele é fixo, igual para todos, e
  * é o que impede a bateria de encher de variações do mesmo molde do plano de
  * bandas.
+ *
+ * A semente de cada matéria deriva da semente do link mais o slug da matéria.
+ * Assim a bateria de Legislação é a mesma quer o desafio tenha uma matéria ou
+ * três — acrescentar Eletrônica ao link não pode reembaralhar o que já estava
+ * lá.
  */
 export function sortearDesafio(
   tema: Tema,
@@ -124,7 +130,7 @@ export function sortearDesafio(
     candidatas,
     pesoProprio,
     quantidade,
-    randDaSemente(semente),
+    randDaSemente(`${semente}|${SLUG_TEMA[tema]}`),
   );
 }
 

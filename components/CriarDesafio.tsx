@@ -17,17 +17,20 @@ import { sementeLegivel } from "@/lib/semente";
  * da build e o do navegador.
  */
 export default function CriarDesafio({
-  tema,
+  temas,
   quantidade,
   classe,
   onImprimir,
 }: {
-  tema: Tema;
+  /** As matérias escolhidas na tela: uma bateria, ou a prova completa. */
+  temas: Tema[];
+  /** Questões por matéria. */
   quantidade: number;
   classe: Classe;
   onImprimir: (desafio: Desafio) => void;
 }) {
   const [aberto, setAberto] = useState(false);
+  const rotuloMaterias = temas.map((t) => ROTULO_CURTO[t]).join(", ");
   const [link, setLink] = useState<string | null>(null);
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -36,7 +39,7 @@ export default function CriarDesafio({
   function criar() {
     const novo: Desafio = {
       semente: sementeLegivel(),
-      tema,
+      temas,
       quantidade,
       classe,
     };
@@ -48,7 +51,7 @@ export default function CriarDesafio({
 
   async function compartilhar() {
     if (!link) return;
-    const texto = `Desafio ${semente} — ${ROTULO_CURTO[tema]}, ${quantidade} questões, Classe ${classe}:\n${link}`;
+    const texto = `Desafio ${semente} — ${rotuloMaterias}, ${quantidade} questões por matéria, Classe ${classe}:\n${link}`;
     try {
       if (typeof navigator !== "undefined" && navigator.share) {
         await navigator.share({ text: texto });
@@ -79,7 +82,8 @@ export default function CriarDesafio({
           <span className="font-semibold">Desafiar o radioclube</span>
           <span className="block text-sm text-slate-500 dark:text-slate-400">
             Um link com a mesma bateria para todos — ou a prova impressa, em
-            branco e com gabarito.
+            branco e com gabarito. Vale para uma matéria ou para a prova
+            completa.
           </span>
         </span>
         <span aria-hidden="true" className="shrink-0 text-slate-400">
@@ -102,10 +106,11 @@ export default function CriarDesafio({
         </button>
       </div>
       <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-        Um link, a mesma bateria para todos: {ROTULO_CURTO[tema]},{" "}
-        {quantidade} questões da Classe {classe}, em modo prova e com o
-        cronômetro oficial. As questões saem da semente do link, e não do
-        histórico de cada um — por isso dá para comparar os resultados.
+        Um link, a mesma bateria para todos: {rotuloMaterias},{" "}
+        {quantidade} questões {temas.length > 1 ? "por matéria " : ""}da Classe{" "}
+        {classe}, em modo prova e com o cronômetro oficial. As questões saem da
+        semente do link, e não do histórico de cada um — por isso dá para
+        comparar os resultados.
       </p>
       <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         A mesma bateria também sai <strong>impressa</strong>: folha em branco

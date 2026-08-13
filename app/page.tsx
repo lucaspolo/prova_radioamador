@@ -23,10 +23,22 @@ import {
   sortearDesafio,
   sortearSimulado,
 } from "@/lib/questoes";
-import { lerDesafio, linkDoDesafio, type Desafio } from "@/lib/desafio";
+import {
+  bateriasDoDesafio,
+  lerDesafio,
+  linkDoDesafio,
+  type Desafio,
+} from "@/lib/desafio";
 import { codigoDaBateria } from "@/lib/semente";
-import { CLASSE_PADRAO, FORMATO, TEMAS, tempoDaBateria } from "@/lib/constantes";
-import type { Classe, MotivoFim, Questao, Resposta, Tema } from "@/lib/tipos";
+import { CLASSE_PADRAO, TEMAS, tempoDaBateria } from "@/lib/constantes";
+import type {
+  Classe,
+  MotivoFim,
+  Questao,
+  Regime,
+  Resposta,
+  Tema,
+} from "@/lib/tipos";
 
 type Etapa =
   | "inicio"
@@ -41,22 +53,34 @@ type Etapa =
   | "desempenho";
 
 /**
- * O que está sendo jogado agora. "avulso" é a bateria de uma matéria;
- * "revisao" recruta só os erros em aberto e não recebe veredito; "assunto" é
- * o estudo dirigido por uma seção do material, também sem veredito; "prova"
- * encadeia as três matérias no formato oficial, cada uma com seu cronômetro
- * e seu mínimo — aprovação só com as três; "desafio" é a bateria de um link,
- * igual à avulsa no registro e no veredito, mas que rende link e código no
- * resultado.
+ * O que está sendo jogado agora. "avulso" é a bateria escolhida na tela
+ * inicial; "revisao" recruta só os erros em aberto e não recebe veredito;
+ * "assunto" é o estudo dirigido por uma seção do material, também sem
+ * veredito; "desafio" é a bateria de um link, igual à avulsa no registro e no
+ * veredito, mas que rende link e código no resultado.
+ *
+ * Quantas matérias a bateria tem é assunto do `Plano`, não do modo: uma
+ * matéria ou as três seguem o mesmo caminho, e a antiga "prova completa" é
+ * simplesmente um plano com os três temas no tamanho oficial.
  */
-type Modo = "avulso" | "revisao" | "prova" | "assunto" | "desafio";
+type Modo = "avulso" | "revisao" | "assunto" | "desafio";
 
 /**
- * Como a bateria é conduzida. "treino" dá o gabarito questão a questão, que é
- * como se aprende; "cego" esconde tudo até o fim e libera a navegação entre as
- * questões, que é como a Anatel aplica.
+ * A bateria combinada: uma matéria por vez, na ordem, cada uma com seu
+ * cronômetro e seu mínimo. Nunca uma bateria misturando matérias — a Anatel
+ * aplica exames separados, e um veredito sobre a mistura aprovaria quem
+ * compensasse matéria fraca com matéria forte.
  */
-type Regime = "treino" | "cego";
+interface Plano {
+  temas: Tema[];
+  /** Questões POR matéria. */
+  quantidade: number;
+  classe: Classe;
+  cronometrar: boolean;
+  soIneditas: boolean;
+  /** Presente quando a bateria veio de um link; muda o sorteio para a semente. */
+  desafio: Desafio | null;
+}
 
 /**
  * O app é uma máquina de estados numa única rota, e não várias.
@@ -80,12 +104,13 @@ export default function Home() {
   const [classeAtual, setClasseAtual] = useState<Classe>(CLASSE_PADRAO);
   const [tempoSegundos, setTempoSegundos] = useState<number | null>(null);
   const [materiasProva, setMateriasProva] = useState<MateriaConcluida[]>([]);
+  const [plano, setPlano] = useState<Plano | null>(null);
   const [motivoFim, setMotivoFim] = useState<MotivoFim>("manual");
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [linkDesafio, setLinkDesafio] = useState<string | null>(null);
   const [impressao, setImpressao] = useState<{
     desafio: Desafio;
-    questoes: Questao[];
+    baterias: { tema: Tema; questoes: Questao[] }[];
     link: string;
   } | null>(null);
   const { historico, carregado, gravacaoRecusada, registrar, importar, limpar } =
@@ -111,8 +136,31 @@ export default function Home() {
     setEtapa("desafio");
   }, []);
 
+  /**
+   * Prepara a matéria de índice `i` do plano e entra na bateria.
+   *
+   * Recebe o plano por parâmetro, e não do estado: quem chama acabou de
+   * montá-lo, e `setPlano` só teria efeito no render seguinte.
+   */
+  function iniciarMateria(p: Plano, i: number) {
+    const tema = p.temas[i];
+    setQuestoes(
+      p.desafio
+        ? sortearDesafio(tema, p.quantidade, p.classe, p.desafio.semente)
+        : sortearSimulado(tema, p.quantidade, historico, p.classe, {
+            soIneditas: p.soIneditas,
+          }),
+    );
+    setRespostas([]);
+    setTemaAtual(tema);
+    setTempoSegundos(
+      p.cronometrar ? tempoDaBateria(p.classe, p.quantidade) : null,
+    );
+    setEtapa("simulado");
+  }
+
   function iniciar(
-    tema: Tema,
+    temas: Tema[],
     quantidade: number,
     classe: Classe,
     cronometrar: boolean,
@@ -122,16 +170,24 @@ export default function Home() {
     // O histórico entra no sorteio: o que você errou volta antes, o que já
     // domina rareia. Sem histórico, o sorteio é uniforme. A classe define o
     // acervo elegível — o acréscimo técnico da Classe A não cai em B nem em C.
+    //
+    // Com mais de uma matéria, são exames em sequência — nunca uma bateria
+    // misturada: a Anatel aplica três provas separadas, e um veredito sobre a
+    // mistura aprovaria quem compensasse matéria fraca com matéria forte.
+    const p: Plano = {
+      temas,
+      quantidade,
+      classe,
+      cronometrar,
+      soIneditas,
+      desafio: null,
+    };
     setModo("avulso");
     setRegime(cego ? "cego" : "treino");
-    setQuestoes(
-      sortearSimulado(tema, quantidade, historico, classe, { soIneditas }),
-    );
-    setRespostas([]);
-    setTemaAtual(tema);
     setClasseAtual(classe);
-    setTempoSegundos(cronometrar ? tempoDaBateria(classe, quantidade) : null);
-    setEtapa("simulado");
+    setMateriasProva([]);
+    setPlano(p);
+    iniciarMateria(p, 0);
   }
 
   function iniciarAssunto(sorteadas: Questao[]) {
@@ -139,6 +195,7 @@ export default function Home() {
     // A bateria é a seção inteira; quem escolheu o assunto quer esgotá-lo.
     setModo("assunto");
     setRegime("treino");
+    setPlano(null);
     setQuestoes(sorteadas);
     setRespostas([]);
     setTempoSegundos(null);
@@ -148,14 +205,20 @@ export default function Home() {
   function iniciarDesafio(d: Desafio) {
     // Cego e cronometrado por construção: é o que torna os resultados
     // comparáveis. Registra no histórico como qualquer bateria da matéria.
+    const p: Plano = {
+      temas: d.temas,
+      quantidade: d.quantidade,
+      classe: d.classe,
+      cronometrar: true,
+      soIneditas: false,
+      desafio: d,
+    };
     setModo("desafio");
     setRegime("cego");
-    setQuestoes(sortearDesafio(d.tema, d.quantidade, d.classe, d.semente));
-    setRespostas([]);
-    setTemaAtual(d.tema);
     setClasseAtual(d.classe);
-    setTempoSegundos(tempoDaBateria(d.classe, d.quantidade));
-    setEtapa("simulado");
+    setMateriasProva([]);
+    setPlano(p);
+    iniciarMateria(p, 0);
   }
 
   /**
@@ -167,7 +230,7 @@ export default function Home() {
     const base = `${window.location.origin}${window.location.pathname}`;
     setImpressao({
       desafio: d,
-      questoes: sortearDesafio(d.tema, d.quantidade, d.classe, d.semente),
+      baterias: bateriasDoDesafio(d),
       link: linkDoDesafio(d, base),
     });
     setEtapa("impressao");
@@ -178,32 +241,12 @@ export default function Home() {
     // gabarito na hora — esconder a resposta aqui seria esconder o estudo.
     setModo("revisao");
     setRegime("treino");
+    setPlano(null);
     setQuestoes(questoesParaRevisao(historico, classe));
     setRespostas([]);
     setClasseAtual(classe);
     setTempoSegundos(null);
     setEtapa("simulado");
-  }
-
-  function iniciarMateriaDaProva(classe: Classe, indice: number) {
-    const tema = TEMAS[indice];
-    setQuestoes(
-      sortearSimulado(tema, FORMATO[classe].questoes, historico, classe),
-    );
-    setRespostas([]);
-    setTemaAtual(tema);
-    // Prova completa é sempre cronometrada: simular o exame é o ponto dela.
-    setTempoSegundos(tempoDaBateria(classe, FORMATO[classe].questoes));
-    setEtapa("simulado");
-  }
-
-  function iniciarProva(classe: Classe) {
-    setModo("prova");
-    // Simular o exame é o ponto da prova completa, e o exame é cego.
-    setRegime("cego");
-    setClasseAtual(classe);
-    setMateriasProva([]);
-    iniciarMateriaDaProva(classe, 0);
   }
 
   function concluir(finais: Resposta[], motivo: MotivoFim) {
@@ -218,13 +261,20 @@ export default function Home() {
       { classe: classeAtual },
     );
 
-    if (modo !== "prova") {
+    // Revisão e assunto não têm plano: são uma bateria só, e acabou.
+    if (!plano) {
       setEtapa("resultado");
       return;
     }
     const concluidas = [...materiasProva, { tema: temaAtual, respostas: finais }];
     setMateriasProva(concluidas);
-    setEtapa(concluidas.length < TEMAS.length ? "intervalo" : "resultadoProva");
+    if (concluidas.length < plano.temas.length) {
+      setEtapa("intervalo");
+      return;
+    }
+    // Uma matéria fecha no resultado da bateria; várias, no consolidado, onde
+    // cada matéria tem seu próprio veredito.
+    setEtapa(plano.temas.length > 1 ? "resultadoProva" : "resultado");
   }
 
   return (
@@ -276,7 +326,6 @@ export default function Home() {
           <TelaInicio
             historico={historico}
             onIniciar={iniciar}
-            onProvaCompleta={iniciarProva}
             onRevisar={iniciarRevisao}
             onAssuntos={() => setEtapa("assuntos")}
             onImprimir={imprimirBateria}
@@ -347,15 +396,16 @@ export default function Home() {
         />
       )}
 
-      {etapa === "intervalo" && (
+      {etapa === "intervalo" && plano && (
         <TelaIntervalo
           classe={classeAtual}
           tema={temaAtual}
           respostas={respostas}
-          proximoTema={TEMAS[materiasProva.length]}
-          onProsseguir={() =>
-            iniciarMateriaDaProva(classeAtual, materiasProva.length)
-          }
+          quantidade={plano.quantidade}
+          proximoTema={plano.temas[materiasProva.length]}
+          cronometrado={plano.cronometrar}
+          restantes={plano.temas.length - materiasProva.length}
+          onProsseguir={() => iniciarMateria(plano, materiasProva.length)}
           onAbandonar={() => setEtapa("inicio")}
         />
       )}
@@ -363,7 +413,7 @@ export default function Home() {
       {etapa === "impressao" && impressao && (
         <TelaImpressao
           desafio={impressao.desafio}
-          questoes={impressao.questoes}
+          baterias={impressao.baterias}
           link={impressao.link}
           onVoltar={() => setEtapa("inicio")}
         />

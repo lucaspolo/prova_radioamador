@@ -66,7 +66,6 @@ const H_VAZIO: Historico = { versao: VERSAO_HISTORICO, simulados: [] };
 const PROPS_INICIO = {
   historico: H_VAZIO,
   onIniciar: () => {},
-  onProvaCompleta: () => {},
   onRevisar: () => {},
   onAssuntos: () => {},
   onImprimir: () => {},
@@ -85,7 +84,17 @@ const PROPS_INICIO = {
   checar("marca a bateria de 20 como prova real", html.includes("prova real"));
   checar("cita o critério oficial 11 acertos", html.includes("11 acertos"));
   checar("oferece o cronômetro ligado por padrão", html.includes("Cronômetro ligado"));
-  checar("oferece a prova completa", html.includes("Prova completa") && html.includes("3 matérias"));
+  // A prova completa deixou de ser um botão à parte: virou selecionar as três
+  // matérias, que é o que ela sempre foi. Um segundo caminho para a mesma
+  // bateria, com formato fixo, era o que havia a mais.
+  checar(
+    "as três matérias se selecionam de uma vez",
+    html.includes("todas as 3"),
+  );
+  checar(
+    "não há mais botão separado de prova completa",
+    !html.includes("Prova completa"),
+  );
   checar("sem histórico, revisão está vazia", html.includes("Nenhum erro em aberto"));
 
   // Com um erro no histórico, o botão de revisão acorda e mostra a contagem.
@@ -395,7 +404,7 @@ const PROPS_INICIO = {
 {
   const desafio = {
     semente: "PY2-SP",
-    tema: TEMAS[0],
+    temas: [TEMAS[0]],
     quantidade: 20,
     classe: "B" as const,
   };
@@ -413,6 +422,25 @@ const PROPS_INICIO = {
   checar(
     "deixa recusar",
     html.includes("Agora não") && html.includes("Começar o desafio"),
+  );
+
+  // Desafio de prova completa: as três matérias, com a quantidade POR matéria.
+  const completo = renderToStaticMarkup(
+    <TelaDesafio
+      desafio={{ ...desafio, temas: TEMAS }}
+      onComecar={() => {}}
+      onIgnorar={() => {}}
+    />,
+  );
+  checar(
+    "desafio de três matérias lista as três",
+    ["Legislação", "Técnica e Ética", "Eletrônica"].every((s) =>
+      completo.includes(s),
+    ),
+  );
+  checar(
+    "e diz que a quantidade é por matéria",
+    completo.includes("em cada matéria") && completo.includes("60 questões no total"),
   );
 
   // No resultado, o código da bateria é o que denuncia banco divergente.
@@ -453,7 +481,7 @@ const PROPS_INICIO = {
 {
   const desafio = {
     semente: "PY2-SP",
-    tema: TEMAS[0],
+    temas: [TEMAS[0]],
     quantidade: 20,
     classe: "B" as const,
   };
@@ -461,7 +489,7 @@ const PROPS_INICIO = {
   const html = renderToStaticMarkup(
     <TelaImpressao
       desafio={desafio}
-      questoes={questoes}
+      baterias={[{ tema: TEMAS[0], questoes }]}
       link="https://exemplo.app/?desafio=PY2-SP&t=legislacao&n=20&c=B"
       onVoltar={() => {}}
     />,
@@ -504,6 +532,36 @@ const PROPS_INICIO = {
   checar(
     "os controles não vão para o papel",
     html.includes("nao-imprimir") && html.includes("Imprimir"),
+  );
+
+  // Prova completa em papel: uma folha por matéria e um gabarito por matéria —
+  // são exames separados, e é assim que se aplica.
+  const duas = [
+    { tema: TEMAS[0], questoes: sortearDesafio(TEMAS[0], 5, "B", "PY2-SP") },
+    { tema: TEMAS[1], questoes: sortearDesafio(TEMAS[1], 5, "B", "PY2-SP") },
+  ];
+  const completa = renderToStaticMarkup(
+    <TelaImpressao
+      desafio={{ ...desafio, temas: [TEMAS[0], TEMAS[1]], quantidade: 5 }}
+      baterias={duas}
+      link="https://exemplo.app/?desafio=PY2-SP&t=legislacao,tecnica&n=5&c=B"
+      onVoltar={() => {}}
+    />,
+  );
+  checar(
+    "cada matéria tem sua folha e seu gabarito",
+    (completa.match(/pagina-nova/g) ?? []).length === 3,
+    `${(completa.match(/pagina-nova/g) ?? []).length} quebras de página`,
+  );
+  checar(
+    "as folhas se identificam pela matéria",
+    completa.includes("Legislação") && completa.includes("Técnica e Ética"),
+  );
+  checar(
+    "a folha da segunda matéria não traz as questões da primeira",
+    duas[0].questoes.every(
+      (q) => !contem(completa.split("pagina-nova")[1] ?? "", q.afirmacao),
+    ),
   );
 }
 
@@ -650,7 +708,10 @@ const PROPS_INICIO = {
       classe="B"
       tema="Legislação de Telecomunicações"
       respostas={sortear("Legislação de Telecomunicações", 14)}
+      quantidade={20}
       proximoTema="Técnica e ética operacional"
+      cronometrado
+      restantes={2}
       onProsseguir={() => {}}
       onAbandonar={() => {}}
     />,
@@ -699,7 +760,7 @@ const PROPS_INICIO = {
   );
   checar(
     "prova completa aprova com o mínimo nas três",
-    aprova.includes("Aprovado") && aprova.includes("atingido nas três matérias"),
+    aprova.includes("Aprovado") && aprova.includes("atingido nas 3 matérias"),
   );
 }
 

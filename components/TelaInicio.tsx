@@ -30,14 +30,15 @@ import type { Desafio } from "@/lib/desafio";
 interface Props {
   historico: Historico;
   onIniciar: (
-    tema: Tema,
+    /** Uma matéria é uma bateria; várias viram exames em sequência. */
+    temas: Tema[],
+    /** Questões **por matéria**. */
     quantidade: number,
     classe: Classe,
     cronometrar: boolean,
     cego: boolean,
     soIneditas: boolean,
   ) => void;
-  onProvaCompleta: (classe: Classe) => void;
   onRevisar: (classe: Classe) => void;
   onAssuntos: () => void;
   onImprimir: (desafio: Desafio) => void;
@@ -46,13 +47,15 @@ interface Props {
 export default function TelaInicio({
   historico,
   onIniciar,
-  onProvaCompleta,
   onRevisar,
   onAssuntos,
   onImprimir,
 }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
-  const [escolha, setEscolha] = useState<Tema>(TEMAS[0]);
+  // Matérias selecionadas, sempre na ordem de TEMAS. Uma é uma bateria; as
+  // três são a prova completa — que deixou de ser um botão à parte para virar
+  // "selecione tudo", porque era a mesma coisa com outro nome.
+  const [escolhas, setEscolhas] = useState<Tema[]>([TEMAS[0]]);
   const formato = FORMATO[classe];
   const [quantidade, setQuantidade] = useState(FORMATO[CLASSE_PADRAO].questoes);
   const [cronometrar, setCronometrar] = useState(
@@ -68,13 +71,30 @@ export default function TelaInicio({
   const [ajusteManual, setAjusteManual] = useState<boolean | null>(null);
   const ajustando = ajusteManual ?? historico.simulados.length === 0;
   const contagem = contarPorTema(classe);
-  const total = disponiveis(escolha, classe);
   const opcoes = tamanhos(classe);
 
-  // Não dá para sortear mais questões do que existem no tema escolhido.
+  // A quantidade é POR matéria, então o teto é o da matéria mais escassa entre
+  // as escolhidas — senão uma delas viria curta sem avisar.
+  const total = Math.min(...escolhas.map((t) => disponiveis(t, classe)));
   const limite = Math.min(quantidade, total);
   const errosAbertos = questoesParaRevisao(historico, classe).length;
-  const ineditasNoTema = questoesIneditas(historico, classe, escolha).length;
+  const ineditasNasEscolhidas = escolhas.reduce(
+    (s, t) => s + questoesIneditas(historico, classe, t).length,
+    0,
+  );
+  const todasAsMaterias = escolhas.length === TEMAS.length;
+
+  function alternarTema(tema: Tema) {
+    setEscolhas((atuais) =>
+      atuais.includes(tema)
+        ? // Nunca zero: sem matéria não há bateria, e um botão "iniciar"
+          // desabilitado seria pior do que impedir o último clique.
+          atuais.length === 1
+          ? atuais
+          : atuais.filter((t) => t !== tema)
+        : TEMAS.filter((t) => t === tema || atuais.includes(t)),
+    );
+  }
 
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
   // ficaria selecionado um número que nem aparece mais entre as opções.
@@ -160,23 +180,49 @@ export default function TelaInicio({
         </div>
 
         <div>
-          <Rotulo>Matéria</Rotulo>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="flex items-center justify-between gap-3">
+            <Rotulo>
+              {escolhas.length > 1 ? "Matérias" : "Matéria"}
+            </Rotulo>
+            {/* As três de uma vez são a prova completa da Anatel — o botão
+                separado que existia aqui fazia exatamente isto. */}
+            <button
+              onClick={() => setEscolhas(todasAsMaterias ? [TEMAS[0]] : TEMAS)}
+              aria-pressed={todasAsMaterias}
+              className="mb-2 text-xs font-medium text-slate-500 underline dark:text-slate-400"
+            >
+              {todasAsMaterias ? "só uma" : "todas as 3"}
+            </button>
+          </div>
+          <div
+            role="group"
+            aria-label="Matérias da bateria"
+            className="grid gap-3 sm:grid-cols-3"
+          >
             {TEMAS.map((tema) => (
               <BotaoTema
                 key={tema}
-                ativo={escolha === tema}
+                ativo={escolhas.includes(tema)}
                 titulo={ROTULO_CURTO[tema]}
                 detalhe={`${contagem[tema]} questões`}
                 classes={`${COR_TEMA[tema].borda} ${COR_TEMA[tema].texto}`}
-                onClick={() => setEscolha(tema)}
+                onClick={() => alternarTema(tema)}
               />
             ))}
           </div>
+          {escolhas.length > 1 && (
+            <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-400">
+              {todasAsMaterias
+                ? "As três em sequência, cada uma com seu cronômetro e seu mínimo — é a prova completa, do jeito que a Anatel aplica."
+                : "Uma matéria de cada vez, em sequência: são exames separados, e a aprovação é matéria a matéria."}
+            </p>
+          )}
         </div>
 
         <div>
-          <Rotulo>Quantidade</Rotulo>
+          <Rotulo>
+            {escolhas.length > 1 ? "Quantidade por matéria" : "Quantidade"}
+          </Rotulo>
           <div className="flex flex-wrap gap-2">
             {opcoes.map((n) => (
               <button
@@ -197,11 +243,12 @@ export default function TelaInicio({
             ))}
           </div>
           {/* Uma linha, e não um parágrafo: as contagens já estão no cartão da
-              classe, e "cada matéria é uma prova separada" reaparece no cartão
-              da prova completa. */}
+              classe. */}
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Prova real da Classe {classe}: {formato.questoes} questões,{" "}
             {formato.minimo} acertos, {formato.minutos} min — por matéria.
+            {escolhas.length > 1 &&
+              ` Aqui: ${limite} × ${escolhas.length} = ${limite * escolhas.length} questões, em ${escolhas.length} exames.`}
           </p>
         </div>
       </section>
@@ -293,7 +340,7 @@ export default function TelaInicio({
       {/* Fora do bloco recolhível de propósito: o número de inéditas é
           informação, não só controle — e some sozinho quando não há histórico
           ou quando o tema já foi coberto. */}
-      {historico.simulados.length > 0 && ineditasNoTema > 0 && (
+      {historico.simulados.length > 0 && ineditasNasEscolhidas > 0 && (
         <button
           onClick={() => setSoIneditas((v) => !v)}
           aria-pressed={soIneditas}
@@ -309,41 +356,32 @@ export default function TelaInicio({
             </span>
             <span className="block text-sm text-slate-500 dark:text-slate-400">
               {!soIneditas
-                ? `${ineditasNoTema} de ${ROTULO_CURTO[escolha]} que você nunca viu.`
-                : ineditasNoTema >= limite
-                  ? "A bateria inteira sai do que você ainda não viu."
-                  : `Restam ${ineditasNoTema} — a bateria completa com questões já vistas.`}
+                ? `${ineditasNasEscolhidas} em ${escolhas.map((t) => ROTULO_CURTO[t]).join(", ")} que você nunca viu.`
+                : ineditasNasEscolhidas >= limite * escolhas.length
+                  ? "As baterias saem inteiras do que você ainda não viu."
+                  : "Onde faltarem inéditas, a bateria completa com questões já vistas."}
             </span>
           </span>
           <span className="shrink-0 font-mono text-lg font-bold tabular-nums">
-            {ineditasNoTema}
+            {ineditasNasEscolhidas}
           </span>
         </button>
       )}
 
       <button
         onClick={() =>
-          onIniciar(escolha, limite, classe, cronometrar, cego, soIneditas)
+          onIniciar(escolhas, limite, classe, cronometrar, cego, soIneditas)
         }
         className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
       >
         Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões
+        {escolhas.length > 1 && ` × ${escolhas.length} matérias`}
       </button>
 
+      {/* A "prova completa" saiu daqui: virou selecionar as três matérias
+          acima, que é o que ela sempre foi. Um botão à parte, com formato
+          fixo, era um segundo caminho para a mesma bateria. */}
       <div className="grid gap-3 sm:grid-cols-2">
-        {/* A prova completa é sempre cronometrada, cega e no formato oficial:
-            simular o dia do exame é exatamente o ponto dela. */}
-        <button
-          onClick={() => onProvaCompleta(classe)}
-          className="rounded-xl border-2 border-slate-900 px-4 py-3 text-left transition hover:bg-slate-900/5 dark:border-slate-100 dark:hover:bg-white/5"
-        >
-          <div className="font-semibold">Prova completa</div>
-          <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-            As 3 matérias em sequência, {FORMATO[classe].questoes} questões e{" "}
-            {FORMATO[classe].minutos} min cada, sem gabarito até o fim — como no
-            dia do exame.
-          </div>
-        </button>
         <button
           onClick={() => onRevisar(classe)}
           disabled={errosAbertos === 0}
@@ -365,7 +403,7 @@ export default function TelaInicio({
         </button>
         <button
           onClick={onAssuntos}
-          className="rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 sm:col-span-2 dark:border-slate-700 dark:hover:border-slate-500"
+          className="rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
         >
           <div className="font-semibold">Estudar por assunto</div>
           <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
@@ -379,7 +417,7 @@ export default function TelaInicio({
           menos se faz aqui, e estava ocupando o espaço logo abaixo do botão
           principal. Usa a configuração escolhida lá em cima. */}
       <CriarDesafio
-        tema={escolha}
+        temas={escolhas}
         quantidade={limite}
         classe={classe}
         onImprimir={onImprimir}
