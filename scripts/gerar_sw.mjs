@@ -31,11 +31,19 @@ function arquivos(dir) {
   });
 }
 
-// Casca do app: página, manifesto, ícones, assets com hash, worker do pdf.js
+// Casca do app: páginas, manifesto, ícones, assets com hash, worker do pdf.js
 // e os trechos de origem. Os PDFs ficam de fora do pré-cache (entram no cache
 // próprio quando abertos); banco_questoes.json também — ele é embutido no
-// bundle JS e nunca é buscado pela aplicação.
-const precache = ["/", "/manifest.webmanifest", "/trechos.json", "/pdf.worker.min.mjs"];
+// bundle JS e nunca é buscado pela aplicação. /conferencia entra porque é a
+// única rota real além de /: fora do pré-cache, o deep link offline caía no
+// fallback da casca e renderizava a home.
+const precache = [
+  "/",
+  "/conferencia",
+  "/manifest.webmanifest",
+  "/trechos.json",
+  "/pdf.worker.min.mjs",
+];
 for (const abs of arquivos(join(OUT, "_next", "static"))) {
   precache.push("/" + relative(OUT, abs).replaceAll("\\", "/"));
 }
@@ -44,11 +52,12 @@ for (const nome of readdirSync(OUT)) {
 }
 
 // A versão precisa mudar quando o conteúdo muda. Os arquivos de _next/static
-// têm hash no nome, então a lista basta; index.html e trechos.json não têm —
+// têm hash no nome, então a lista basta; os HTML e trechos.json não têm —
 // entram pelo conteúdo.
 const versao = createHash("sha1")
   .update(JSON.stringify(precache.sort()))
   .update(readFileSync(join(OUT, "index.html")))
+  .update(readFileSync(join(OUT, "conferencia.html")))
   .update(readFileSync(join(OUT, "trechos.json")))
   .digest("hex")
   .slice(0, 12);
@@ -59,9 +68,15 @@ const CACHE_PDFS = "radioamador-pdfs-v1";
 const PRECACHE = ${JSON.stringify(precache, null, 1)};
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
-  );
+  // Sem skipWaiting: a versão nova instala e fica esperando até o usuário
+  // aceitar recarregar (o app mostra o convite fora de bateria). Assumir no
+  // meio do uso apagava o cache dos chunks antigos com abas abertas, e um
+  // import() tardio — o visualizador de PDF é dinâmico — quebrava.
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)));
+});
+
+self.addEventListener("message", (e) => {
+  if (e.data && e.data.tipo === "assumir") self.skipWaiting();
 });
 
 self.addEventListener("activate", (e) => {
@@ -143,9 +158,11 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== location.origin) return;
 
-  // App de rota única: qualquer navegação cai na casca em "/".
+  // Duas cascas: /conferencia tem página própria no pré-cache; todo o resto
+  // da navegação cai na casca de "/" (o app é de rota única fora dela).
   if (e.request.mode === "navigate") {
-    e.respondWith(redePrimeiro(e.request, "/"));
+    const casca = url.pathname.startsWith("/conferencia") ? "/conferencia" : "/";
+    e.respondWith(redePrimeiro(e.request, casca));
     return;
   }
   if (url.pathname.startsWith("/pdfs/")) {
@@ -162,6 +179,9 @@ self.addEventListener("fetch", (e) => {
 
 writeFileSync(join(OUT, "sw.js"), sw);
 const kb = Math.round(
-  precache.reduce((s, p) => s + statSync(join(OUT, p === "/" ? "index.html" : p)).size, 0) / 1024,
+  precache.reduce((s, p) => {
+    const arquivo = p === "/" ? "index.html" : p === "/conferencia" ? "conferencia.html" : p;
+    return s + statSync(join(OUT, arquivo)).size;
+  }, 0) / 1024,
 );
 console.log(`sw.js gerado: versão ${versao}, ${precache.length} arquivos no pré-cache (~${kb} KB)`);

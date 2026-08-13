@@ -9,6 +9,7 @@ import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva, {
   type MateriaConcluida,
 } from "@/components/TelaResultadoProva";
+import AvisoAtualizacao from "@/components/AvisoAtualizacao";
 import MenuPrincipal from "@/components/MenuPrincipal";
 import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaDesempenho from "@/components/TelaDesempenho";
@@ -163,6 +164,13 @@ export default function Home() {
           />
         )}
       </header>
+
+      {/* O convite de recarregar segue a mesma regra do menu: só fora de
+          bateria e de resultado. Recarregar no meio descartaria a bateria; o
+          componente em si nunca recarrega sozinho. */}
+      {(etapa === "inicio" ||
+        etapa === "desempenho" ||
+        etapa === "ferramentas") && <AvisoAtualizacao />}
 
       {etapa === "inicio" && (
         <div className="space-y-8">
