@@ -1,5 +1,5 @@
 import type { Classe, Questao } from "./tipos";
-import { CLASSE_PADRAO } from "./constantes";
+import { CLASSE_PADRAO, ROTULO_CURTO, TEMAS } from "./constantes";
 import { acervo } from "./questoes";
 
 /**
@@ -118,28 +118,91 @@ export function secaoDe(q: Questao): Secao | null {
   );
 }
 
+/** Rótulo curto de cada PDF, para o agrupamento não ocupar três linhas. */
+export const ROTULO_ARQUIVO: Record<string, string> = {
+  [CARTILHA]: "Cartilha do Radioamador",
+  [ATO_926]: "Ato 926/2024 — requisitos técnicos",
+  [ATO_3448]: "Ato 3448/2026 — habilitação e indicativos",
+  [RES_777]: "Resolução 777/2025",
+  [ATO_3445]: "Ato 3445/2026 — indicativos especiais",
+  [ATO_926_UHF]: "Ato 926/2024 — 2 m, 220 MHz e UHF",
+};
+
+/**
+ * Tópicos do gerador que são o mesmo assunto com nomes diferentes — vieram de
+ * passes distintos (o complementar e as questões manuais) e fundem aqui, na
+ * exibição, sem reescrever o banco.
+ */
+const MESMO_ASSUNTO: Record<string, string> = {
+  "Alfabeto Fonético da UIT": "Alfabeto fonético internacional",
+  "Teoria técnica de antenas": "Teoria de antenas",
+};
+
+/**
+ * O rótulo de UI de um tópico da ementa: o que vem antes do ":" (os tópicos
+ * longos são "Lei de Ohm: cálculo de..."), com as fusões de `MESMO_ASSUNTO`.
+ */
+export function rotuloDoTopico(topico: string): string {
+  const bruto = topico.split(":")[0].trim();
+  return MESMO_ASSUNTO[bruto] ?? bruto;
+}
+
 export interface Assunto {
-  secao: Secao;
+  titulo: string;
+  /** Cabeçalho de agrupamento: o documento, ou "Ementa · matéria". */
+  grupo: string;
   questoes: Questao[];
+  /** Presente quando o assunto é uma seção de PDF (questões de documento). */
+  secao?: Secao;
 }
 
 /**
- * Os assuntos estudáveis para uma classe: cada seção com as questões do
- * acervo que caem nela, na ordem do mapa (que é a ordem dos documentos).
- * Seções sem questão elegível ficam de fora — assunto sem bateria não é
- * assunto, é título.
+ * Os assuntos estudáveis para uma classe: as seções dos PDFs (questões de
+ * documento, na ordem dos documentos) e os tópicos da ementa (agrupados por
+ * rótulo dentro de cada matéria, na ordem do capítulo indicado). Assunto sem
+ * questão elegível fica de fora — assunto sem bateria não é assunto, é
+ * título.
  */
 export function listarAssuntos(classe: Classe = CLASSE_PADRAO): Assunto[] {
+  const doAcervo = acervo(classe);
+  const assuntos: Assunto[] = [];
+
   const porSecao = new Map<Secao, Questao[]>();
-  for (const q of acervo(classe)) {
+  for (const q of doAcervo) {
     const s = secaoDe(q);
     if (!s) continue;
     const lista = porSecao.get(s);
     if (lista) lista.push(q);
     else porSecao.set(s, [q]);
   }
-  return SECOES.filter((s) => porSecao.has(s)).map((secao) => ({
-    secao,
-    questoes: porSecao.get(secao)!,
-  }));
+  for (const secao of SECOES) {
+    const questoes = porSecao.get(secao);
+    if (!questoes) continue;
+    assuntos.push({
+      titulo: secao.titulo,
+      grupo: ROTULO_ARQUIVO[secao.arquivo] ?? secao.arquivo,
+      questoes,
+      secao,
+    });
+  }
+
+  for (const tema of TEMAS) {
+    const porRotulo = new Map<string, Questao[]>();
+    for (const q of doAcervo) {
+      if (q.tema !== tema || !q.topico) continue;
+      const rotulo = rotuloDoTopico(q.topico);
+      const lista = porRotulo.get(rotulo);
+      if (lista) lista.push(q);
+      else porRotulo.set(rotulo, [q]);
+    }
+    for (const [titulo, questoes] of porRotulo) {
+      assuntos.push({
+        titulo,
+        grupo: `Ementa · ${ROTULO_CURTO[tema]}`,
+        questoes,
+      });
+    }
+  }
+
+  return assuntos;
 }

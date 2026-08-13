@@ -53,6 +53,12 @@ export interface Questao {
    */
   trecho_id?: string;
   /**
+   * O tópico da ementa que dirigiu a geração — o "assunto" da questão. Só as
+   * de `origem: "ementa"` têm: as de documento derivam o assunto de
+   * arquivo+página (`lib/secoes.ts`), que é fonte melhor — a página existe.
+   */
+  topico?: string;
+  /**
    * Quanto esta questão pesa no sorteio, quando diferente de 1.
    *
    * Existe para a questão que precisa estar no banco mas não pode dominá-lo. O
