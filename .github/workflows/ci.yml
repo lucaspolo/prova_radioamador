@@ -1,0 +1,40 @@
+# As 14 suítes de teste incluem travas que abrem os PDFs reais (cobertura por
+# faixa e UF, páginas conferidas, tabelas casadas contra a fonte) — e nada
+# obrigava a rodá-las. Este workflow é essa obrigação.
+#
+# A ordem importa: o build vem ANTES dos testes porque `testes/pdfs.test.ts`
+# exige `public/pdf.worker.min.mjs`, que é gerado (não versionado) pelo
+# prebuild — num checkout limpo, testar antes de buildar falha por ausência
+# do worker. O build também executa o postbuild que gera e valida o sw.js.
+#
+# Node 24 espelha o ambiente de build da Vercel, que é onde o site nasce.
+#
+# O pipeline Python (processar_pdfs.py) fica de fora: exige OPENAI_API_KEY e
+# só roda ao regerar o banco. O artefato dele que o app consome
+# (banco_questoes.json) é versionado e é o que os testes conferem.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checagens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+      - name: tabelas_referencia.json em dia com lib/referencia.ts
+        # O gerador lê a transcrição exportada, não a lib: se lib/referencia.ts
+        # mudar e ninguém reexportar, o gerador segue usando a versão velha em
+        # silêncio. Aqui a divergência vira PR vermelho.
+        run: npm run tabelas && git diff --exit-code scripts/tabelas_referencia.json
