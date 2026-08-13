@@ -38,3 +38,9 @@ jobs:
         # mudar e ninguém reexportar, o gerador segue usando a versão velha em
         # silêncio. Aqui a divergência vira PR vermelho.
         run: npm run tabelas && git diff --exit-code scripts/tabelas_referencia.json
+      - name: ocr-visao.json em dia com os PDFs publicados
+        # lib/ocr-visao.json diz quais PDFs vieram por OCR de visão — controla
+        # o aviso de "citação é leitura do modelo" e o desligamento do grifo.
+        # É materializado por npm run conferencia; trocar um PDF sem rodar o
+        # comando deixava o aviso mentindo em silêncio.
+        run: npm run conferencia && git diff --exit-code lib/ocr-visao.json

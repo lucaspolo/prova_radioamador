@@ -191,6 +191,13 @@ Cada chamada é cacheada em `scripts/.cache/`, então reexecuções não repagam
 tokens. A chave de cache inclui um hash do prompt: editar um prompt invalida
 automaticamente o que ele produziu.
 
+O cache é **versionado**, e não é por economia: o gerador não fixa semente,
+então é o cache que torna o banco reproduzível. Sem ele, regerar numa máquina
+limpa produziria outras questões com outros ids — orfanando as 178 correções
+de `scripts/correcoes.json` e zerando o histórico salvo no navegador de quem
+estuda, porque o id é o hash da afirmação. `--forcar` refaz todas as chamadas
+ignorando o cache: é exatamente a operação que não se roda por descuido.
+
 Flags úteis: `--dry-run`, `--arquivo <padrão>`, `--limite-chunks N`,
 `--verificar`, `--forcar`, `--listar-modelos`.
 
@@ -211,9 +218,11 @@ invertido, e o erro só apareceu quando alguém que estudava por ela abriu a
 O conserto tem duas metades.
 
 **`scripts/erratas_ocr.json`** corrige a transcrição na origem, logo depois do
-OCR e antes de a página virar bloco. Fica versionado porque `scripts/.cache/`
-está no `.gitignore`: consertado só no cache, o erro voltaria na próxima máquina
-que regerasse o banco. Errata que não encontra o texto que promete corrigir é
+OCR e antes de a página virar bloco. Fica versionado mesmo agora que
+`scripts/.cache/` também é: editar um prompt invalida o cache daquele passo, e
+um conserto que vivesse só ali evaporaria na primeira mudança de prompt — a
+errata é o conserto declarado, que sobrevive a qualquer regeração. Errata que
+não encontra o texto que promete corrigir é
 erro fatal — o caso ruim seria o silencioso, em que a transcrição muda, a errata
 deixa de casar e o banco volta a ser gerado errado sem aviso.
 

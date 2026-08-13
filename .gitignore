@@ -6,9 +6,6 @@ __pycache__/
 # Segredos
 .env
 
-# Cache do processamento (regeravel, mas custa tokens)
-scripts/.cache/
-
 # Node / Next.js (fases 2-4)
 node_modules/
 .next/
