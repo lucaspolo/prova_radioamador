@@ -64,6 +64,9 @@ const versao = createHash("sha1")
 
 const sw = `// Gerado por scripts/gerar_sw.mjs — não editar à mão.
 const CACHE = "radioamador-${versao}";
+// Precisa bater com CACHE_PDFS em components/MaterialOffline.tsx — o
+// pré-download conta os arquivos deste cache para dizer o que já está no
+// aparelho. (Este script roda no build e não pode ser importado de lá.)
 const CACHE_PDFS = "radioamador-pdfs-v1";
 const PRECACHE = ${JSON.stringify(precache, null, 1)};
 
