@@ -185,6 +185,12 @@ const PROPS_INICIO = {
     "a folha tem uma célula por questão, identificada",
     questoes.every((_, i) => html.includes(`Questão ${i + 1}, em branco`)),
   );
+  // Tabindex rotativo: a grade é uma parada de Tab só — todas as células
+  // menos a atual saem do fluxo do teclado, e "Encerrar" fica a um Tab.
+  checar(
+    "a folha é uma única parada de Tab",
+    (html.match(/tabindex="-1"/g) ?? []).length === questoes.length - 1,
+  );
   checar("permite navegar entre as questões", html.includes("Anterior") && html.includes("Próxima"));
   checar("permite marcar para revisar", html.includes("Marcar para revisar"));
   checar("permite encerrar e ver o gabarito", html.includes("Encerrar e ver o gabarito"));

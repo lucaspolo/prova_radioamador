@@ -48,7 +48,7 @@ export default function BotaoConsultarMaterial({
       </button>
 
       {origem === "ementa" && (
-        <p className="mt-2 text-xs text-slate-500 italic dark:text-slate-500">
+        <p className="mt-2 text-xs text-slate-500 italic dark:text-slate-400">
           Esta questão foi elaborada a partir da ementa oficial; a página
           indicada explica o tema, mas não traz este enunciado.
         </p>

@@ -102,7 +102,7 @@ export default function TelaInicio({
           ))}
         </div>
         {classe === "C" && (
-          <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-500">
+          <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-400">
             A ementa da Classe C é um subconjunto da Classe B, então o banco
             cobre mais do que cai — há questões de cálculo (código de cores,
             Kirchhoff, associação de resistores) que só são cobradas a partir da
@@ -110,7 +110,7 @@ export default function TelaInicio({
           </p>
         )}
         {classe === "A" && (
-          <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-500">
+          <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-400">
             Inclui o acréscimo técnico da Classe A em Eletrônica. Legislação e
             Técnica e Ética têm a mesma ementa nas três classes — o que muda é o
             número de questões.

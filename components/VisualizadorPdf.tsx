@@ -89,7 +89,7 @@ export default function VisualizadorPdf({
       >
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium">{nomeExibicao}</div>
-          <div className="text-xs text-slate-400">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
             {totalPaginas > 0
               ? `Página ${pagina} de ${totalPaginas}`
               : "Carregando…"}

@@ -124,3 +124,18 @@ body {
     word-break: break-all;
   }
 }
+
+/* Quem pediu menos movimento ao sistema recebe menos movimento: as
+   transições dos controles e o `transition-all` das barras de progresso
+   ficam instantâneos. Duração quase zero, e não `none`, para eventos de
+   `transitionend` de que algum código dependa continuarem disparando. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
