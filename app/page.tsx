@@ -16,6 +16,7 @@ import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaDesafio from "@/components/TelaDesafio";
+import TelaImpressao from "@/components/TelaImpressao";
 import { useHistorico } from "@/hooks/useHistorico";
 import {
   questoesParaRevisao,
@@ -31,6 +32,7 @@ type Etapa =
   | "inicio"
   | "assuntos"
   | "desafio"
+  | "impressao"
   | "simulado"
   | "resultado"
   | "intervalo"
@@ -81,6 +83,11 @@ export default function Home() {
   const [motivoFim, setMotivoFim] = useState<MotivoFim>("manual");
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [linkDesafio, setLinkDesafio] = useState<string | null>(null);
+  const [impressao, setImpressao] = useState<{
+    desafio: Desafio;
+    questoes: Questao[];
+    link: string;
+  } | null>(null);
   const { historico, carregado, gravacaoRecusada, registrar, importar, limpar } =
     useHistorico();
 
@@ -149,6 +156,21 @@ export default function Home() {
     setClasseAtual(d.classe);
     setTempoSegundos(tempoDaBateria(d.classe, d.quantidade));
     setEtapa("simulado");
+  }
+
+  /**
+   * A bateria em papel, sempre a partir de uma semente: assim a folha impressa
+   * e o link são a MESMA prova, e quem faltou à aula responde pelo celular às
+   * questões que os colegas responderam na caneta.
+   */
+  function imprimirBateria(d: Desafio) {
+    const base = `${window.location.origin}${window.location.pathname}`;
+    setImpressao({
+      desafio: d,
+      questoes: sortearDesafio(d.tema, d.quantidade, d.classe, d.semente),
+      link: linkDoDesafio(d, base),
+    });
+    setEtapa("impressao");
   }
 
   function iniciarRevisao(classe: Classe) {
@@ -257,6 +279,7 @@ export default function Home() {
             onProvaCompleta={iniciarProva}
             onRevisar={iniciarRevisao}
             onAssuntos={() => setEtapa("assuntos")}
+            onImprimir={imprimirBateria}
           />
         </div>
       )}
@@ -334,6 +357,15 @@ export default function Home() {
             iniciarMateriaDaProva(classeAtual, materiasProva.length)
           }
           onAbandonar={() => setEtapa("inicio")}
+        />
+      )}
+
+      {etapa === "impressao" && impressao && (
+        <TelaImpressao
+          desafio={impressao.desafio}
+          questoes={impressao.questoes}
+          link={impressao.link}
+          onVoltar={() => setEtapa("inicio")}
         />
       )}
 

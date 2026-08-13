@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Classe, Tema } from "@/lib/tipos";
 import { ROTULO_CURTO } from "@/lib/constantes";
-import { linkDoDesafio } from "@/lib/desafio";
+import { linkDoDesafio, type Desafio } from "@/lib/desafio";
 import { sementeLegivel } from "@/lib/semente";
 
 /**
@@ -20,20 +20,28 @@ export default function CriarDesafio({
   tema,
   quantidade,
   classe,
+  onImprimir,
 }: {
   tema: Tema;
   quantidade: number;
   classe: Classe;
+  onImprimir: (desafio: Desafio) => void;
 }) {
   const [link, setLink] = useState<string | null>(null);
-  const [semente, setSemente] = useState<string | null>(null);
+  const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  const semente = desafio?.semente ?? null;
 
   function criar() {
-    const nova = sementeLegivel();
+    const novo: Desafio = {
+      semente: sementeLegivel(),
+      tema,
+      quantidade,
+      classe,
+    };
     const base = `${window.location.origin}${window.location.pathname}`;
-    setSemente(nova);
-    setLink(linkDoDesafio({ semente: nova, tema, quantidade, classe }, base));
+    setDesafio(novo);
+    setLink(linkDoDesafio(novo, base));
     setAviso(null);
   }
 
@@ -62,7 +70,8 @@ export default function CriarDesafio({
         Um link, a mesma bateria para todos: {ROTULO_CURTO[tema]},{" "}
         {quantidade} questões da Classe {classe}, em modo prova e com o
         cronômetro oficial. As questões saem da semente do link, e não do
-        histórico de cada um — por isso dá para comparar os resultados.
+        histórico de cada um — por isso dá para comparar os resultados. Dá para
+        imprimir a mesma bateria em branco, para aplicar em papel.
       </p>
 
       {link === null ? (
@@ -91,6 +100,15 @@ export default function CriarDesafio({
               className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
             >
               Compartilhar link
+            </button>
+            {/* Papel e link são a mesma bateria: o curso presencial aplica
+                impresso, e quem faltou faz pelo celular caindo nas mesmas
+                questões. */}
+            <button
+              onClick={() => desafio && onImprimir(desafio)}
+              className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+            >
+              Imprimir em branco
             </button>
             <button
               onClick={criar}
