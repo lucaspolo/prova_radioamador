@@ -130,11 +130,20 @@ export function amostrarPonderado<T>(
     .map((x) => x.item);
 }
 
-/** Fisher-Yates, usado quando não há o que ponderar. */
-export function embaralharSimples<T>(itens: T[]): T[] {
+/**
+ * Fisher-Yates, usado quando não há o que ponderar.
+ *
+ * `rand` existe para o teste poder fixar a ordem — o drill das tabelas
+ * (`lib/drill.ts`) monta alternativas embaralhadas, e afirmação sobre sorteio
+ * só se prova com sorteio determinístico.
+ */
+export function embaralharSimples<T>(
+  itens: T[],
+  rand: () => number = Math.random,
+): T[] {
   const copia = [...itens];
   for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     [copia[i], copia[j]] = [copia[j], copia[i]];
   }
   return copia;

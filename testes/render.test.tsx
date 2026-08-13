@@ -10,9 +10,11 @@ import MenuPrincipal, { PainelMenu } from "@/components/MenuPrincipal";
 import ItemConferencia from "@/components/ItemConferencia";
 import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
+import Relampago from "@/components/Relampago";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
 import { ATALHOS_DA_PROVA } from "@/lib/atalhos";
+import { BARALHOS } from "@/lib/drill";
 import { sortearSimulado, BANCO } from "@/lib/questoes";
 import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
 import type { Resposta } from "@/lib/tipos";
@@ -306,7 +308,10 @@ const PROPS_INICIO = {
 {
   const html = renderToStaticMarkup(<TelaFerramentas onVoltar={() => {}} />);
   checar("TelaFerramentas renderiza", html.length > 0);
-  checar("oferece as duas abas", html.includes("Tabelas") && html.includes("Calculadoras"));
+  checar(
+    "oferece as três abas",
+    ["Tabelas", "Calculadoras", "Relâmpago"].every((s) => html.includes(s)),
+  );
   checar(
     "lista as tabelas publicadas",
     ["Alfabeto fonético", "Código Q", "Plano de bandas", "Prefixos"].every((s) =>
@@ -326,6 +331,21 @@ const PROPS_INICIO = {
     ),
   );
   checar("permite voltar", html.includes("Voltar ao início"));
+}
+
+// --- Drill relâmpago ------------------------------------------------------
+// A tela de escolha não sorteia nada: se sorteasse na renderização, o
+// servidor e o cliente montariam rodadas diferentes.
+{
+  const html = renderToStaticMarkup(<Relampago />);
+  checar(
+    "o drill abre na escolha das tabelas",
+    ["Tudo", ...BARALHOS.map((b) => b.rotulo)].every((s) => html.includes(s)) &&
+      html.includes("Começar"),
+  );
+  // A honestidade do modo é parte dele: memorizar tabela não é estar pronto
+  // para o exame, e a tela diz isso antes da primeira pergunta.
+  checar("o drill avisa que não é a prova", html.includes("não é a prova"));
 }
 
 // --- Rótulo de procedência ------------------------------------------------

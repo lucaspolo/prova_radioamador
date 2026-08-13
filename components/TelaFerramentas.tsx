@@ -6,6 +6,7 @@ import AtalhosDaProva from "./AtalhosDaProva";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
 import MaterialOffline from "./MaterialOffline";
+import Relampago from "./Relampago";
 
 /**
  * Consulta rápida offline: as tabelas que o radioamador usa a vida toda e as
@@ -20,7 +21,9 @@ import MaterialOffline from "./MaterialOffline";
  * cega seria cola, e no treino seria distração.
  */
 export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) {
-  const [aba, setAba] = useState<"tabelas" | "calculadoras">("tabelas");
+  const [aba, setAba] = useState<"tabelas" | "calculadoras" | "relampago">(
+    "tabelas",
+  );
   const titulo = useRef<HTMLHeadingElement>(null);
 
   // Chegou-se aqui por um item de menu que sumiu da tela; sem isto o foco
@@ -51,18 +54,21 @@ export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) 
         >
           Calculadoras
         </Aba>
+        <Aba ativa={aba === "relampago"} onClick={() => setAba("relampago")}>
+          Relâmpago
+        </Aba>
       </div>
 
-      {aba === "tabelas" ? (
+      {aba === "tabelas" && (
         <div className="space-y-4">
           {TABELAS.map((t) => (
             <Tabela key={t.id} tabela={t} />
           ))}
           <SemFonte />
         </div>
-      ) : (
-        <Calculadoras />
       )}
+      {aba === "calculadoras" && <Calculadoras />}
+      {aba === "relampago" && <Relampago />}
 
       {/* Fora das abas: nem atalho nem download são consulta de tabela, e os
           dois valem para a tela inteira — inclusive para o "Consultar
