@@ -9,6 +9,7 @@ import {
   ROTULO_CURTO,
 } from "@/lib/constantes";
 import { estatisticasPorTema, resumo, type Historico } from "@/lib/historico";
+import { prontidao } from "@/lib/prontidao";
 import { cobertura } from "@/lib/questoes";
 import { lerPreferencias } from "@/lib/preferencias";
 import { useSuspeitas } from "@/hooks/useSuspeitas";
@@ -67,6 +68,7 @@ export default function TelaDesempenho({
 
   const geral = resumo(historico);
   const abrangencia = cobertura(historico, classePreferida);
+  const aptidao = prontidao(historico, classePreferida);
   const estatisticas = estatisticasPorTema(historico);
   const atencao = estatisticas
     .filter((e) => e.respondidas > 0 && e.percentual < PERCENTUAL_CORTE)
@@ -168,6 +170,52 @@ export default function TelaDesempenho({
               . É onde o estudo rende mais agora.
             </p>
           )}
+
+          {/* "Passaria hoje?", na forma honesta: fatos da janela recente por
+              matéria contra o corte da classe — a prova exige o mínimo nas
+              TRÊS, e é a mais fraca que decide. Treino com gabarito imediato
+              não é prova cega, então o texto diz o que aconteceu, nunca "você
+              passaria". */}
+          <div>
+            <h4 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+              Últimas baterias · corte da Classe {classePreferida}
+            </h4>
+            <ul className="space-y-1 text-sm">
+              {aptidao.map((p) => (
+                <li
+                  key={p.tema}
+                  className="flex items-baseline justify-between gap-2"
+                >
+                  <span className={`font-medium ${COR_TEMA[p.tema].texto}`}>
+                    {ROTULO_CURTO[p.tema]}
+                  </span>
+                  {p.baterias === 0 ? (
+                    <span className="text-slate-500 dark:text-slate-400">
+                      nenhuma bateria ainda
+                    </span>
+                  ) : (
+                    <span
+                      className={
+                        p.acimaDoCorte === p.baterias
+                          ? "font-medium text-emerald-600 dark:text-emerald-400"
+                          : p.acimaDoCorte === 0
+                            ? "font-medium text-rose-600 dark:text-rose-400"
+                            : "font-medium text-amber-600 dark:text-amber-400"
+                      }
+                    >
+                      acima do corte em {p.acimaDoCorte} de {p.baterias}
+                      {!p.soOficiais && (
+                        <span className="font-normal text-slate-500 dark:text-slate-400">
+                          {" "}
+                          · baterias menores que a prova
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* O sorteio ponderado não garante visitar o banco inteiro; este
               número transforma "será que já vi tudo?" em plano — o modo "só
