@@ -14,24 +14,11 @@ interface Props {
   onVoltar: () => void;
 }
 
-/** Rótulo curto de cada PDF, para o agrupamento não ocupar três linhas. */
-const ROTULO_ARQUIVO: Record<string, string> = {
-  "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf": "Cartilha do Radioamador",
-  "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf":
-    "Ato 926/2024 — requisitos técnicos",
-  "SEI_ANATEL - 15307586 - Ato_orginal.pdf":
-    "Ato 3448/2026 — habilitação e indicativos",
-  "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf": "Resolução 777/2025",
-  "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf":
-    "Ato 3445/2026 — indicativos especiais",
-  "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf":
-    "Ato 926/2024 — 2 m, 220 MHz e UHF",
-};
-
 /**
- * Estudar por assunto: as seções reais dos PDFs, com o desempenho de quem
- * estuda em cada uma. É o que transforma "Eletrônica em 48%" em "o fraco é
- * propagação" — e a bateria sai só dali.
+ * Estudar por assunto: as seções reais dos PDFs (questões de documento) e os
+ * tópicos da ementa, com o desempenho de quem estuda em cada um. É o que
+ * transforma "Eletrônica em 48%" em "o fraco é propagação" — e a bateria sai
+ * só dali.
  */
 export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
@@ -48,12 +35,12 @@ export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) 
   const desempenho = desempenhoPorQuestao(historico);
   const assuntos = listarAssuntos(classe);
 
-  // Agrupa preservando a ordem do mapa (que é a ordem dos documentos).
-  const porArquivo = new Map<string, typeof assuntos>();
+  // Agrupa preservando a ordem da lib: documentos primeiro, ementa depois.
+  const porGrupo = new Map<string, typeof assuntos>();
   for (const a of assuntos) {
-    const lista = porArquivo.get(a.secao.arquivo);
+    const lista = porGrupo.get(a.grupo);
     if (lista) lista.push(a);
-    else porArquivo.set(a.secao.arquivo, [a]);
+    else porGrupo.set(a.grupo, [a]);
   }
 
   return (
@@ -63,20 +50,19 @@ export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) 
           Estudar por assunto
         </h2>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          As seções reais do material oficial, com o seu aproveitamento em cada
-          uma. A bateria sai só do assunto escolhido, em modo treino e sem
-          cronômetro. Questões da ementa (sem página de origem) não entram aqui
-          — elas seguem no simulado normal.
+          As seções do material oficial e os tópicos da ementa, com o seu
+          aproveitamento em cada um. A bateria sai só do assunto escolhido, em
+          modo treino e sem cronômetro.
         </p>
       </div>
 
-      {[...porArquivo.entries()].map(([arquivo, doArquivo]) => (
-        <section key={arquivo}>
+      {[...porGrupo.entries()].map(([grupo, doGrupo]) => (
+        <section key={grupo}>
           <h3 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-            {ROTULO_ARQUIVO[arquivo] ?? arquivo}
+            {grupo}
           </h3>
           <div className="grid gap-2 sm:grid-cols-2">
-            {doArquivo.map(({ secao, questoes }) => {
+            {doGrupo.map(({ titulo, secao, questoes }) => {
               let vistas = 0;
               let acertosAgora = 0;
               for (const q of questoes) {
@@ -87,23 +73,24 @@ export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) 
               }
               return (
                 <button
-                  key={secao.titulo}
+                  key={titulo}
                   onClick={() => onEstudar(questoes)}
                   className="rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
                 >
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="font-semibold">{secao.titulo}</span>
-                    <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
-                      pp. {secao.paginaInicio}
-                      {secao.paginaFim !== secao.paginaInicio &&
-                        `–${secao.paginaFim}`}
-                    </span>
+                    <span className="font-semibold">{titulo}</span>
+                    {secao && (
+                      <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
+                        pp. {secao.paginaInicio}
+                        {secao.paginaFim !== secao.paginaInicio &&
+                          `–${secao.paginaFim}`}
+                      </span>
+                    )}
                   </div>
                   <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
                     {questoes.length}{" "}
                     {questoes.length === 1 ? "questão" : "questões"}
-                    {vistas > 0 &&
-                      ` · viu ${vistas}, sabe ${acertosAgora}`}
+                    {vistas > 0 && ` · viu ${vistas}, sabe ${acertosAgora}`}
                   </div>
                 </button>
               );

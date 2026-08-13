@@ -91,7 +91,7 @@ async function main() {
     );
   }
 
-  // --- listarAssuntos: só assunto com bateria -----------------------------
+  // --- listarAssuntos: seções ∪ tópicos, só assunto com bateria -----------
   const assuntos = listarAssuntos("B");
   checar("há assuntos para estudar", assuntos.length > 10, String(assuntos.length));
   checar(
@@ -99,19 +99,57 @@ async function main() {
     assuntos.every((a) => a.questoes.length > 0),
   );
   checar(
-    "as questões de cada assunto caem na faixa da seção",
-    assuntos.every((a) =>
-      a.questoes.every(
-        (q) =>
-          q.arquivo_origem === a.secao.arquivo &&
-          q.pagina >= a.secao.paginaInicio &&
-          q.pagina <= a.secao.paginaFim,
-      ),
+    "as questões de cada seção caem na faixa dela",
+    assuntos.every(
+      (a) =>
+        !a.secao ||
+        a.questoes.every(
+          (q) =>
+            q.arquivo_origem === a.secao!.arquivo &&
+            q.pagina >= a.secao!.paginaInicio &&
+            q.pagina <= a.secao!.paginaFim,
+        ),
     ),
   );
   checar(
     "classe A não perde assunto em relação à B",
     listarAssuntos("A").length >= assuntos.length,
+  );
+
+  // --- Tópicos da ementa: a outra metade do assunto -----------------------
+  checar(
+    "toda questão de ementa tem topico",
+    BANCO.filter((q) => q.origem === "ementa").every((q) => !!q.topico),
+  );
+  checar(
+    "nenhuma questão de documento tem topico",
+    BANCO.filter((q) => q.origem === "documento").every((q) => !q.topico),
+  );
+  const daEmenta = assuntos.filter((a) => !a.secao);
+  checar("os tópicos da ementa viram assuntos", daEmenta.length > 10, String(daEmenta.length));
+  checar(
+    "todo grupo de ementa se declara como tal",
+    daEmenta.every((a) => a.grupo.startsWith("Ementa")),
+  );
+  // Toda questão de ementa do acervo aparece em exatamente um assunto.
+  const idsListados = daEmenta.flatMap((a) => a.questoes.map((q) => q.id));
+  const doAcervoEmenta = BANCO.filter(
+    (q) => q.origem === "ementa" && q.nivel === "B",
+  );
+  checar(
+    "nenhuma questão de ementa fica órfã de assunto",
+    idsListados.length === doAcervoEmenta.length &&
+      new Set(idsListados).size === idsListados.length,
+    `${idsListados.length} listadas de ${doAcervoEmenta.length}`,
+  );
+  // As fusões de rótulo: os dois nomes do alfabeto fonético são UM assunto.
+  const foneticos = daEmenta.filter((a) =>
+    a.titulo.toLowerCase().includes("fonétic"),
+  );
+  checar(
+    "os dois tópicos de fonético fundem num assunto só",
+    foneticos.length === 1 && foneticos[0].questoes.length >= 30,
+    foneticos.map((a) => `${a.titulo}(${a.questoes.length})`).join(", "),
   );
 
   console.log(
