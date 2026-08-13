@@ -1316,6 +1316,11 @@ def gerar_complementar(
         # verificacao independentemente de conterem numeros. Removida na escrita.
         q["_complementar"] = True
         q["_nivel"] = classe
+        # O topico que dirigiu a geracao vira o "assunto" da questao no app.
+        # Anexado AQUI, depois da leitura do cache, para alcancar tambem as
+        # entradas antigas — o topico ja compoe a chave de cache, entao nada
+        # e' invalidado e nenhuma chamada nova acontece.
+        q["_topico"] = topico
     return questoes
 
 
@@ -1607,6 +1612,10 @@ def carregar_questoes_manuais() -> list[dict[str, Any]]:
         # Nao vem de um trecho: a pagina indica onde estudar (origem "ementa").
         q["_complementar"] = True
         q.setdefault("_nivel", "B")
+        # Toda manual declara seu topico no proprio JSON — sao "ementa" como
+        # as complementares, e sem isto seriam as unicas sem assunto no app.
+        if q.get("topico"):
+            q["_topico"] = q.pop("topico")
     return entradas
 
 
@@ -1749,6 +1758,10 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 # Questoes da ementa nascem de um topico, e nao de um texto:
                 # inventar um trecho para elas seria mentir sobre a origem.
                 **({"trecho_id": q["_trecho"]} if q.get("_trecho") else {}),
+                # O topico da ementa que dirigiu a geracao — o "assunto" da
+                # questao no app. So' as de origem "ementa" tem; as de
+                # documento derivam o assunto de arquivo+pagina (lib/secoes.ts).
+                **({"topico": q["_topico"]} if q.get("_topico") else {}),
                 # Peso proprio no sorteio. Omitido quando e' 1, que e' o padrao
                 # de `lib/tipos.ts`: gravar 1 em quase mil questoes so' engorda
                 # o JSON que o app carrega inteiro no bundle.
