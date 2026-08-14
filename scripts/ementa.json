@@ -1,0 +1,246 @@
+{
+  "fonte": {
+    "arquivo": "SEI_ANATEL - 15307586 - Ato_orginal.pdf",
+    "pagina": 5,
+    "referencia": "Ato nº 3448/2026, item 11.4"
+  },
+  "blocos": [
+    {
+      "tema": "Técnica e ética operacional",
+      "titulo": "TÉCNICA E ÉTICA OPERACIONAL",
+      "classes": [
+        "C",
+        "B",
+        "A"
+      ],
+      "cumulativo": null,
+      "topicos": [
+        {
+          "id": "tec-estacao",
+          "titulo": "ESTAÇÃO DE RADIOAMADOR",
+          "texto": "Diagrama de blocos de receptores, transmissores, transceptores e repetidoras."
+        },
+        {
+          "id": "tec-antenas",
+          "titulo": "ANTENAS",
+          "texto": "Noções básicas de antenas direcionais, tipos e características, uso de antena artificial, relação sinal/ruído, onda estacionária."
+        },
+        {
+          "id": "tec-frequencia",
+          "titulo": "FREQUÊNCIA, COMPRIMENTO DE ONDA",
+          "texto": "Noções básicas de frequência de áudio, faixas de frequências de transmissão e seus comprimentos de onda, batimento de frequências."
+        },
+        {
+          "id": "tec-propagacao",
+          "titulo": "PROPAGAÇÃO",
+          "texto": "Noções básicas de Ondas terrestres, espaciais, camadas atmosféricas, propagação de ondas nas faixas de VLF, LF, MF, HF, VHF, UHF e SHF."
+        },
+        {
+          "id": "tec-interferencias",
+          "titulo": "INTERFERÊNCIAS",
+          "texto": "Procedimentos de como detectar e evitar interferências."
+        },
+        {
+          "id": "tec-comunicados",
+          "titulo": "COMUNICADOS",
+          "texto": "Como estabelecer um comunicado nas diversas modalidades, Alfabeto Fonético da UIT, noções do Código Q."
+        },
+        {
+          "id": "tec-etica",
+          "titulo": "ÉTICA",
+          "texto": "Comportamento ético do radioamador, procedimentos indispensáveis."
+        },
+        {
+          "id": "tec-emergencias",
+          "titulo": "EMERGÊNCIAS",
+          "texto": "Procedimentos operacionais em situações de emergência."
+        }
+      ]
+    },
+    {
+      "tema": "Legislação de Telecomunicações",
+      "titulo": "LEGISLAÇÃO DE TELECOMUNICAÇÕES",
+      "classes": [
+        "C",
+        "B",
+        "A"
+      ],
+      "cumulativo": null,
+      "topicos": [
+        {
+          "id": "leg-rr-uit",
+          "titulo": null,
+          "texto": "Regulamento de Rádio (RR) da União Internacional de Telecomunicações (UIT)."
+        },
+        {
+          "id": "leg-itu-r-m1544",
+          "titulo": null,
+          "texto": "Recomendação ITU-R M.1544-1 (09/2015) de qualificações mínimas para o radioamador."
+        },
+        {
+          "id": "leg-iaru-regiao-2",
+          "titulo": null,
+          "texto": "Plano de Faixas para a Região 2, da União Internacional de Radioamadores (IARU)."
+        },
+        {
+          "id": "leg-lgt",
+          "titulo": null,
+          "texto": "Lei Geral das Telecomunicações."
+        },
+        {
+          "id": "leg-rgst",
+          "titulo": null,
+          "texto": "Regulamento Geral dos Serviços de Telecomunicações – RGST."
+        },
+        {
+          "id": "leg-requisitos-tecnicos",
+          "titulo": null,
+          "texto": "Requisitos Técnicos e Operacionais para uso de radiofrequências associadas ao Serviço de Radioamador."
+        },
+        {
+          "id": "leg-pdff",
+          "titulo": null,
+          "texto": "Plano de Atribuição, Destinação e Distribuição de Faixas de Frequências no Brasil."
+        },
+        {
+          "id": "leg-conformidade",
+          "titulo": null,
+          "texto": "Regulamento de Avaliação da Conformidade e de Homologação de Produtos para Telecomunicações."
+        }
+      ]
+    },
+    {
+      "tema": "Conhecimentos de Eletrônica e Eletricidade",
+      "titulo": "CONHECIMENTOS BÁSICOS DE ELETRÔNICA E ELETRICIDADE (CLASSE C)",
+      "classes": [
+        "C",
+        "B",
+        "A"
+      ],
+      "cumulativo": null,
+      "topicos": [
+        {
+          "id": "ele-c-eletronica-basica",
+          "titulo": "ELETRÔNICA BÁSICA",
+          "texto": "Noções básicas da Lei de Ohm, funções e utilizações de componentes eletrônicos, resistência, tensão, corrente e potência em circuitos elétricos."
+        },
+        {
+          "id": "ele-c-eletromagnetismo-basico",
+          "titulo": "ELETROMAGNETISMO BÁSICO",
+          "texto": "Noções básicas sobre espectro eletromagnético, frequência e comprimento de onda."
+        },
+        {
+          "id": "ele-c-protecao-eletrica",
+          "titulo": "PROTEÇÃO ELÉTRICA",
+          "texto": "Noções básicas da função e utilização de fusíveis/disjuntores e aterramento em circuitos elétricos."
+        },
+        {
+          "id": "ele-c-medicao-eletrica",
+          "titulo": "MEDIÇÃO ELÉTRICA",
+          "texto": "Noções básicas da função e utilização do Multímetro (medição de tensão, corrente e resistência), Wattímetro e Medidor de Ondas Estacionárias."
+        },
+        {
+          "id": "ele-c-estacao",
+          "titulo": "ESTAÇÃO DE RADIOAMADOR",
+          "texto": "Noções básicas sobre a função dos receptores, transmissores, transceptores, repetidoras, antenas, linhas de transmissão, diagramas de blocos de transmissores e receptores."
+        },
+        {
+          "id": "ele-c-telecomunicacoes",
+          "titulo": "TELECOMUNICAÇÕES",
+          "texto": "Noções básicas sobre modulação, demodulação, propagação."
+        }
+      ]
+    },
+    {
+      "tema": "Conhecimentos de Eletrônica e Eletricidade",
+      "titulo": "CONHECIMENTOS DE ELETRÔNICA E ELETRICIDADE (CLASSE B)",
+      "classes": [
+        "B",
+        "A"
+      ],
+      "cumulativo": "Todo o conteúdo especificado nos Conhecimentos Básicos de Eletrônica e Eletricidade.",
+      "topicos": [
+        {
+          "id": "ele-b-circuitos",
+          "titulo": "CIRCUITOS ELÉTRICOS",
+          "texto": "Lei de Ohm, cálculo da resistência, tensão, corrente e potência, conhecimentos básicos das Leis de Joule e Kirchhoff."
+        },
+        {
+          "id": "ele-b-identificacao-resistores",
+          "titulo": "IDENTIFICAÇÃO DE RESISTORES",
+          "texto": "Determinação do valor da Resistência mediante o código de cores de um resistor."
+        },
+        {
+          "id": "ele-b-associacao-resistores",
+          "titulo": "ASSOCIAÇÃO DE RESISTORES",
+          "texto": "Cálculo da Resistência em circuitos série e paralelo."
+        },
+        {
+          "id": "ele-b-eletromagnetismo",
+          "titulo": "ELETROMAGNETISMO",
+          "texto": "Análise sobre cargas elétricas, campos elétricos, campos magnéticos e seus conceitos."
+        },
+        {
+          "id": "ele-b-teoria-circuitos-ca",
+          "titulo": "TEORIA DE CIRCUITOS (CA)",
+          "texto": "Conhecimentos básicos de impedância, reatância, capacitância e indutância em componentes eletrônicos."
+        },
+        {
+          "id": "ele-b-ondulatoria",
+          "titulo": "ONDULATÓRIA",
+          "texto": "Análise de sinais ondulatórios senoidais com relação a frequência, amplitude e período."
+        },
+        {
+          "id": "ele-b-propriedade-materiais",
+          "titulo": "PROPRIEDADE DOS MATERIAIS",
+          "texto": "Conhecimentos básicos sobre condutores, semicondutores e isolantes."
+        },
+        {
+          "id": "ele-b-teoria-antenas",
+          "titulo": "TEORIA DE ANTENAS",
+          "texto": "Funcionamento básico e aplicação dos diversos tipos de antenas."
+        },
+        {
+          "id": "ele-b-propagacao-ondas",
+          "titulo": "PROPAGAÇÃO DE ONDAS",
+          "texto": "Conceitos básicos sobre polarização, interferência e ressonância."
+        },
+        {
+          "id": "ele-b-comunicacoes-digitais",
+          "titulo": "COMUNICAÇÕES DIGITAIS",
+          "texto": "Conceitos sobre modulações ASK, FSK e PSK."
+        }
+      ]
+    },
+    {
+      "tema": "Conhecimentos de Eletrônica e Eletricidade",
+      "titulo": "CONHECIMENTOS TÉCNICOS DE ELETRÔNICA E ELETRICIDADE (CLASSE A)",
+      "classes": [
+        "A"
+      ],
+      "cumulativo": "Todo o conteúdo especificado nos Conhecimentos de Eletrônica e Eletricidade.",
+      "topicos": [
+        {
+          "id": "ele-a-teoria-circuitos",
+          "titulo": "TEORIA DE CIRCUITOS",
+          "texto": "Análise de circuitos CA série e paralelo. Conhecimentos técnicos de impedância, reatância, capacitância e indutância em componentes eletrônicos."
+        },
+        {
+          "id": "ele-a-teoria-ondas",
+          "titulo": "TEORIA DE ONDAS",
+          "texto": "Conhecimentos técnicos sobre funcionamento e aplicação dos diversos tipos de antenas."
+        },
+        {
+          "id": "ele-a-eletronica-rf",
+          "titulo": "ELETRÔNICA DE RF",
+          "texto": "Conhecimentos técnicos de funcionamento e aplicação de componentes semicondutores em circuitos de transmissão."
+        },
+        {
+          "id": "ele-a-fenomenos-propagacao",
+          "titulo": "FENÔMENOS DE PROPAGAÇÃO",
+          "texto": "Conceitos técnicos sobre polarização, ondas estacionárias, interferências, superposição e ressonância."
+        }
+      ]
+    }
+  ]
+}

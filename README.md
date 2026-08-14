@@ -56,7 +56,8 @@ lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
 scripts/      processar_pdfs.py — gerador do banco de questões
               auditar_ocr.py — segundo leitor dos PDFs digitalizados
               copiar_pdfs.mjs / preparar_worker.mjs — publicação de assets
-              exportar_tabelas.ts — tabelas de referência para o gerador
+              exportar_tabelas.ts / exportar_ementa.ts — dados conferidos do
+              app para o gerador
 testes/       sorteio, histórico, estudo, bateria, prioridade, prontidão,
               PDFs, páginas, trechos, seções, atalhos, classes, cobertura,
               cálculos, referência, ementa, dataset, conferência e render
@@ -107,7 +108,11 @@ public/       banco_questoes.json, trechos.json e pdfs/
   de licenciamento (719/2020) e de outorgas (720/2020). Eles fecham itens que a
   ementa nomeia e que antes só existiam como resumo da Cartilha — e o Glossário
   ainda define *atribuição*, *destinação* e *distribuição* de faixas, os três
-  termos do nome do PDFF, que nenhum outro documento daqui explicava.
+  termos do nome do PDFF, que nenhum outro documento daqui explicava. Gerar
+  questão deles é outra decisão: são 119 páginas de norma setorial, a maior
+  parte sobre concessão e estrutura da agência, e jogá-las inteiras no chunking
+  quase dobraria o banco com conteúdo que o exame não cobra. O caminho, quando
+  for a hora, é `PAGINAS_REFORCO` — página escolhida, cota própria.
 - **Consulta rápida** offline: alfabeto fonético, código Q, plano de bandas com
   as classes habilitadas, prefixos de indicativo por UF e limites de potência,
   todos copiados dos PDFs oficiais e a um toque da página de origem; mais as
@@ -183,14 +188,25 @@ O script:
    uma em um dos três temas;
 4. roda passes complementares guiados pela ementa oficial, para os tópicos que
    os PDFs ensinam mas não exercitam (cálculo de eletrônica) ou tratam de forma
-   resumida (operação);
+   resumida (operação). A ementa vem de `scripts/ementa.json`, exportado de
+   `lib/ementa.ts` por `npm run ementa` — a mesma transcrição que a página
+   `/estudar` mostra e que `testes/ementa.test.ts` confere item a item contra o
+   Ato. Reexporte depois de mexer em `lib/ementa.ts`;
 5. roda um passe por tabela normativa, com uma questão para cada linha do plano
    de bandas e da tabela de prefixos por UF. As linhas vêm de
    `scripts/tabelas_referencia.json`, exportado de `lib/referencia.ts` por
    `npm run tabelas`: é a transcrição que `testes/referencia.test.ts` já confere
    contra o PDF, e não o texto cru da página, que o extrator entrega com as
    colunas embaralhadas. Reexporte depois de mexer em `lib/referencia.ts`;
-6. roda um passe de reforço nas páginas que o passo 3 cobriu de raspão;
+6. roda um passe de reforço em páginas escolhidas a dedo, com cota e foco
+   próprios. Ele tem dois papéis: corrigir página que o passo 3 cobriu de
+   raspão, e ser a **única** porta de entrada dos PDFs listados em
+   `SO_REFORCO` — as normas do setor, que são lidas mas ficam fora do chunking
+   geral. Sem essa exclusão, as 119 páginas da Lei 9.472, do Glossário e dos
+   regulamentos gerais renderiam ~680 questões sobre concessão, tarifa e
+   desestatização, quase dobrando o banco com o que o exame não cobra. Delas
+   saem 25 questões dirigidas — o Título V da LGT, cinco verbetes do Glossário
+   e o ciclo de vida da homologação;
 7. deduplica, valida e revisa a aritmética das questões numéricas.
 
 Os passos 5 e 6 existem pela mesma razão. O passo 3 gera um número fixo de

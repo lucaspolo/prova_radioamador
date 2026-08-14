@@ -89,57 +89,72 @@ QUESTOES_POR_CHUNK = 8
 MAX_TENTATIVAS = 5
 WORKERS_PADRAO = 5
 
-# Ementa oficial da Classe B, transcrita do Ato nº 3448/2026 (item 11.4).
-# Serve de guia de cobertura para o gerador: o LLM deve puxar as questoes para
-# esses topicos, que sao os efetivamente cobrados.
-EMENTA_CLASSE_B = """\
-TÉCNICA E ÉTICA OPERACIONAL
-- ESTAÇÃO DE RADIOAMADOR: Diagrama de blocos de receptores, transmissores, transceptores e repetidoras.
-- ANTENAS: Noções básicas de antenas direcionais, tipos e características, uso de antena artificial, relação sinal/ruído, onda estacionária.
-- FREQUÊNCIA, COMPRIMENTO DE ONDA: Noções básicas de frequência de áudio, faixas de frequências de transmissão e seus comprimentos de onda, batimento de frequências.
-- PROPAGAÇÃO: Noções básicas de ondas terrestres, espaciais, camadas atmosféricas, propagação nas faixas de VLF, LF, MF, HF, VHF, UHF e SHF.
-- INTERFERÊNCIAS: Procedimentos de como detectar e evitar interferências.
-- COMUNICADOS: Como estabelecer um comunicado nas diversas modalidades, Alfabeto Fonético da UIT, noções do Código Q.
-- ÉTICA: Comportamento ético do radioamador, procedimentos indispensáveis.
-- EMERGÊNCIAS: Procedimentos operacionais em situações de emergência.
-
-LEGISLAÇÃO DE TELECOMUNICAÇÕES
-- Regulamento de Rádio (RR) da União Internacional de Telecomunicações (UIT).
-- Recomendação ITU-R M.1544-1 (09/2015) de qualificações mínimas para o radioamador.
-- Plano de Faixas para a Região 2, da União Internacional de Radioamadores (IARU).
-- Lei Geral das Telecomunicações.
-- Regulamento Geral dos Serviços de Telecomunicações (RGST).
-- Requisitos Técnicos e Operacionais para uso de radiofrequências associadas ao Serviço de Radioamador.
-- Plano de Atribuição, Destinação e Distribuição de Faixas de Frequências no Brasil.
-- Regulamento de Avaliação da Conformidade e de Homologação de Produtos para Telecomunicações.
-
-CONHECIMENTOS DE ELETRÔNICA E ELETRICIDADE (CLASSE B)
-- Todo o conteúdo da Classe C: Lei de Ohm, componentes eletrônicos, resistência, tensão, corrente e potência; espectro eletromagnético; fusíveis, disjuntores e aterramento; multímetro, wattímetro e medidor de ondas estacionárias; função de receptores, transmissores, transceptores, repetidoras, antenas e linhas de transmissão; modulação, demodulação e propagação.
-- CIRCUITOS ELÉTRICOS: Lei de Ohm, cálculo da resistência, tensão, corrente e potência, conhecimentos básicos das Leis de Joule e Kirchhoff.
-- IDENTIFICAÇÃO DE RESISTORES: Determinação do valor da resistência mediante o código de cores.
-- ASSOCIAÇÃO DE RESISTORES: Cálculo da resistência em circuitos série e paralelo.
-- ELETROMAGNETISMO: Cargas elétricas, campos elétricos, campos magnéticos e seus conceitos.
-- TEORIA DE CIRCUITOS (CA): Impedância, reatância, capacitância e indutância.
-- ONDULATÓRIA: Análise de sinais senoidais quanto a frequência, amplitude e período.
-- PROPRIEDADE DOS MATERIAIS: Condutores, semicondutores e isolantes.
-- TEORIA DE ANTENAS: Funcionamento básico e aplicação dos diversos tipos de antenas.
-- PROPAGAÇÃO DE ONDAS: Polarização, interferência e ressonância.
-- COMUNICAÇÕES DIGITAIS: Conceitos sobre modulações ASK, FSK e PSK."""
+# Ementa oficial do Ato nº 3448/2026 (item 11.4). Serve de guia de cobertura
+# para o gerador: o LLM deve puxar as questoes para esses topicos, que sao os
+# efetivamente cobrados.
+#
+# A transcricao NAO mora aqui. Ela e' de lib/ementa.ts, que o app tambem usa
+# para montar a pagina /estudar e que testes/ementa.test.ts confere contra o
+# PDF item a item; `npm run ementa` exporta o JSON abaixo. Duas copias da mesma
+# ementa seriam a errata esperando acontecer — uma republicacao do Ato
+# corrigiria uma e deixaria a outra ensinando o programa do ano passado. Mesmo
+# arranjo de scripts/tabelas_referencia.json.
+#
+# A ementa e' cumulativa em Eletronica: a Classe B e' "todo o conteudo" da C
+# mais dez topicos, e a A e' todo o da B mais quatro. Legislacao e Tecnica e
+# Etica tem uma lista so' para as tres classes. Por isso os blocos declaram
+# `classes`, e nao o contrario.
+ARQ_EMENTA = RAIZ / "scripts" / "ementa.json"
 
 
-# Acrescimo da Classe A sobre a Classe B, transcrito do mesmo item 11.4. A
-# ementa e cumulativa: a Classe A e' definida como "todo o conteudo especificado
-# nos Conhecimentos de Eletronica e Eletricidade" (o da Classe B) mais os quatro
-# topicos abaixo. Legislacao e Tecnica e Etica nao tem ementa por classe — o Ato
-# traz uma unica lista para as tres —, entao so' Eletronica ganha um passe
-# proprio. O que muda para a Classe A e' o formato: 30 questoes, minimo 16, 40
-# minutos por materia.
-EMENTA_CLASSE_A = """\
-CONHECIMENTOS TÉCNICOS DE ELETRÔNICA E ELETRICIDADE (CLASSE A)
-- TEORIA DE CIRCUITOS: Análise de circuitos CA série e paralelo. Conhecimentos técnicos de impedância, reatância, capacitância e indutância em componentes eletrônicos.
-- TEORIA DE ONDAS: Conhecimentos técnicos sobre funcionamento e aplicação dos diversos tipos de antenas.
-- ELETRÔNICA DE RF: Conhecimentos técnicos de funcionamento e aplicação de componentes semicondutores em circuitos de transmissão.
-- FENÔMENOS DE PROPAGAÇÃO: Conceitos técnicos sobre polarização, ondas estacionárias, interferências, superposição e ressonância."""
+def carregar_ementa() -> list[dict[str, Any]]:
+    """Le os blocos da ementa exportados de lib/ementa.ts."""
+    if not ARQ_EMENTA.exists():
+        raise SystemExit(
+            f"{ARQ_EMENTA.name} não encontrado. Gere-o com `npm run ementa`."
+        )
+    return json.loads(ARQ_EMENTA.read_text(encoding="utf-8"))["blocos"]
+
+
+BLOCOS_EMENTA = carregar_ementa()
+
+
+def _itens(bloco: dict[str, Any], com_cumulativo: bool = True) -> list[str]:
+    linhas = []
+    if com_cumulativo and bloco["cumulativo"]:
+        linhas.append(f"- {bloco['cumulativo']}")
+    for t in bloco["topicos"]:
+        rotulo = f"{t['titulo']}: " if t["titulo"] else ""
+        linhas.append(f"- {rotulo}{t['texto']}")
+    return linhas
+
+
+def topicos_ementa(titulo: str, com_cumulativo: bool = True) -> str:
+    """So' os itens de um bloco, sem o cabecalho dele."""
+    for b in BLOCOS_EMENTA:
+        if b["titulo"] == titulo:
+            return "\n".join(_itens(b, com_cumulativo))
+    raise SystemExit(
+        f"bloco '{titulo}' não está em {ARQ_EMENTA.name}; "
+        f"reexporte com `npm run ementa`."
+    )
+
+
+# O bloco que o passe da Classe A usa sozinho: ele e' o acrescimo sobre a
+# Classe B, e o prompt de la' o apresenta como tal.
+BLOCO_ELETRONICA_A = "CONHECIMENTOS TÉCNICOS DE ELETRÔNICA E ELETRICIDADE (CLASSE A)"
+
+
+def ementa_texto(classe: str | None = None, tema: str | None = None) -> str:
+    """Os blocos que a classe cobra (e, opcionalmente, so' de um tema)."""
+    partes = []
+    for b in BLOCOS_EMENTA:
+        if classe is not None and classe not in b["classes"]:
+            continue
+        if tema is not None and b["tema"] != tema:
+            continue
+        partes.append("\n".join([b["titulo"], *_itens(b)]))
+    return "\n\n".join(partes)
 
 
 # ---------------------------------------------------------------------------
@@ -282,7 +297,7 @@ editoriais não.
 
 EMENTA OFICIAL DA CLASSE B (guia de cobertura — priorize os pontos abaixo quando \
 o trecho tocar neles):
-{EMENTA_CLASSE_B}"""
+{ementa_texto(classe="B")}"""
 
 
 PROMPT_SISTEMA_ELETRONICA = f"""\
@@ -323,7 +338,7 @@ CA em série/paralelo (isso é Classe A).
 8. Escreva em português do Brasil.
 
 EMENTA OFICIAL DE ELETRÔNICA E ELETRICIDADE DA CLASSE B:
-{EMENTA_CLASSE_B.split("CONHECIMENTOS DE ELETRÔNICA E ELETRICIDADE (CLASSE B)")[1].strip()}"""
+{ementa_texto(classe="B", tema=TEMAS[2])}"""
 
 
 PROMPT_SISTEMA_CLASSE_A = f"""\
@@ -372,7 +387,7 @@ exigências regulatórias brasileiras nem valores normativos.
 9. Escreva em português do Brasil.
 
 ACRÉSCIMO OFICIAL DA CLASSE A SOBRE A CLASSE B:
-{EMENTA_CLASSE_A.split("(CLASSE A)")[1].strip()}"""
+{topicos_ementa(BLOCO_ELETRONICA_A, com_cumulativo=False)}"""
 
 
 PROMPT_SISTEMA_TABELA = """\
@@ -470,7 +485,7 @@ avançada de RF (isso é Classe A).
 8. Escreva em português do Brasil.
 
 EMENTA OFICIAL DE TÉCNICA E ÉTICA OPERACIONAL:
-{EMENTA_CLASSE_B.split("TÉCNICA E ÉTICA OPERACIONAL")[1].split("LEGISLAÇÃO DE TELECOMUNICAÇÕES")[0].strip()}"""
+{topicos_ementa("TÉCNICA E ÉTICA OPERACIONAL")}"""
 
 
 PROMPT_OCR = """\
@@ -666,9 +681,33 @@ TABELAS_COBERTURA = [
 
 ARQ_TABELAS = RAIZ / "scripts" / "tabelas_referencia.json"
 
-# A Cartilha: unico dos seis PDFs que cobre as tres materias. E' para ela que os
-# passes complementares apontam a pagina de estudo, e dela que sai o reforco.
+# A Cartilha: unico PDF que cobre as tres materias. E' para ela que os passes
+# complementares apontam a pagina de estudo, e dela que sai o reforco.
 ARQUIVO_COMPLEMENTAR = "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf"
+
+# As normas do setor publicadas para CONSULTA (ver lib/secoes.ts, que as mapeia
+# em secoes e as liga aos itens da ementa em lib/ementa.ts).
+LGT = "Lei nº 9.472, de 16 de julho de 1997 (LGT).pdf"
+RES_715 = "Anatel - Resolução nº 715, de 23 de outubro de 2019.pdf"
+RES_719 = "Anatel - Resolução nº 719, de 10 de fevereiro de 2020.pdf"
+RES_720 = "Anatel - Resolução nº 720, de 10 de fevereiro de 2020.pdf"
+RES_779 = "Anatel - Resolução Anatel nº 779, de 28 de abril de 2025.pdf"
+RES_780 = "Anatel - Resolução Anatel nº 780, de 1º de agosto de 2025.pdf"
+
+# Lidos, mas fora do chunking geral: entram so' pelos passes dirigidos.
+#
+# Sao 119 paginas de norma setorial. A Lei 9.472 tem 39 e so' o Titulo V toca o
+# radioamador; o Glossario tem 31 e o que cai sao cinco verbetes; a 719 e a 720
+# tratam de prestadora, licitacao e preco publico. No chunking geral (6.000
+# chars, 8 questoes por chunk) isso renderia ~700 questoes sobre concessao,
+# tarifa e desestatizacao — quase dobrando o banco com o que o exame de
+# radioamador nao cobra, e diluindo o sorteio de Legislacao na mesma proporcao.
+#
+# Continuam sendo LIDAS: `PAGINAS_REFORCO` precisa dos blocos, e elas tem camada
+# de texto (nada de OCR, nada de custo de visao). O que se pula e' a cota por
+# chunk. Tirar um arquivo daqui sem apontar as paginas em PAGINAS_REFORCO o faz
+# voltar a nao render questao nenhuma.
+SO_REFORCO = {LGT, RES_715, RES_719, RES_720, RES_779, RES_780}
 
 
 # Passe de reforco: paginas que o chunking geral cobriu de raspao.
@@ -704,7 +743,80 @@ PAGINAS_REFORCO = [
      "regras gerais de uso das faixas: estações NSS temporárias, vedação de "
      "criptografia em modos digitais, salto em frequência e espalhamento "
      "espectral abaixo de 440 MHz", 8),
+
+    # --- As normas de consulta, e so' os capitulos que o exame alcanca -------
+    #
+    # Aqui o reforco muda de papel: nas entradas acima ele corrige pagina
+    # coberta de raspao; nestas, ele e' a UNICA porta de entrada do arquivo
+    # (ver SO_REFORCO). Fora destas paginas, esses PDFs existem no app so' para
+    # consulta.
+    #
+    # UMA pagina por entrada, sempre — ver a validacao logo abaixo.
+    #
+    # O Titulo V da LGT e' o unico trecho da lei que a prova alcanca. O art. 159
+    # e' o mais valioso: e' a definicao legal de interferencia prejudicial, que
+    # a ementa cobra em Tecnica (INTERFERENCIAS) e em Legislacao, e que o banco
+    # so' tinha de forma indireta, pelo resumo da Cartilha.
+    (LGT, [29],
+     "o espectro como bem público e recurso limitado administrado pela Agência; "
+     "o plano de atribuição, distribuição e destinação de radiofrequências; a "
+     "definição legal de interferência prejudicial; a restrição de faixas por "
+     "interesse público; e a sujeição da estação transmissora a licença de "
+     "funcionamento prévia e a fiscalização permanente (arts. 157 a 162)", 8),
+    (LGT, [30],
+     "a outorga prévia da Agência para o uso de radiofrequência, com ou sem "
+     "caráter de exclusividade, e as exceções à licença de funcionamento "
+     "(art. 163)", 3),
+
+    # O Glossario e' uma lista alfabetica de verbetes sem relacao entre si: uma
+    # entrada por pagina nao e' so' a regra da atribuicao de pagina, e' o que
+    # mantem a mira do modelo num punhado de definicoes por vez.
+    (RES_779, [6],
+     "a definição oficial de atribuição de uma faixa de radiofrequências", 2),
+    (RES_779, [8], "a definição oficial de COER", 2),
+    (RES_779, [10],
+     "as definições oficiais de destinação e de distribuição de uma "
+     "radiofrequência, faixa ou canal de radiofrequências", 3),
+    (RES_779, [12], "a definição oficial de estação de radioamador", 2),
+    (RES_779, [23],
+     "a definição oficial de radioamador como pessoa habilitada a operar "
+     "estação do Serviço de Radioamador", 2),
+    (RES_779, [26],
+     "a definição oficial de Serviço de Radioamador como serviço de interesse "
+     "restrito prestado em regime privado", 2),
+
+    # A Cartilha ja rende a distincao certificacao x homologacao (p.52, acima).
+    # O que a norma acrescenta e' o ciclo de vida do certificado.
+    (RES_715, [10],
+     "a homologação como pré-requisito para uso e comercialização de produtos "
+     "para telecomunicações, e o requerimento em formulário eletrônico", 3),
+    (RES_715, [11],
+     "os direitos que o Certificado de Homologação confere, conforme decorra "
+     "de Declaração de Conformidade ou de Certificado de Conformidade", 2),
+    (RES_715, [12],
+     "o prazo de validade do Certificado de Homologação e as hipóteses de "
+     "suspensão e de revogação", 3),
+    (RES_715, [13], "a renovação da homologação", 2),
 ]
+
+# Uma pagina por entrada, e a razao e' onde o botao "Consultar Material" abre.
+#
+# `chunk_de_paginas` junta o texto das paginas pedidas e atribui TODAS as
+# questoes a `min(paginas)`. Numa faixa de quatro paginas isso mente: a
+# definicao de Servico de Radioamador esta' na p.26 do Glossario e a questao
+# sairia apontando a p.8. Quebra a promessa de `testes/paginas.test.ts` e manda
+# quem estuda para a pagina errada — em silencio, que e' o pior modo de falha.
+#
+# O passe de tabela usa faixa de propósito: la' a atribuicao de pagina e' feita
+# linha a linha, com o texto de cada pagina em separado. Aqui nao ha' esse
+# desempate, entao a faixa fica proibida.
+for _arq, _pags, _assunto, _n in PAGINAS_REFORCO:
+    if len(_pags) != 1:
+        raise ValueError(
+            f"PAGINAS_REFORCO de {_arq} declara {len(_pags)} páginas ({_pags}); "
+            f"use uma entrada por página, ou as questões apontarão todas para "
+            f"a p.{min(_pags)}"
+        )
 
 # Nao entram no reforco, apesar de tambem estarem sem questao: as pp.7, 16 e 17
 # do Ato 926, que sao a grade de modos de emissao por subfaixa. Ali o dado e'
@@ -1206,12 +1318,22 @@ def gerar_do_chunk(
     chunk: Chunk,
     forcar: bool,
     quantidade: int = QUESTOES_POR_CHUNK,
+    foco: str | None = None,
 ) -> list[dict[str, Any]]:
-    # `quantidade` entra na chave de cache no lugar onde a constante entrava:
-    # com o padrao, a chave dos chunks ja gerados nao muda, e o cache continua
-    # valendo. So' o passe de reforco, que pede outra cota, gera chave nova.
+    """Gera questoes de um chunk.
+
+    `foco` mira o passe de reforco num assunto dentro do trecho. Sem ele, o
+    modelo escolhe o que cobrar — o que basta numa pagina de prosa, e falha numa
+    pagina de glossario, onde os verbetes nao tem relacao entre si e a maioria
+    nao cai na prova.
+    """
+    # `quantidade` e `foco` entram na chave de cache no lugar onde a constante
+    # entrava: com o padrao, a chave dos chunks ja gerados nao muda, e o cache
+    # continua valendo. So' o passe de reforco, que pede outra cota e declara
+    # foco, gera chave nova.
     chave = hashlib.sha1(
         f"gen|{versao_prompt(PROMPT_SISTEMA)}|{modelo}|{quantidade}"
+        f"{'|foco:' + foco if foco else ''}"
         f"|{chunk.chave_cache}".encode("utf-8")
     ).hexdigest()
 
@@ -1226,6 +1348,12 @@ def gerar_do_chunk(
             f"Gere até {quantidade} questões Verdadeiro/Falso a partir "
             f"deste trecho, seguindo todas as regras. Se o trecho não tiver "
             f"conteúdo cobrável, retorne uma lista vazia."
+            + (
+                f"\n\nFOCO: cubra {foco}. O trecho pode trazer outros assuntos "
+                f"— ignore-os, ainda que sobre cota."
+                if foco
+                else ""
+            )
         )
         bruto = chamar_llm(
             cliente,
@@ -1852,6 +1980,9 @@ def main() -> int:
                         help="Processa no máximo N chunks (teste barato)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Extrai e mostra os chunks sem chamar a API")
+    parser.add_argument("--so-reforco", action="store_true",
+                        help="Roda só os passes dirigidos por página "
+                             "(PAGINAS_REFORCO). Exige --saida próprio")
     parser.add_argument("--sem-complementos", action="store_true",
                         help="Pula os passes complementares (eletrônica e técnica)")
     parser.add_argument("--verificar", action="store_true",
@@ -1885,6 +2016,17 @@ def main() -> int:
         log(f"ERRO: diretório não encontrado: {diretorio}")
         return 1
 
+    # A gravacao e' sempre do zero: o arquivo de saida recebe SO' o que esta
+    # execucao gerou. Numa execucao completa isso e' o banco; com --so-reforco
+    # sao algumas dezenas de questoes, e apontar para o destino padrao trocaria
+    # 914 questoes por 53 — junto com as 178 correcoes manuais presas aos ids.
+    if args.so_reforco and args.saida == SAIDA_PADRAO:
+        log("ERRO: --so-reforco grava só as questões dos passes dirigidos, e "
+            "sobrescreveria o banco inteiro.\n"
+            "       Passe um destino próprio, por exemplo:\n"
+            "       --saida /tmp/reforco.json")
+        return 1
+
     if not shutil.which("pdftoppm"):
         log("AVISO: pdftoppm não encontrado; PDFs digitalizados serão pulados.")
 
@@ -1915,6 +2057,11 @@ def main() -> int:
             log(f"  ! Falha ao ler: {e}")
             continue
         blocos_por_arquivo[pdf.name] = blocos
+        # Lido e guardado, mas sem cota por chunk: os passes dirigidos pegam as
+        # paginas que interessam. Ver SO_REFORCO.
+        if pdf.name in SO_REFORCO:
+            log("  só pelos passes dirigidos; fora do chunking geral")
+            continue
         do_pdf = montar_chunks(pdf.name, blocos)
         chunks.extend(do_pdf)
         log(f"  {len(do_pdf)} chunks")
@@ -1939,14 +2086,19 @@ def main() -> int:
         return 1
 
     # --- Geracao -------------------------------------------------------------
-    log(f"\n=== Gerando questões ({args.workers} chamadas simultâneas) ===")
     questoes: list[dict[str, Any]] = []
     concluidos = 0
+
+    if args.so_reforco:
+        log("\n--so-reforco: passe geral, complementares, tabelas e questões "
+            "manuais ficam de fora.")
+    else:
+        log(f"\n=== Gerando questões ({args.workers} chamadas simultâneas) ===")
 
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futuros = {
             pool.submit(gerar_do_chunk, cliente, modelo, c, args.forcar): c
-            for c in chunks
+            for c in ([] if args.so_reforco else chunks)
         }
         for fut in as_completed(futuros):
             chunk = futuros[fut]
@@ -1976,7 +2128,7 @@ def main() -> int:
          "Verifique cada conta antes de definir `resposta_correta`. Exija "
          "análise, não reconhecimento.", "A"),
     ]
-    if not args.sem_complementos and not args.limite_chunks:
+    if not args.sem_complementos and not args.limite_chunks and not args.so_reforco:
         for prefixo, rotulo, prompt_sis, tema, topicos, instrucao, classe in passes:
             total = sum(n for _, n, _ in topicos)
             log(f"\n=== Passe de {rotulo}: {len(topicos)} tópicos, "
@@ -2000,7 +2152,9 @@ def main() -> int:
                     log(f"  {topico[:52]:<52} -> {len(novas)} questões")
 
     # --- Passe de reforco: paginas cobertas de raspao ------------------------
-    if not args.sem_complementos and not args.limite_chunks:
+    # O unico que --so-reforco liga em vez de desligar: e' ele que a flag serve
+    # para provar sozinho.
+    if not args.limite_chunks and (args.so_reforco or not args.sem_complementos):
         if PAGINAS_REFORCO:
             log(f"\n=== Passe de reforço: {len(PAGINAS_REFORCO)} páginas ===")
         for arquivo, paginas, assunto, quantidade in PAGINAS_REFORCO:
@@ -2014,7 +2168,9 @@ def main() -> int:
                 continue
             chunks.append(chunk)
             try:
-                novas = gerar_do_chunk(cliente, modelo, chunk, args.forcar, quantidade)
+                novas = gerar_do_chunk(
+                    cliente, modelo, chunk, args.forcar, quantidade, foco=assunto
+                )
             except Exception as e:
                 log(f"  ! p.{paginas}: {e}")
                 continue
@@ -2022,7 +2178,7 @@ def main() -> int:
             log(f"  p.{str(paginas):<8} {assunto[:44]:<44} -> {len(novas)} questões")
 
     # --- Passe de tabela: cobertura linha a linha ----------------------------
-    if not args.sem_complementos and not args.limite_chunks:
+    if not args.sem_complementos and not args.limite_chunks and not args.so_reforco:
         catalogo = carregar_tabelas_referencia()
         for id_tabela, tema, por_lote, peso_tabela in TABELAS_COBERTURA:
             tabela = catalogo.get(id_tabela)
@@ -2078,7 +2234,7 @@ def main() -> int:
                         f"-> {len(novas)} questões")
 
     # --- Questoes autorais de cobertura --------------------------------------
-    if not args.sem_complementos and not args.limite_chunks:
+    if not args.sem_complementos and not args.limite_chunks and not args.so_reforco:
         manuais = carregar_questoes_manuais()
         if manuais:
             questoes.extend(manuais)
