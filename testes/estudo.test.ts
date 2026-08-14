@@ -20,7 +20,7 @@ import {
   questoesParaRevisao,
   BANCO,
 } from "@/lib/questoes";
-import { REPO, urlDeReporte } from "@/lib/reportar";
+import { CONFIG_FORMULARIO, urlDeReporte } from "@/lib/reportar";
 import { resumoDeTexto, URL_PROJETO } from "@/lib/compartilhar";
 import {
   FATOR_ESCALA,
@@ -342,20 +342,56 @@ function h(...simulados: SimuladoSalvo[]): Historico {
   );
 }
 
-// --- reportar: a suspeita vira issue --------------------------------------
+// --- reportar: a suspeita vira formulário ---------------------------------
 {
+  const { id: FORM_ID, campos } = CONFIG_FORMULARIO;
+
+  // A configuração é copiada à mão do "Obter link pré-preenchido" do Forms.
+  // Sem esta checagem, um placeholder esquecido só apareceria para quem
+  // clicasse em "Reportar" — e cairia numa página de erro do Google.
+  checar(
+    "o formulário está configurado",
+    /^[\w-]{20,}$/.test(FORM_ID) && !FORM_ID.includes("PENDENTE"),
+    FORM_ID,
+  );
+  const invalidos = Object.entries(campos).filter(
+    ([, v]) => !/^entry\.\d+$/.test(v),
+  );
+  checar(
+    "todo campo preenchido tem entry numérico",
+    invalidos.length === 0,
+    invalidos.map(([k, v]) => `${k}=${v}`).join(", "),
+  );
+  checar(
+    "os campos não se repetem",
+    new Set(Object.values(campos)).size === Object.keys(campos).length,
+  );
+
   const q = BANCO[0];
   const url = urlDeReporte(q);
   // Pelo `searchParams`, e não por `decodeURIComponent` da query crua: o
   // espaço é codificado como `+`, que só o parser de query desfaz.
   const params = new URL(url).searchParams;
-  const corpo = `${params.get("title")}\n${params.get("body")}\nlabels=${params.get("labels")}`;
 
-  checar("aponta para o repositório do projeto", url.startsWith(`https://github.com/${REPO}/issues/new?`));
-  checar("leva o id, que sobrevive a regenerações do banco", corpo.includes(q.id));
-  checar("leva a afirmação e o gabarito atual", corpo.includes(q.afirmacao));
-  checar("leva a fonte e a página", corpo.includes(q.arquivo_origem) && corpo.includes(`página ${q.pagina}`));
-  checar("classifica a issue", corpo.includes("labels=questao"));
+  checar("aponta para o formulário", url.startsWith("https://docs.google.com/forms/d/e/"));
+  checar("marca o link como pré-preenchido", params.get("usp") === "pp_url");
+  checar("leva o id, que sobrevive a regenerações do banco", params.get(campos.id) === q.id);
+  checar("leva a afirmação", params.get(campos.afirmacao) === q.afirmacao);
+  checar(
+    "leva o gabarito atual",
+    params.get(campos.gabarito) === (q.resposta_correta ? "Verdadeiro" : "Falso"),
+  );
+  checar(
+    "leva a fonte e a página",
+    (params.get(campos.fonte) ?? "").includes(q.arquivo_origem) &&
+      (params.get(campos.fonte) ?? "").includes(`página ${q.pagina}`),
+  );
+  // O relato é o que a pessoa escreve: preenchê-lo convidaria a não mexer.
+  checar(
+    "não preenche o relato nem o contato",
+    [...params.keys()].filter((k) => k.startsWith("entry.")).length ===
+      Object.keys(campos).length,
+  );
 
   // Acento, & e # no enunciado não podem quebrar a URL nem virar outro
   // parâmetro de query.
@@ -363,24 +399,31 @@ function h(...simulados: SimuladoSalvo[]): Historico {
     ...q,
     afirmacao: "Potência & frequência #1: a estação é operada às 3h?",
   };
-  const complicada = urlDeReporte(travessa);
+  const complicada = new URL(urlDeReporte(travessa)).searchParams;
   checar(
     "afirmação com &, # e acento sobrevive à codificação",
-    (new URL(complicada).searchParams.get("body") ?? "").includes(travessa.afirmacao),
+    complicada.get(campos.afirmacao) === travessa.afirmacao,
   );
   checar(
     "e não injeta parâmetro novo na query",
-    new URL(complicada).searchParams.get("labels") === "questao",
+    complicada.get(campos.id) === q.id && complicada.get("usp") === "pp_url",
   );
 
-  // Uma questão anormalmente longa não pode gerar um link que o GitHub recusa.
+  // Uma questão anormalmente longa não pode gerar um link que o mensageiro
+  // corte no meio.
   const gigante = urlDeReporte({
     ...q,
     afirmacao: "a".repeat(9000),
     explicacao_curta: "b".repeat(9000),
   });
-  checar("questão gigante ainda gera link utilizável", gigante.length <= 8000);
-  checar("e o link reduzido continua identificando a questão", decodeURIComponent(gigante).includes(q.id));
+  checar("questão gigante ainda gera link utilizável", gigante.length <= 2000);
+  // O que sobra tem de continuar identificando a questão: id e fonte.
+  const enxuto = new URL(gigante).searchParams;
+  checar(
+    "e o link reduzido continua identificando a questão",
+    enxuto.get(campos.id) === q.id &&
+      (enxuto.get(campos.fonte) ?? "").includes(q.arquivo_origem),
+  );
 }
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE ESTUDO PASSARAM" : falhas + " FALHA(S)"}`);
