@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import TelaInicio from "@/components/TelaInicio";
 import TelaSimulado from "@/components/TelaSimulado";
 import TelaProvaCega from "@/components/TelaProvaCega";
@@ -29,6 +30,8 @@ import {
   linkDoDesafio,
   type Desafio,
 } from "@/lib/desafio";
+import { lerAssunto, questoesDoTopico } from "@/lib/ementa";
+import { lerPreferencias } from "@/lib/preferencias";
 import { codigoDaBateria } from "@/lib/semente";
 import { CLASSE_PADRAO, TEMAS, tempoDaBateria } from "@/lib/constantes";
 import type {
@@ -117,23 +120,38 @@ export default function Home() {
     useHistorico();
 
   /**
-   * O desafio chega pela query string, lida com `URLSearchParams` num efeito —
-   * e não com `useSearchParams`, que num export estático exigiria envolver a
-   * página em Suspense (ver o comentário acima). Efeito também é o lugar certo
-   * por outro motivo: `window` não existe na geração do HTML, e ler ali
-   * divergiria do que o navegador renderiza.
+   * O que chega pela query string: um desafio, ou um assunto vindo de
+   * `/estudar`.
    *
-   * A URL não é limpa depois: recarregar o link tem de reoferecer o mesmo
-   * desafio, que é o que se espera de um endereço.
+   * Lida com `URLSearchParams` num efeito — e não com `useSearchParams`, que
+   * num export estático exigiria envolver a página em Suspense (ver o
+   * comentário acima). Efeito também é o lugar certo por outro motivo:
+   * `window` não existe na geração do HTML, e ler ali divergiria do que o
+   * navegador renderiza.
+   *
+   * A URL não é limpa depois: recarregar o link tem de reoferecer a mesma
+   * coisa, que é o que se espera de um endereço.
    */
   useEffect(() => {
     const d = lerDesafio(window.location.search);
-    if (!d) return;
-    const base = `${window.location.origin}${window.location.pathname}`;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDesafio(d);
-    setLinkDesafio(linkDoDesafio(d, base));
-    setEtapa("desafio");
+    if (d) {
+      const base = `${window.location.origin}${window.location.pathname}`;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDesafio(d);
+      setLinkDesafio(linkDoDesafio(d, base));
+      setEtapa("desafio");
+      return;
+    }
+
+    // O desafio ganha se os dois vierem no mesmo link: ele é bateria combinada
+    // com outras pessoas, e trocá-la por um estudo solitário quebraria a
+    // comparação. Tópico desconhecido, ou sem questão elegível na classe
+    // preferida, fica no início em silêncio — `lerAssunto` já é desconfiado, e
+    // uma tela de erro para um link velho não ajudaria ninguém.
+    const t = lerAssunto(window.location.search);
+    if (!t) return;
+    const doTopico = questoesDoTopico(t, lerPreferencias().classe);
+    if (doTopico.length > 0) iniciarAssunto(doTopico);
   }, []);
 
   /**
@@ -290,6 +308,25 @@ export default function Home() {
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Questões de certo ou errado no formato da prova da Anatel.
           </p>
+          {/* O caminho para o material, no alto e sem caixa. Quem instala o app
+              não desconfia que existe uma ementa oficial, e um item de menu não
+              conta isso a ninguém — mas a home é sobre fazer a bateria de hoje,
+              e um cartão aqui competiria com ela. Uma linha resolve.
+
+              Só no início: durante a bateria seria cola, e das telas de
+              resultado seria porta de mão única — sair descartaria o gabarito
+              recém-conquistado, pela mesma razão que esconde o menu. */}
+          {etapa === "inicio" && (
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              A ementa oficial e os PDFs da Anatel estão no{" "}
+              <Link
+                href="/estudar"
+                className="font-medium underline underline-offset-4 hover:text-slate-700 dark:hover:text-slate-200"
+              >
+                material de estudo ›
+              </Link>
+            </p>
+          )}
         </div>
         {/* O menu não existe durante uma bateria nem depois dela: consulta
             rápida em prova cega é cola e em treino é distração, e a partir de

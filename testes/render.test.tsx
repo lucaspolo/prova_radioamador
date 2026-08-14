@@ -10,6 +10,7 @@ import MenuPrincipal, { PainelMenu } from "@/components/MenuPrincipal";
 import ItemConferencia from "@/components/ItemConferencia";
 import Home from "@/app/page";
 import TelaFerramentas from "@/components/TelaFerramentas";
+import TelaEstudar, { TodosOsBlocos } from "@/components/TelaEstudar";
 import Relampago from "@/components/Relampago";
 import TelaDesafio from "@/components/TelaDesafio";
 import TelaImpressao from "@/components/TelaImpressao";
@@ -210,6 +211,63 @@ const PROPS_INICIO = {
   checar(
     "sem histórico, não inventa aproveitamento",
     !html.includes("sabe 0") && !html.includes("viu 0"),
+  );
+}
+
+// --- Material de estudo ---------------------------------------------------
+{
+  const html = renderToStaticMarkup(<TelaEstudar />);
+  checar("TelaEstudar renderiza", html.includes("Material de estudo"));
+  checar(
+    "declara de onde a ementa saiu",
+    html.includes("Ato nº 3448/2026, item 11.4"),
+  );
+  // O valor da página é ser o texto da Anatel, e não um resumo nosso: se o
+  // item chegar parafraseado à tela, ela deixa de valer mais do que o README.
+  checar(
+    "traz o item da ementa palavra por palavra",
+    contem(
+      html,
+      "Diagrama de blocos de receptores, transmissores, transceptores e repetidoras.",
+    ),
+  );
+  checar(
+    "aponta o trecho do material que cobre o item",
+    html.includes("Cartilha do Radioamador"),
+  );
+  checar(
+    "leva à bateria do assunto",
+    html.includes("assunto=tec-antenas") && /Treinar/.test(html),
+  );
+  // Sem escolha gravada a classe é a B, e o acréscimo exclusivo da A não é
+  // programa dela — mostrá-lo faria estudar o que não cai.
+  checar(
+    "na Classe B, o bloco exclusivo da Classe A fica de fora",
+    !html.includes("ELETRÔNICA DE RF"),
+  );
+  checar(
+    "oferece os documentos inteiros para baixar",
+    html.includes("Baixar") && html.includes("Ato 3448/2026"),
+  );
+  // Mesma regra da consulta rápida: sem service worker controlando, baixar
+  // não deixaria nada no cache e a seção não pode nem aparecer.
+  checar(
+    "sem service worker, o pré-download não aparece",
+    !html.includes("Material para consulta offline"),
+  );
+  checar(
+    "a leitura termina com uma saída para a prova",
+    html.includes("Agora teste seus conhecimentos"),
+  );
+
+  // A tela só mostra os blocos da classe escolhida; a ementa inteira só sai
+  // sob renderização estática por este export.
+  const todos = renderToStaticMarkup(<TodosOsBlocos />);
+  const links = todos.match(/assunto=/g) ?? [];
+  checar(
+    "os 36 tópicos da ementa rendem bateria",
+    links.length === 36,
+    `${links.length} links`,
   );
 }
 
@@ -945,6 +1003,13 @@ const PROPS_INICIO = {
     "o menu leva às três telas",
     ["Simulado", "Desempenho", "Consulta rápida"].every((s) => painel.includes(s)),
   );
+  // O material abre a lista: é a ordem do estudo — ler o que a prova cobra
+  // antes de responder — e o único destino do menu que ninguém adivinha
+  // existir. Os outros três a pessoa encontra sozinha.
+  checar(
+    "o material de estudo é o primeiro item",
+    painel.indexOf("Material de estudo") < painel.indexOf("Simulado"),
+  );
   checar(
     "o menu traz o tema",
     ["Claro", "Escuro", "Automático"].every((s) => painel.includes(s)),
@@ -978,6 +1043,12 @@ const PROPS_INICIO = {
   checar("tema e tamanho de texto saíram da home", !home.includes("Automático"));
   checar("a consulta rápida saiu da home", !home.includes("Consulta rápida"));
   checar("a escolha da prova continua à vista", home.includes("Iniciar modo treino"));
+  // O material tem de ser descobrível de fora do menu: quem instala o app não
+  // desconfia que existe uma ementa oficial.
+  checar(
+    "a home aponta para o material de estudo",
+    home.includes('href="/estudar"') && home.includes("material de estudo"),
+  );
 }
 
 // --- O cartão de conferência sob triagem ------------------------------------

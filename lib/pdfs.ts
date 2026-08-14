@@ -17,3 +17,14 @@ export function caminhoPdf(arquivoOrigem: string): string | null {
 export function temPdf(arquivoOrigem: string): boolean {
   return caminhoPdf(arquivoOrigem) !== null;
 }
+
+/**
+ * Quanto o material inteiro pesa, para avisar quem vai baixar no celular.
+ *
+ * Escrito à mão porque o navegador não sabe o tamanho antes de baixar, e
+ * embutir 12 números no bundle para somar seria pior. `npm run pdfs` imprime o
+ * tamanho de cada arquivo, e `testes/pdfs.test.ts` soma os publicados e
+ * reprova se este valor tiver ficado para trás — trocar um PDF sem atualizar
+ * aqui não passa calado.
+ */
+export const TAMANHO_MATERIAL_MB = 6.4;

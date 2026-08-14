@@ -377,8 +377,13 @@ export const TABELAS: readonly TabelaReferencia[] = [
 /**
  * A escala RST é a ausência mais visível desta tela, e é deliberada.
  *
- * Uma varredura pelos seis PDFs publicados em `public/pdfs/` não encontra
- * nenhuma ocorrência de "RST", "legibilidade" ou "inteligibilidade do sinal".
+ * Uma varredura por TODOS os PDFs publicados em `public/pdfs/` não encontra
+ * nenhuma ocorrência de "RST", "legibilidade" ou "inteligibilidade do sinal" —
+ * refeita quando a Lei 9.472, o Glossário e os regulamentos gerais entraram, e
+ * o resultado não mudou. Não é acaso: o RST não é norma da Anatel nem da UIT,
+ * é convenção de radioamador, e nenhum documento oficial brasileiro a
+ * reproduz.
+ *
  * Escrevê-la de memória seria fácil e provavelmente daria certo — e é
  * exatamente por isso que não se faz: o valor destas tabelas está em serem
  * conferíveis contra a fonte, e uma linha sem fonte contamina a confiança nas
@@ -387,7 +392,7 @@ export const TABELAS: readonly TabelaReferencia[] = [
 export const RST_SEM_FONTE = {
   titulo: "Sinais RST",
   motivo:
-    "Não aparece em nenhum dos PDFs oficiais publicados neste app (Cartilha, Ato 926, Ato 3448, Resolução 777 e Ato 3445).",
+    "Não aparece em nenhum dos PDFs oficiais publicados neste app — é convenção de radioamador, e não norma da Anatel ou da UIT.",
   comoResolver:
     "Publique a fonte em public/pdfs/, ligue-a em lib/mapa-pdfs.json e acrescente a tabela com a página citada.",
 } as const;

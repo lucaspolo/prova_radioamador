@@ -31,15 +31,23 @@ function arquivos(dir) {
   });
 }
 
+// As rotas reais do app e o HTML que o export gerou para cada uma.
+//
+// Fonte única das três coisas que dependem disso: o que entra no pré-cache, o
+// que entra no hash de versão e qual casca responde uma navegação offline.
+// Uma rota fora daqui cairia na casca de "/" e renderizaria a home.
+const CASCAS = {
+  "/": "index.html",
+  "/conferencia": "conferencia.html",
+  "/estudar": "estudar.html",
+};
+
 // Casca do app: páginas, manifesto, ícones, assets com hash, worker do pdf.js
 // e os trechos de origem. Os PDFs ficam de fora do pré-cache (entram no cache
 // próprio quando abertos); banco_questoes.json também — ele é embutido no
-// bundle JS e nunca é buscado pela aplicação. /conferencia entra porque é a
-// única rota real além de /: fora do pré-cache, o deep link offline caía no
-// fallback da casca e renderizava a home.
+// bundle JS e nunca é buscado pela aplicação.
 const precache = [
-  "/",
-  "/conferencia",
+  ...Object.keys(CASCAS),
   "/manifest.webmanifest",
   "/trechos.json",
   "/pdf.worker.min.mjs",
@@ -54,10 +62,11 @@ for (const nome of readdirSync(OUT)) {
 // A versão precisa mudar quando o conteúdo muda. Os arquivos de _next/static
 // têm hash no nome, então a lista basta; os HTML e trechos.json não têm —
 // entram pelo conteúdo.
-const versao = createHash("sha1")
-  .update(JSON.stringify(precache.sort()))
-  .update(readFileSync(join(OUT, "index.html")))
-  .update(readFileSync(join(OUT, "conferencia.html")))
+const hash = createHash("sha1").update(JSON.stringify(precache.sort()));
+for (const arquivo of Object.values(CASCAS)) {
+  hash.update(readFileSync(join(OUT, arquivo)));
+}
+const versao = hash
   .update(readFileSync(join(OUT, "trechos.json")))
   .digest("hex")
   .slice(0, 12);
@@ -69,6 +78,8 @@ const CACHE = "radioamador-${versao}";
 // aparelho. (Este script roda no build e não pode ser importado de lá.)
 const CACHE_PDFS = "radioamador-pdfs-v1";
 const PRECACHE = ${JSON.stringify(precache, null, 1)};
+// As rotas com casca própria, fora "/". Ver CASCAS em scripts/gerar_sw.mjs.
+const ROTAS = ${JSON.stringify(Object.keys(CASCAS).filter((r) => r !== "/"))};
 
 self.addEventListener("install", (e) => {
   // Sem skipWaiting: a versão nova instala e fica esperando até o usuário
@@ -161,10 +172,10 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== location.origin) return;
 
-  // Duas cascas: /conferencia tem página própria no pré-cache; todo o resto
-  // da navegação cai na casca de "/" (o app é de rota única fora dela).
+  // Cada rota de ROTAS tem página própria no pré-cache; todo o resto da
+  // navegação cai na casca de "/" (o app é de rota única fora delas).
   if (e.request.mode === "navigate") {
-    const casca = url.pathname.startsWith("/conferencia") ? "/conferencia" : "/";
+    const casca = ROTAS.find((r) => url.pathname.startsWith(r)) || "/";
     e.respondWith(redePrimeiro(e.request, casca));
     return;
   }
@@ -182,9 +193,9 @@ self.addEventListener("fetch", (e) => {
 
 writeFileSync(join(OUT, "sw.js"), sw);
 const kb = Math.round(
-  precache.reduce((s, p) => {
-    const arquivo = p === "/" ? "index.html" : p === "/conferencia" ? "conferencia.html" : p;
-    return s + statSync(join(OUT, arquivo)).size;
-  }, 0) / 1024,
+  precache.reduce(
+    (s, p) => s + statSync(join(OUT, CASCAS[p] ?? p)).size,
+    0,
+  ) / 1024,
 );
 console.log(`sw.js gerado: versão ${versao}, ${precache.length} arquivos no pré-cache (~${kb} KB)`);

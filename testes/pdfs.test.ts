@@ -1,8 +1,9 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { caminhoPdf, temPdf } from "@/lib/pdfs";
+import { caminhoPdf, temPdf, TAMANHO_MATERIAL_MB } from "@/lib/pdfs";
 import { BANCO } from "@/lib/questoes";
 import mapa from "@/lib/mapa-pdfs.json";
+import { RESUMO_ARQUIVO, ROTULO_ARQUIVO } from "@/lib/secoes";
 
 const RAIZ = join(import.meta.dirname ?? __dirname, "..");
 
@@ -39,6 +40,36 @@ function checar(nome: string, ok: boolean, detalhe = "") {
     .map((o) => caminhoPdf(o)!)
     .filter((c) => statSync(join(RAIZ, "public", c)).size < 10_000);
   checar("nenhum PDF publicado está vazio ou truncado", vazios.length === 0, vazios.join("; "));
+}
+
+// --- O tamanho anunciado bate com o material publicado --------------------
+{
+  // `MaterialOffline` avisa quantos MB o pré-download custa, e esse número é
+  // escrito à mão — o navegador não sabe o tamanho antes de baixar. Trocar um
+  // PDF sem atualizá-lo faria o app prometer 6 MB e consumir 20 da franquia de
+  // quem estuda no celular.
+  const bytes = Object.values(mapa as Record<string, string>)
+    .map((alvo) => join(RAIZ, "public", "pdfs", alvo))
+    .filter((c) => existsSync(c))
+    .reduce((s, c) => s + statSync(c).size, 0);
+  const real = bytes / 1048576;
+  checar(
+    "TAMANHO_MATERIAL_MB acompanha os PDFs publicados",
+    Math.abs(real - TAMANHO_MATERIAL_MB) < 0.5,
+    `declarado ${TAMANHO_MATERIAL_MB} MB, real ${real.toFixed(2)} MB em ${Object.keys(mapa).length} arquivos`,
+  );
+}
+
+// --- Todo PDF publicado se apresenta na lista de material -----------------
+{
+  // `npm run pdfs` publica o que estiver no diretório de origem, e a lista de
+  // "Material oficial" mostra todos. Sem rótulo, a linha exibe o nome cru do
+  // arquivo ("SEI_ANATEL - 15307586 - Ato_orginal.pdf"); sem resumo, o
+  // candidato não tem como saber qual dos doze abrir.
+  const semRotulo = Object.keys(mapa).filter((a) => !ROTULO_ARQUIVO[a]);
+  const semResumo = Object.keys(mapa).filter((a) => !RESUMO_ARQUIVO[a]);
+  checar("todo PDF publicado tem rótulo", semRotulo.length === 0, semRotulo.join("; "));
+  checar("todo PDF publicado tem resumo", semResumo.length === 0, semResumo.join("; "));
 }
 
 // --- Nomes seguros para URL ----------------------------------------------

@@ -24,12 +24,21 @@ interface Props {
   arquivoOrigem: string;
   pagina: number;
   origem: Origem;
+  /**
+   * Texto do botão. O padrão é o da consulta a partir de uma questão; a página
+   * de estudo passa o nome do trecho, porque ali o que se escolhe é ONDE ler.
+   */
+  rotulo?: string;
+  /** Enxuto, para as listas de material onde vários botões vêm em sequência. */
+  compacto?: boolean;
 }
 
 export default function BotaoConsultarMaterial({
   arquivoOrigem,
   pagina,
   origem,
+  rotulo = "Consultar Material",
+  compacto = false,
 }: Props) {
   const [aberto, setAberto] = useState(false);
   const caminho = caminhoPdf(arquivoOrigem);
@@ -41,10 +50,18 @@ export default function BotaoConsultarMaterial({
     <>
       <button
         onClick={() => setAberto(true)}
-        className="mt-3 rounded-lg border border-current/30 px-3 py-1.5 text-sm font-medium transition hover:bg-current/10"
+        className={`rounded-lg border border-current/30 font-medium transition hover:bg-current/10 ${
+          compacto ? "px-2.5 py-1 text-xs" : "mt-3 px-3 py-1.5 text-sm"
+        }`}
       >
-        Consultar Material
-        <span className="ml-1.5 opacity-60">· página {pagina}</span>
+        {rotulo}
+        {/* A p. 1 não se anuncia: abrir um documento na primeira página é só
+            abrir o documento, e o sufixo ali seria ruído. */}
+        {pagina > 1 && (
+          <span className="ml-1.5 opacity-60">
+            {compacto ? `· p. ${pagina}` : `· página ${pagina}`}
+          </span>
+        )}
       </button>
 
       {origem === "ementa" && (

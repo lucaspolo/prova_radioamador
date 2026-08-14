@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Preferencias from "./Preferencias";
 
 /** As telas que o menu alcança. */
@@ -41,7 +42,7 @@ export default function MenuPrincipal({
   const [aberto, setAberto] = useState(false);
   const caixa = useRef<HTMLDivElement>(null);
   const gatilho = useRef<HTMLButtonElement>(null);
-  const primeiro = useRef<HTMLButtonElement>(null);
+  const painel = useRef<HTMLDivElement>(null);
 
   function fechar(devolverFoco: boolean) {
     setAberto(false);
@@ -50,7 +51,11 @@ export default function MenuPrincipal({
 
   useEffect(() => {
     if (!aberto) return;
-    primeiro.current?.focus();
+    // O primeiro item, seja ele link ou botão — e descoberto pelo DOM, não por
+    // uma ref passada ao item que hoje é o primeiro: trocar a ordem da lista é
+    // mexida rotineira, e amarrar o foco a um item específico faz o menu abrir
+    // sem foco nenhum na primeira reordenação, calado.
+    painel.current?.querySelector<HTMLElement>("a, button")?.focus();
 
     // `pointerdown` e não `click`: assim o controle que se tocou fora do menu
     // ainda recebe o próprio clique. A referência é a caixa INTEIRA, gatilho
@@ -102,6 +107,7 @@ export default function MenuPrincipal({
 
       {aberto && (
         <div
+          ref={painel}
           id="menu-principal"
           tabIndex={-1}
           // Fundo opaco é obrigatório: o painel cobre o resumo de desempenho e
@@ -112,7 +118,6 @@ export default function MenuPrincipal({
         >
           <PainelMenu
             atual={atual}
-            refPrimeiro={primeiro}
             onInicio={() => {
               setAberto(false);
               onInicio();
@@ -142,13 +147,11 @@ export default function MenuPrincipal({
  */
 export function PainelMenu({
   atual = "inicio",
-  refPrimeiro,
   onInicio,
   onDesempenho,
   onFerramentas,
 }: {
   atual?: TelaDoMenu;
-  refPrimeiro?: React.Ref<HTMLButtonElement>;
   onInicio: () => void;
   onDesempenho: () => void;
   onFerramentas: () => void;
@@ -156,11 +159,23 @@ export function PainelMenu({
   return (
     <>
       <div className="space-y-3">
+        {/* Primeiro item, e é o único que é rota e não etapa: `/estudar` tem
+            endereço próprio para poder ser lido devagar e mandado para o
+            colega. Vem no topo porque é a ordem do estudo — ler o que a prova
+            cobra antes de responder —, e porque é o único destino do menu que
+            ninguém adivinha existir. Nunca aparece como atual: lá o menu não
+            existe, a página tem a própria volta para cá. Sair daqui não custa
+            nada, já que o menu só existe fora de bateria e fora de resultado. */}
+        <ItemMenu
+          ativo={false}
+          href="/estudar"
+          titulo="Material de estudo"
+          detalhe="A ementa oficial da prova, o trecho do PDF que explica cada item e os documentos da Anatel para baixar."
+        />
         {/* O caminho de volta. Sem ele, sair de Desempenho ou da Consulta
             rápida exigia rolar duas telas longas até o "Voltar ao início" do
             rodapé — e o menu, que é a navegação do app, só levava para longe. */}
         <ItemMenu
-          ref={refPrimeiro}
           ativo={atual === "inicio"}
           titulo="Simulado"
           detalhe="Escolher a classe e a matéria e começar uma bateria."
@@ -188,36 +203,52 @@ export function PainelMenu({
 }
 
 function ItemMenu({
-  ref,
   ativo,
   titulo,
   detalhe,
   onClick,
+  href,
 }: {
-  ref?: React.Ref<HTMLButtonElement>;
   ativo: boolean;
   titulo: string;
   detalhe: string;
-  onClick: () => void;
+  onClick?: () => void;
+  /** Presente quando o destino é uma rota, e não uma etapa. */
+  href?: string;
 }) {
-  return (
-    <button
-      ref={ref}
-      type="button"
-      onClick={onClick}
-      aria-current={ativo ? "page" : undefined}
-      // A tela atual só troca a cor da borda. Preenchida, como nos seletores
-      // da tela inicial, o subtítulo em cinza ficaria ilegível.
-      className={`w-full rounded-xl border-2 px-4 py-3 text-left transition ${
-        ativo
-          ? "border-slate-900 dark:border-slate-100"
-          : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
-      }`}
-    >
+  // A tela atual só troca a cor da borda. Preenchida, como nos seletores da
+  // tela inicial, o subtítulo em cinza ficaria ilegível.
+  const estilo = `block w-full rounded-xl border-2 px-4 py-3 text-left transition ${
+    ativo
+      ? "border-slate-900 dark:border-slate-100"
+      : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+  }`;
+
+  const conteudo = (
+    <>
       <div className="font-semibold">{titulo}</div>
       <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
         {detalhe}
       </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={estilo}>
+        {conteudo}
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={ativo ? "page" : undefined}
+      className={estilo}
+    >
+      {conteudo}
     </button>
   );
 }

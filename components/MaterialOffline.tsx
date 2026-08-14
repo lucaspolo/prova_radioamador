@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import mapa from "@/lib/mapa-pdfs.json";
+import { TAMANHO_MATERIAL_MB } from "@/lib/pdfs";
 import { ROTULO_ARQUIVO } from "@/lib/secoes";
 
 /**
@@ -23,9 +24,9 @@ type Estado =
 /**
  * Pré-download do material: os PDFs só entravam no cache quando abertos uma
  * vez, e a interface não contava isso em lugar nenhum — quem instalava o PWA
- * em casa descobria no ônibus que a Cartilha não abre. Um toque baixa os
- * seis (~5 MB) pelo próprio service worker: o fetch de /pdfs/ passa pelo
- * `comFaixa()`, que guarda o arquivo inteiro quando não há header Range.
+ * em casa descobria no ônibus que a Cartilha não abre. Um toque baixa todos
+ * pelo próprio service worker: o fetch de /pdfs/ passa pelo `comFaixa()`, que
+ * guarda o arquivo inteiro quando não há header Range.
  *
  * Sem service worker controlando a página (primeiro acesso, dev, navegador
  * sem suporte), baixar não deixaria nada no cache — a seção nem aparece.
@@ -84,12 +85,12 @@ export default function MaterialOffline() {
           <h3 className="font-semibold">Material para consulta offline</h3>
           <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             {estado.fase === "completo"
-              ? "Os seis PDFs estão no aparelho — o material abre sem rede."
+              ? `Os ${ARQUIVOS.length} PDFs estão no aparelho — o material abre sem rede.`
               : estado.fase === "baixando"
                 ? `Baixando ${Math.min(estado.feitos + 1, ARQUIVOS.length)} de ${ARQUIVOS.length} — ${rotulo(estado.feitos)}…`
                 : estado.fase === "erro"
                   ? `A rede falhou depois de ${estado.feitos} de ${ARQUIVOS.length} — os baixados ficam; tente de novo para o resto.`
-                  : `Sem isto, cada PDF só fica offline depois de aberto uma vez. São ${ARQUIVOS.length} arquivos, cerca de 5 MB.`}
+                  : `Sem isto, cada PDF só fica offline depois de aberto uma vez. São ${ARQUIVOS.length} arquivos, cerca de ${TAMANHO_MATERIAL_MB} MB.`}
           </p>
         </div>
         {estado.fase !== "completo" && (
