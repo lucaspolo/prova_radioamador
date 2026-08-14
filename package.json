@@ -14,6 +14,7 @@
     "postbuild": "node scripts/gerar_sw.mjs",
     "pdfs": "node scripts/copiar_pdfs.mjs",
     "tabelas": "tsx scripts/exportar_tabelas.ts",
+    "ementa": "tsx scripts/exportar_ementa.ts",
     "conferencia": "tsx scripts/relatorio_conferencia.ts"
   },
   "dependencies": {
