@@ -45,10 +45,12 @@ partir da Classe B. A tela inicial avisa.
 ## Estrutura
 
 ```
-app/          rotas e layout (Next.js App Router) — inclui /conferencia
+app/          rotas e layout (Next.js App Router) — inclui /estudar e
+              /conferencia
 components/   telas, menu, resumo de desempenho e visualizador de PDF
 hooks/        useHistorico — persistência em localStorage
 lib/          tipos, constantes da prova, sorteio, histórico e mapa de PDFs
+              ementa.ts — a ementa oficial do exame, e o que estudar em cada item
               conferencia.ts — ordem da revisão, storage e exportação
               triagem.ts — o que a conferência já decidiu, lido do triado
 scripts/      processar_pdfs.py — gerador do banco de questões
@@ -57,7 +59,7 @@ scripts/      processar_pdfs.py — gerador do banco de questões
               exportar_tabelas.ts — tabelas de referência para o gerador
 testes/       sorteio, histórico, estudo, bateria, prioridade, prontidão,
               PDFs, páginas, trechos, seções, atalhos, classes, cobertura,
-              cálculos, referência, dataset, conferência e render
+              cálculos, referência, ementa, dataset, conferência e render
 public/       banco_questoes.json, trechos.json e pdfs/
 ```
 
@@ -88,6 +90,24 @@ public/       banco_questoes.json, trechos.json e pdfs/
 - **Prova completa**: as três matérias em sequência no formato oficial da
   classe, cada uma com seu cronômetro e seu mínimo — aprovação exige passar
   nas três, como no exame. É sempre cega.
+- **Material de estudo** (`/estudar`): a ementa oficial do exame — o item 11.4
+  do Ato nº 3448/2026, transcrito palavra por palavra e conferido contra o PDF
+  por `testes/ementa.test.ts` — com, em cada item, o trecho do material que o
+  explica (abre o PDF na página do capítulo) e a bateria só daquele assunto.
+  Filtra pela classe: Eletrônica é cumulativa, então a C vê um bloco, a B dois
+  e a A três. Ao fim, os PDFs oficiais para abrir ou baixar, o
+  pré-download para uso offline, e o convite para o simulado. É a única tela do
+  app com rota própria além da conferência — material de estudo se lê devagar,
+  se deixa aberto numa aba e se manda para o colega, e nada disso funciona sem
+  endereço.
+
+  Seis dos doze PDFs publicados estão ali **só para consulta**, sem nenhuma
+  questão no banco: a Lei 9.472 (LGT), as Resoluções 715/2019 e 780/2025
+  (conformidade e homologação), o Glossário (779/2025) e os regulamentos gerais
+  de licenciamento (719/2020) e de outorgas (720/2020). Eles fecham itens que a
+  ementa nomeia e que antes só existiam como resumo da Cartilha — e o Glossário
+  ainda define *atribuição*, *destinação* e *distribuição* de faixas, os três
+  termos do nome do PDFF, que nenhum outro documento daqui explicava.
 - **Consulta rápida** offline: alfabeto fonético, código Q, plano de bandas com
   as classes habilitadas, prefixos de indicativo por UF e limites de potência,
   todos copiados dos PDFs oficiais e a um toque da página de origem; mais as
@@ -207,7 +227,7 @@ e o `git diff` deixava de dizer o que mudou.
 
 ## Conferindo a transcrição dos PDFs digitalizados
 
-Dois dos seis PDFs não têm camada de texto e só existem para o gerador através
+Dois dos PDFs publicados não têm camada de texto e só existem para o gerador através
 do OCR de visão. Esse leitor tem um modo de falha próprio: ele erra
 **normalizando**. Devolve português fluente e plausível que se afastou da fonte,
 e nada no resultado denuncia. No Ato 3445 ele leu a primeira letra "W" do item
@@ -382,7 +402,7 @@ indicada é o capítulo onde estudar o assunto, não a origem do enunciado.
 A ordem dos capítulos é a mesma do Markdown porque as duas saídas chamam
 `agruparEmCapitulos()` de `lib/conferencia.ts`. Quais PDFs vieram por OCR é o
 único dado que a tela não consegue derivar sozinha — medir isso custaria baixar
-os 5,4 MB dos seis arquivos antes da primeira questão —, então
+os megabytes de todos os arquivos antes da primeira questão —, então
 `npm run conferencia` materializa o resultado em `lib/ocr-visao.json`, como
 `npm run pdfs` faz com `lib/mapa-pdfs.json`.
 
@@ -458,7 +478,7 @@ documentação e acredita nela.
 As questões são geradas por LLM e revisadas por amostragem — **em divergência, o
 documento oficial da Anatel prevalece**. Quem redistribuir o dataset herda essa
 ressalva e faz bem em repassá-la: cada questão traz `arquivo_origem` e `pagina`
-justamente para que a conferência na fonte seja um clique, e os seis PDFs estão
+justamente para que a conferência na fonte seja um clique, e os PDFs estão
 em `public/pdfs/`. O estado da revisão humana está em
 `scripts/conferencia_triado.json`.
 
@@ -515,9 +535,10 @@ radiofrequência e classe na mesma string.
 | Sufixos vedados | Ato nº 3448/2026, item 12.2, p. 8 |
 
 A escala **RST fica de fora**, e o app diz isso na tela: ela não aparece em
-nenhum dos seis PDFs publicados aqui. Escrevê-la de memória seria fácil e
-provavelmente daria certo — e é justamente por isso que não se faz, já que o
-valor destas tabelas está em serem conferíveis contra a fonte.
+nenhum dos PDFs publicados aqui — não é norma da Anatel nem da UIT, é convenção
+de radioamador. Escrevê-la de memória seria fácil e provavelmente daria certo —
+e é justamente por isso que não se faz, já que o valor destas tabelas está em
+serem conferíveis contra a fonte.
 
 ## Aviso
 

@@ -27,15 +27,32 @@ export interface Secao {
   ancora?: string;
 }
 
-// Exportados os dois que outros módulos endereçam por nome (lib/atalhos.ts):
-// o nome do arquivo é a chave de `lib/mapa-pdfs.json`, e repeti-lo à mão em
-// outro arquivo é errata esperando acontecer.
+// Todos exportados: outros módulos endereçam seções por nome de arquivo
+// (`lib/atalhos.ts`, `lib/ementa.ts`), e o nome é a chave de
+// `lib/mapa-pdfs.json` — repeti-lo à mão em outro arquivo é errata esperando
+// acontecer.
 export const CARTILHA = "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf";
-const ATO_926 = "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf";
+export const ATO_926 = "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf";
 export const ATO_3448 = "SEI_ANATEL - 15307586 - Ato_orginal.pdf";
-const RES_777 = "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf";
-const ATO_3445 = "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf";
-const ATO_926_UHF = "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf";
+export const RES_777 = "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf";
+export const ATO_3445 = "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf";
+export const ATO_926_UHF = "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf";
+
+// As normas que a ementa nomeia mas que o material de estudo só resumia.
+//
+// Nenhuma delas tem questão no banco: entraram para serem CONSULTADAS — o item
+// "Lei Geral das Telecomunicações" da ementa apontava para duas páginas de
+// resumo da Cartilha, e agora aponta também para a lei. Gerar questão delas é
+// outra decisão, e cara: são 119 páginas de norma setorial, a maior parte
+// sobre concessão e estrutura da agência, que o exame de radioamador não
+// cobra. Quando for a hora, o caminho é `PAGINAS_REFORCO` no gerador — página
+// escolhida, cota própria —, e não jogar os arquivos inteiros no chunking.
+export const LGT = "Lei nº 9.472, de 16 de julho de 1997 (LGT).pdf";
+export const RES_715 = "Anatel - Resolução nº 715, de 23 de outubro de 2019.pdf";
+export const RES_780 = "Anatel - Resolução Anatel nº 780, de 1º de agosto de 2025.pdf";
+export const RES_779 = "Anatel - Resolução Anatel nº 779, de 28 de abril de 2025.pdf";
+export const RES_719 = "Anatel - Resolução nº 719, de 10 de fevereiro de 2020.pdf";
+export const RES_720 = "Anatel - Resolução nº 720, de 10 de fevereiro de 2020.pdf";
 
 export const SECOES: Secao[] = [
   // --- Cartilha, corpo (pp. 5-25) ---------------------------------------
@@ -102,6 +119,34 @@ export const SECOES: Secao[] = [
   // app usa para avisar que a citação é leitura do modelo.
   { arquivo: ATO_3445, titulo: "Indicativos especiais", paginaInicio: 1, paginaFim: 3 },
   { arquivo: ATO_926_UHF, titulo: "Faixas de 2 m, 220 MHz e UHF", paginaInicio: 1, paginaFim: 4 },
+  // --- Lei Geral das Telecomunicações (39 pp.) ---------------------------
+  // Só os capítulos que a ementa alcança. O resto da lei é concessão, tarifa
+  // e desestatização — assunto de prova de outro concurso.
+  { arquivo: LGT, titulo: "Princípios fundamentais", paginaInicio: 1, paginaFim: 2, ancora: "DOS PRINCÍPIOS FUNDAMENTAIS" },
+  { arquivo: LGT, titulo: "Competências da Anatel", paginaInicio: 4, paginaFim: 5, ancora: "DAS COMPETÊNCIAS" },
+  { arquivo: LGT, titulo: "Organização dos serviços", paginaInicio: 12, paginaFim: 14, ancora: "DA ORGANIZAÇÃO DOS SERVIÇOS DE TELECOMUNICAÇÕES" },
+  { arquivo: LGT, titulo: "Espectro e órbita", paginaInicio: 29, paginaFim: 31, ancora: "DO ESPECTRO E DA ÓRBITA" },
+  { arquivo: LGT, titulo: "Sanções administrativas", paginaInicio: 32, paginaFim: 32, ancora: "DAS SANÇÕES" },
+  // --- Res. 715/2019: conformidade e homologação (18 pp.) ----------------
+  { arquivo: RES_715, titulo: "Objetivo, princípios e abrangência", paginaInicio: 2, paginaFim: 2, ancora: "DAS DISPOSIÇÕES GERAIS" },
+  { arquivo: RES_715, titulo: "Avaliação da conformidade", paginaInicio: 3, paginaFim: 9, ancora: "DO PROCESSO DE AVALIAÇÃO DA CONFORMIDADE E DE HOMOLOGAÇÃO" },
+  { arquivo: RES_715, titulo: "Homologação: obtenção e direitos", paginaInicio: 10, paginaFim: 13, ancora: "DOS DIREITOS DECORRENTES DA HOMOLOGAÇÃO" },
+  { arquivo: RES_715, titulo: "Sanções", paginaInicio: 15, paginaFim: 15, ancora: "DAS SANÇÕES" },
+  // --- Res. 780/2025: altera a 715 (3 pp.) -------------------------------
+  { arquivo: RES_780, titulo: "Alterações à Resolução 715/2019", paginaInicio: 1, paginaFim: 3, ancora: "Altera o Regulamento de Avaliação da Conformidade" },
+  // --- Res. 779/2025: Glossário do setor (31 pp.) ------------------------
+  // O que fecha o buraco apontado em `RST_SEM_FONTE` para outro assunto: os
+  // três verbos do nome do PDFF — atribuição (p. 6), destinação e distribuição
+  // (p. 10) — não tinham definição em nenhum PDF publicado aqui.
+  { arquivo: RES_779, titulo: "Definições de espectro e radiofrequência", paginaInicio: 6, paginaFim: 14, ancora: "Atribuição (de uma faixa de radiofrequências)" },
+  { arquivo: RES_779, titulo: "Definições do Serviço de Radioamador", paginaInicio: 23, paginaFim: 26, ancora: "pessoa habilitada a operar estação do Serviço de Radioamador" },
+  // --- Res. 719/2020: Regulamento Geral de Licenciamento (16 pp.) --------
+  { arquivo: RES_719, titulo: "Licenciamento de estações", paginaInicio: 10, paginaFim: 13, ancora: "DO LICENCIAMENTO DE ESTAÇÕES" },
+  { arquivo: RES_719, titulo: "Validade, transferência e obrigações", paginaInicio: 14, paginaFim: 14, ancora: "DOS PRAZOS DE VALIDADE DA LICENÇA DA ESTAÇÃO" },
+  // --- Res. 720/2020: Regulamento Geral de Outorgas (12 pp.) -------------
+  { arquivo: RES_720, titulo: "Processo de autorização", paginaInicio: 6, paginaFim: 6, ancora: "DO PROCESSO DE AUTORIZAÇÃO" },
+  { arquivo: RES_720, titulo: "Autorização de uso de radiofrequências", paginaInicio: 7, paginaFim: 7, ancora: "DA AUTORIZAÇÃO DE USO DE RADIOFREQUÊNCIAS" },
+  { arquivo: RES_720, titulo: "Dispensa de autorização e transferências", paginaInicio: 8, paginaFim: 9, ancora: "DOS CASOS DE DISPENSA DE AUTORIZAÇÃO" },
 ];
 
 /**
@@ -121,6 +166,27 @@ export function secaoDe(q: Questao): Secao | null {
   );
 }
 
+/**
+ * Endereço de uma seção, para quem precisa apontar para ela de fora.
+ *
+ * O par arquivo + título, e não só o título: "Antenas" e "Indicativos de
+ * chamada" existem em mais de um documento, e uma referência ambígua abriria
+ * calada o PDF errado.
+ */
+export interface RefSecao {
+  arquivo: string;
+  titulo: string;
+}
+
+/** A seção apontada por uma referência, ou null se ela não existe mais. */
+export function secaoPorRef(ref: RefSecao): Secao | null {
+  return (
+    SECOES.find(
+      (s) => s.arquivo === ref.arquivo && s.titulo === ref.titulo,
+    ) ?? null
+  );
+}
+
 /** Rótulo curto de cada PDF, para o agrupamento não ocupar três linhas. */
 export const ROTULO_ARQUIVO: Record<string, string> = {
   [CARTILHA]: "Cartilha do Radioamador",
@@ -129,6 +195,50 @@ export const ROTULO_ARQUIVO: Record<string, string> = {
   [RES_777]: "Resolução 777/2025",
   [ATO_3445]: "Ato 3445/2026 — indicativos especiais",
   [ATO_926_UHF]: "Ato 926/2024 — 2 m, 220 MHz e UHF",
+  [LGT]: "Lei 9.472/1997 — Lei Geral das Telecomunicações",
+  [RES_715]: "Resolução 715/2019 — conformidade e homologação",
+  [RES_780]: "Resolução 780/2025 — altera a 715/2019",
+  [RES_779]: "Resolução 779/2025 — Glossário do setor",
+  [RES_719]: "Resolução 719/2020 — licenciamento (RGL)",
+  [RES_720]: "Resolução 720/2020 — outorgas (RGO)",
+};
+
+/**
+ * Uma linha dizendo o que cada documento é, para a lista de material.
+ *
+ * São doze arquivos com nomes que só quem já os leu distingue — "Ato 926" e
+ * "Ato 3448" não contam a ninguém qual traz as faixas e qual traz a prova.
+ *
+ * É índice, não conteúdo, pela mesma regra de `lib/atalhos.ts`: cada linha
+ * resume o assunto declarado pelo próprio documento (a ementa da norma, o
+ * "Aprova o Regulamento de…" da primeira página) e aponta onde olhar. Quem
+ * responde é o PDF. `testes/pdfs.test.ts` exige uma entrada aqui para todo
+ * arquivo publicado — sem ela a lista mostraria o nome cru do arquivo.
+ */
+export const RESUMO_ARQUIVO: Record<string, string> = {
+  [CARTILHA]:
+    "O material de estudo da Anatel: o serviço explicado do começo ao fim, mais os anexos de técnica e ética, legislação e eletrônica.",
+  [ATO_926]:
+    "As faixas do radioamador: plano de bandas, modos de emissão, limites de potência e quais classes operam cada trecho.",
+  [ATO_3448]:
+    "Habilitação e indicativos: o formato do exame, a ementa das matérias (item 11.4) e as séries de indicativo por estado.",
+  [RES_777]:
+    "As regras gerais dos serviços de telecomunicações (RGST). Este PDF traz só os artigos de Radioamador e Rádio do Cidadão.",
+  [ATO_3445]:
+    "Indicativos especiais das ilhas e arquipélagos oceânicos: Fernando de Noronha, São Pedro e São Paulo, Trindade, Rocas e Martim Vaz.",
+  [ATO_926_UHF]:
+    "O recorte do plano de bandas nas faixas de 2 m, 220 MHz e UHF, com os modos e as aplicações de cada subfaixa.",
+  [LGT]:
+    "A lei que organiza os serviços de telecomunicações e cria a Anatel. O Título V é o que trata do espectro de radiofrequências.",
+  [RES_715]:
+    "Como um equipamento é avaliado, certificado e homologado pela Anatel antes de poder ser vendido e usado.",
+  [RES_780]: "Altera a Resolução 715/2019 — leia junto com ela.",
+  [RES_779]:
+    "O glossário oficial do setor. Define atribuição, destinação e distribuição de faixas, e o próprio Serviço de Radioamador.",
+  [RES_719]:
+    "O Regulamento Geral de Licenciamento: quando a estação precisa de licença, como se pede e por quanto tempo ela vale.",
+  [RES_720]:
+    "O Regulamento Geral de Outorgas: a autorização do serviço e a autorização de uso de radiofrequências.",
 };
 
 /**

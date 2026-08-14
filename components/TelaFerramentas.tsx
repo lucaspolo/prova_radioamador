@@ -5,7 +5,6 @@ import { RST_SEM_FONTE, TABELAS, type TabelaReferencia } from "@/lib/referencia"
 import AtalhosDaProva from "./AtalhosDaProva";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
-import MaterialOffline from "./MaterialOffline";
 import Relampago from "./Relampago";
 
 /**
@@ -70,11 +69,11 @@ export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) 
       {aba === "calculadoras" && <Calculadoras />}
       {aba === "relampago" && <Relampago />}
 
-      {/* Fora das abas: nem atalho nem download são consulta de tabela, e os
-          dois valem para a tela inteira — inclusive para o "Consultar
-          material" de qualquer questão, offline. */}
+      {/* Fora das abas: atalho não é consulta de tabela, e vale para a tela
+          inteira. O pré-download do material saiu daqui para `/estudar`, que é
+          onde o material passou a morar — mantê-lo nos dois lugares seria duas
+          portas para a mesma coisa. */}
       <AtalhosDaProva />
-      <MaterialOffline />
 
       <button
         onClick={onVoltar}
