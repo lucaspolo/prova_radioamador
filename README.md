@@ -123,11 +123,14 @@ public/       banco_questoes.json, trechos.json e pdfs/
 - **Tela de desempenho**: percentual por matéria contra a linha de corte
   oficial de 55%, tendência das últimas baterias, exportar/importar do
   histórico para backup ou troca de aparelho, e lista de questões marcadas
-  como suspeitas durante o estudo. Marcada a suspeita, um link abre no GitHub
-  uma issue já preenchida com id, afirmação, gabarito e fonte — o banco é
-  gerado por LLM, e quem estuda por ele é quem mais olha cada questão de
-  perto. Na tela inicial fica só uma linha de resumo, com o que é acionável:
-  quantos simulados, o percentual e qual matéria está abaixo do corte.
+  como suspeitas durante o estudo. Marcada a suspeita, um link abre o
+  formulário de revisão já preenchido com id, afirmação, gabarito e fonte — o
+  banco é gerado por LLM, e quem estuda por ele é quem mais olha cada questão
+  de perto. É formulário, e não issue no GitHub, porque a issue cobrava um
+  pedágio invisível: exigia conta. Quem lê a norma e percebe o gabarito errado
+  raramente é quem tem login de programador. Na tela inicial fica só uma linha
+  de resumo, com o que é acionável: quantos simulados, o percentual e qual
+  matéria está abaixo do corte.
 - **Um menu só** no cabeçalho, com as três telas — simulado, desempenho e
   consulta rápida, sempre as três, para voltar custar o mesmo que ir — mais o
   tema (claro/escuro/automático) e os três tamanhos de texto, persistidos e

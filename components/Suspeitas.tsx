@@ -9,7 +9,8 @@ import { urlDeReporte } from "@/lib/reportar";
  * As questões que o usuário marcou como suspeitas durante o estudo.
  *
  * O banco é gerado por LLM e revisado por amostragem; quem estuda por ele é
- * quem mais olha cada questão de perto. Daqui sai uma issue já preenchida.
+ * quem mais olha cada questão de perto. Daqui sai o formulário de revisão já
+ * preenchido — sem login, que era o pedágio da issue no GitHub.
  */
 export default function Suspeitas({
   suspeitas,
@@ -56,7 +57,7 @@ export default function Suspeitas({
                     rel="noreferrer"
                     className="mt-0.5 ml-3 text-xs text-slate-500 underline underline-offset-2 dark:text-slate-400"
                   >
-                    Reportar no GitHub
+                    Reportar o erro
                   </a>
                 )}
               </li>
