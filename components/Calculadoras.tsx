@@ -65,7 +65,7 @@ function Campo({
         }`}
       />
       {invalido && (
-        <span className="text-xs text-rose-600 dark:text-rose-400">
+        <span className="text-xs text-rose-700 dark:text-rose-400">
           número inválido
         </span>
       )}

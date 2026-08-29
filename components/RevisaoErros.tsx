@@ -50,8 +50,8 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
               <span
                 className={`font-semibold ${
                   r.acertou
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-rose-600 dark:text-rose-400"
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-rose-700 dark:text-rose-400"
                 }`}
               >
                 {emBranco

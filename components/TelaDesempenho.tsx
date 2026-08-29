@@ -129,8 +129,8 @@ export default function TelaDesempenho({
                         e.respondidas === 0
                           ? "text-slate-500 dark:text-slate-400"
                           : aprovando
-                            ? "font-medium text-emerald-600 dark:text-emerald-400"
-                            : "font-medium text-rose-600 dark:text-rose-400"
+                            ? "font-medium text-emerald-700 dark:text-emerald-400"
+                            : "font-medium text-rose-700 dark:text-rose-400"
                       }
                     >
                       {e.respondidas === 0
@@ -197,10 +197,10 @@ export default function TelaDesempenho({
                     <span
                       className={
                         p.acimaDoCorte === p.baterias
-                          ? "font-medium text-emerald-600 dark:text-emerald-400"
+                          ? "font-medium text-emerald-700 dark:text-emerald-400"
                           : p.acimaDoCorte === 0
-                            ? "font-medium text-rose-600 dark:text-rose-400"
-                            : "font-medium text-amber-600 dark:text-amber-400"
+                            ? "font-medium text-rose-700 dark:text-rose-400"
+                            : "font-medium text-amber-700 dark:text-amber-400"
                       }
                     >
                       acima do corte em {p.acimaDoCorte} de {p.baterias}
@@ -259,7 +259,7 @@ export default function TelaDesempenho({
                     onLimpar();
                     setConfirmando(false);
                   }}
-                  className="font-medium text-rose-600 underline-offset-4 hover:underline dark:text-rose-400"
+                  className="font-medium text-rose-700 underline-offset-4 hover:underline dark:text-rose-400"
                 >
                   Apagar
                 </button>

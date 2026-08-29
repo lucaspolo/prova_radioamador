@@ -150,7 +150,7 @@ export default function VisualizadorPdf({
       >
         {erro ? (
           <div className="mx-auto mt-12 max-w-md rounded-xl bg-white p-6 text-center dark:bg-slate-900">
-            <p className="font-medium text-rose-600 dark:text-rose-400">
+            <p className="font-medium text-rose-700 dark:text-rose-400">
               Não foi possível abrir o PDF.
             </p>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">

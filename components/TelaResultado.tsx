@@ -131,7 +131,7 @@ export default function TelaResultado({
         {/* No modo cego dá para encerrar antes da hora com questões em branco.
             Anunciar "tempo esgotado" nesse caso seria mentira. */}
         {naoRespondidas > 0 && (
-          <p className="mt-2 text-sm font-medium text-rose-600 dark:text-rose-400">
+          <p className="mt-2 text-sm font-medium text-rose-700 dark:text-rose-400">
             {motivoFim === "tempo" ? "Tempo esgotado: " : ""}
             {naoRespondidas}{" "}
             {naoRespondidas === 1
