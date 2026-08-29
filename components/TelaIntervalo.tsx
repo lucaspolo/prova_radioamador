@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import {
   aprovadoNaMateria,
@@ -41,6 +42,7 @@ export default function TelaIntervalo({
   onProsseguir,
   onAbandonar,
 }: Props) {
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false);
   const formato = FORMATO[classe];
   const acertos = respostas.filter((r) => r.acertou).length;
   // O mínimo absoluto só vale no tamanho oficial; fora dele, a proporção.
@@ -102,12 +104,44 @@ export default function TelaIntervalo({
         Iniciar {ROTULO_CURTO[proximoTema]}
       </button>
 
-      <button
-        onClick={onAbandonar}
-        className="w-full py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
-      >
-        Abandonar a bateria
-      </button>
+      {/* Abandonar aqui não descarta o que já foi feito — a matéria concluída
+          já entrou no histórico —, mas a tela acabou de prometer que "a
+          revisão dos erros fica para o fim", e esse fim nunca chega. A
+          confirmação diz as duas coisas: o que fica e o que não será feito. */}
+      {!confirmandoSaida ? (
+        <button
+          onClick={() => setConfirmandoSaida(true)}
+          className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+        >
+          Abandonar a bateria
+        </button>
+      ) : (
+        <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
+          <p className="text-sm font-medium">
+            {ROTULO_CURTO[tema]} fica registrada ({acertos} de{" "}
+            {respostas.length}) e os erros vão para a revisão.{" "}
+            {restantes === 1
+              ? `${ROTULO_CURTO[proximoTema]} não será feita, e o gabarito dela não aparece.`
+              : restantes === 2
+                ? `${ROTULO_CURTO[proximoTema]} e a outra matéria não serão feitas, e o gabarito delas não aparece.`
+                : `${ROTULO_CURTO[proximoTema]} e as outras ${restantes - 1} matérias não serão feitas, e o gabarito delas não aparece.`}
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setConfirmandoSaida(false)}
+              className="rounded-lg border-2 border-slate-400 px-4 py-2 text-sm font-semibold transition hover:border-slate-500"
+            >
+              Continuar a bateria
+            </button>
+            <button
+              onClick={onAbandonar}
+              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
+            >
+              Abandonar mesmo assim
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

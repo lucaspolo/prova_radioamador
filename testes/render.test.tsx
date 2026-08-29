@@ -286,6 +286,13 @@ const PROPS_INICIO = {
     !contem(html, questoes[0].explicacao_curta),
   );
   checar("permite abandonar", html.includes("Abandonar simulado"));
+  // A confirmação de abandono nasce fechada: quem ainda não respondeu nada não
+  // tem o que confirmar, e ver a caixa de aviso antes da primeira resposta
+  // seria alarme falso.
+  checar(
+    "abandonar não pede confirmação antes da primeira resposta",
+    !html.includes("Abandonar apaga"),
+  );
   checar("sem cronômetro, não mostra relógio", !html.includes("30:00"));
   // O alvo do foco a cada questão. Sem ele, quem responde pelo teclado ou
   // pelo toque não recebe anúncio nenhum ao trocar de questão — e o efeito
@@ -373,6 +380,33 @@ const PROPS_INICIO = {
   checar("permite marcar para revisar", html.includes("Marcar para revisar"));
   checar("permite encerrar e ver o gabarito", html.includes("Encerrar e ver o gabarito"));
   checar("permite abandonar", html.includes("Abandonar a prova"));
+  checar(
+    "abandonar não pede confirmação antes da primeira resposta",
+    !html.includes("Abandonar apaga"),
+  );
+  // Uma prova retomada monta com a folha e a posição de onde parou.
+  const retomada = renderToStaticMarkup(
+    <TelaProvaCega
+      questoes={questoes}
+      escolhasIniciais={questoes.map((_, i) => (i < 4 ? true : null))}
+      indiceInicial={4}
+      marcadasIniciais={[1]}
+      onConcluir={() => {}}
+      onSair={() => {}}
+    />,
+  );
+  checar(
+    "prova retomada abre na questão em que parou",
+    retomada.includes("Questão 5 de 20"),
+  );
+  checar(
+    "e com as respostas que já tinha",
+    retomada.includes("4 de 20 respondidas"),
+  );
+  checar(
+    "e com as marcações que já tinha",
+    retomada.includes("Questão 2, respondida, marcada para revisar"),
+  );
 
   const comTempo = renderToStaticMarkup(
     <TelaProvaCega
