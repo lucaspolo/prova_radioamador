@@ -116,7 +116,13 @@ export default function MenuPrincipal({
           // a escolha de classe. A largura em `rem` acompanha a escala de
           // fonte, e o `min` com `vw` impede que estoure num telefone estreito
           // quando o texto está no tamanho grande.
-          className="absolute top-full right-0 z-40 mt-2 max-h-[70vh] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-xl border border-slate-300 bg-[var(--background)] p-4 shadow-lg dark:border-slate-700"
+          // `70vh` cortava justamente o que só existe aqui: em 1280×800 a
+          // linha "Texto" virava uma fatia de 10 px, e em 320×568 com fonte
+          // grande o painel mostrava dois itens e meio. Agora a altura segue a
+          // tela de verdade (`dvh`, que no celular desconta a barra do
+          // navegador) e quem rola é a lista de destinos — tema e tamanho de
+          // texto ficam presos no rodapé do painel, sempre à vista.
+          className="absolute top-full right-0 z-40 mt-2 flex max-h-[calc(100dvh-7rem)] w-[min(20rem,calc(100vw-2rem))] flex-col overscroll-contain rounded-xl border border-slate-300 bg-[var(--background)] p-4 shadow-lg dark:border-slate-700"
         >
           <PainelMenu
             atual={atual}
@@ -160,7 +166,7 @@ export function PainelMenu({
 }) {
   return (
     <>
-      <div className="space-y-3">
+      <div className="min-h-0 space-y-3 overflow-y-auto">
         {/* Primeiro item, e é o único que é rota e não etapa: `/estudar` tem
             endereço próprio para poder ser lido devagar e mandado para o
             colega. Vem no topo porque é a ordem do estudo — ler o que a prova
@@ -197,7 +203,9 @@ export function PainelMenu({
         />
       </div>
 
-      <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-800">
+      {/* Fora do que rola: são a razão de o menu existir para quem já sabe
+          onde ficam as telas, e eram os primeiros a sumir. */}
+      <div className="mt-4 shrink-0 border-t border-slate-200 pt-3 dark:border-slate-800">
         <Preferencias />
       </div>
     </>

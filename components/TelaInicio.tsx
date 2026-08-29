@@ -57,6 +57,8 @@ export default function TelaInicio({
   // três são a prova completa — que deixou de ser um botão à parte para virar
   // "selecione tudo", porque era a mesma coisa com outro nome.
   const [escolhas, setEscolhas] = useState<Tema[]>([TEMAS[0]]);
+  // Guarda a última matéria escolhida sozinha, para "só uma" devolver ela.
+  const [sozinhaAnterior, setSozinhaAnterior] = useState<Tema>(TEMAS[0]);
   const formato = FORMATO[classe];
   const [quantidade, setQuantidade] = useState(FORMATO[CLASSE_PADRAO].questoes);
   const [cronometrar, setCronometrar] = useState(
@@ -85,16 +87,25 @@ export default function TelaInicio({
   );
   const todasAsMaterias = escolhas.length === TEMAS.length;
 
+  /**
+   * A matéria que estava sozinha antes de "todas as 3".
+   *
+   * Voltar para `TEMAS[0]` jogava quem estudava Eletrônica de volta em
+   * Legislação — "só uma" desfaz a ação, e desfazer tem de devolver o estado
+   * anterior, não um padrão.
+   */
+  const ultimaSozinha = escolhas.length === 1 ? escolhas[0] : sozinhaAnterior;
+
   function alternarTema(tema: Tema) {
-    setEscolhas((atuais) =>
-      atuais.includes(tema)
-        ? // Nunca zero: sem matéria não há bateria, e um botão "iniciar"
-          // desabilitado seria pior do que impedir o último clique.
-          atuais.length === 1
-          ? atuais
-          : atuais.filter((t) => t !== tema)
-        : TEMAS.filter((t) => t === tema || atuais.includes(t)),
-    );
+    const proximas = escolhas.includes(tema)
+      ? // Nunca zero: sem matéria não há bateria, e um botão "iniciar"
+        // desabilitado seria pior do que impedir o último clique.
+        escolhas.length === 1
+        ? escolhas
+        : escolhas.filter((t) => t !== tema)
+      : TEMAS.filter((t) => t === tema || escolhas.includes(t));
+    setEscolhas(proximas);
+    if (proximas.length === 1) setSozinhaAnterior(proximas[0]);
   }
 
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
@@ -145,11 +156,15 @@ export default function TelaInicio({
       <section className="space-y-5 rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
         <div>
           <Rotulo>Classe</Rotulo>
-          <div className="flex gap-2">
+          {/* `role="group"` com rótulo, como as matérias já tinham: sem isso o
+              leitor de tela lia três botões soltos, sem dizer de que decisão
+              eles fazem parte. */}
+          <div role="group" aria-label="Classe da prova" className="flex gap-2">
             {CLASSES.map((c) => (
               <button
                 key={c}
                 onClick={() => escolherClasse(c)}
+                aria-pressed={classe === c}
                 className={`min-w-0 flex-1 rounded-xl border-2 px-1.5 py-2.5 transition sm:px-3 sm:py-3 ${
                   classe === c
                     ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
@@ -195,10 +210,16 @@ export default function TelaInicio({
             </Rotulo>
             {/* As três de uma vez são a prova completa da Anatel — o botão
                 separado que existia aqui fazia exatamente isto. */}
+            {/* Era um link de 12 px com alvo de 57×16 — abaixo do mínimo de
+                24×24 da WCAG e ao lado de cartões de 44 px. É por ele que se
+                descobre a prova completa, o cenário mais valioso para quem
+                está perto do exame: vira pílula, com altura de dedo. */}
             <button
-              onClick={() => setEscolhas(todasAsMaterias ? [TEMAS[0]] : TEMAS)}
+              onClick={() =>
+                setEscolhas(todasAsMaterias ? [ultimaSozinha] : TEMAS)
+              }
               aria-pressed={todasAsMaterias}
-              className="mb-2 text-xs font-medium text-slate-500 underline dark:text-slate-400"
+              className="mb-2 min-h-9 rounded-full border-2 border-slate-300 px-3 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
             >
               {todasAsMaterias ? "só uma" : "todas as 3"}
             </button>
@@ -239,11 +260,16 @@ export default function TelaInicio({
           <Rotulo>
             {escolhas.length > 1 ? "Quantidade por matéria" : "Quantidade"}
           </Rotulo>
-          <div className="flex flex-wrap gap-2">
+          <div
+            role="group"
+            aria-label="Questões por bateria"
+            className="flex flex-wrap gap-2"
+          >
             {opcoes.map((n) => (
               <button
                 key={n}
                 onClick={() => setQuantidade(n)}
+                aria-pressed={quantidade === n}
                 disabled={n > total}
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
                   quantidade === n
@@ -549,13 +575,41 @@ function BotaoTema({
   return (
     <button
       onClick={onClick}
+      aria-pressed={ativo}
       className={`rounded-xl border-2 p-4 text-left transition ${classes} ${
         ativo
           ? "ring-2 ring-slate-900 ring-offset-2 ring-offset-[var(--background)] dark:ring-slate-100"
           : "hover:bg-current/5"
       }`}
     >
-      <div className="font-semibold">{titulo}</div>
+      {/* A caixa de seleção é o que diz "pode marcar mais de uma": os cartões
+          de matéria têm a mesma cara dos de classe, logo acima, que são
+          escolha única — e nada além do link "todas as 3", em letra miúda no
+          canto oposto, contava que dá para somar matérias. O quadrado é
+          deliberado: o regime, que é escolha única, usa disco. */}
+      <div className="flex items-center gap-2 font-semibold">
+        <span
+          aria-hidden
+          className={`grid h-4 w-4 shrink-0 place-items-center rounded border-2 ${
+            ativo ? "border-current bg-current" : "border-slate-400 dark:border-slate-600"
+          }`}
+        >
+          {ativo && (
+            <svg
+              viewBox="0 0 12 12"
+              className="h-3 w-3 text-[var(--background)]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2.5 6.5 5 9l4.5-5.5" />
+            </svg>
+          )}
+        </span>
+        {titulo}
+      </div>
       <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
         {detalhe}
       </div>

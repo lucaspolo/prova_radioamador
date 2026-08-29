@@ -1245,12 +1245,72 @@ const PROPS_INICIO = {
   checar("tema e tamanho de texto saíram da home", !home.includes("Automático"));
   checar("a consulta rápida saiu da home", !home.includes("Consulta rápida"));
   checar("a escolha da prova continua à vista", home.includes("Iniciar modo treino"));
+  // A decisão principal da tela — classe, matéria e quantidade — precisa dizer
+  // ao leitor de tela o que está escolhido. Antes, só o regime e os toggles
+  // tinham estado; os três grupos que definem a bateria não tinham nenhum.
+  checar(
+    "classe, matéria e quantidade anunciam o que está escolhido",
+    (home.match(/aria-pressed="(true|false)"/g) ?? []).length >= 10,
+  );
+  checar(
+    "e cada grupo tem nome",
+    home.includes('aria-label="Classe da prova"') &&
+      home.includes('aria-label="Matérias da bateria"') &&
+      home.includes('aria-label="Questões por bateria"'),
+  );
   // O material tem de ser descobrível de fora do menu: quem instala o app não
   // desconfia que existe uma ementa oficial — e é a ementa, e não o nome da
   // tela, que a linha precisa prometer.
   checar(
     "a home aponta para o material de estudo",
     home.includes('href="/estudar"') && home.includes("Ementa oficial e PDFs"),
+  );
+}
+
+// --- Questões em branco aparecem em todas as telas de veredito --------------
+// Na prova completa, a cronometrada, quem estourou o tempo não descobria por
+// que perdeu pontos: o aviso existia só no resultado de uma matéria.
+{
+  const questoes = sortearSimulado("Legislação de Telecomunicações", 10);
+  const comBranco = questoes.map((q, i) => ({
+    questao: q,
+    respondeu: i < 6 ? q.resposta_correta : null,
+    acertou: i < 6,
+  }));
+  const intervalo = renderToStaticMarkup(
+    <TelaIntervalo
+      classe="B"
+      tema="Legislação de Telecomunicações"
+      respostas={comBranco}
+      quantidade={10}
+      proximoTema="Técnica e ética operacional"
+      cronometrado
+      restantes={2}
+      motivoFim="tempo"
+      onProsseguir={() => {}}
+      onAbandonar={() => {}}
+    />,
+  );
+  checar(
+    "o intervalo avisa das questões em branco",
+    intervalo.includes("4 questões ficaram sem resposta"),
+  );
+  checar(
+    "e diz que foi o tempo, quando foi",
+    intervalo.includes("Tempo esgotado"),
+  );
+  const consolidado = renderToStaticMarkup(
+    <TelaResultadoProva
+      classe="B"
+      materias={[
+        { tema: "Legislação de Telecomunicações", respostas: comBranco },
+      ]}
+      onReiniciar={() => {}}
+    />,
+  );
+  checar(
+    "o consolidado mostra as em branco por matéria",
+    consolidado.includes("4") && consolidado.includes("em branco"),
   );
 }
 
