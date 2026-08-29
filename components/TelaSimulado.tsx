@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MotivoFim, Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
-import { folhaVazia, respostasDe } from "@/lib/bateria";
+import type { Escolhas } from "@/lib/bateria";
+import { contarRespondidas, folhaVazia, respostasDe } from "@/lib/bateria";
 import { useCronometro } from "@/hooks/useCronometro";
+import { useGuardaDeSaida } from "@/hooks/useGuardaDeSaida";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import BotaoSuspeita from "./BotaoSuspeita";
 import TrechoOrigem from "./TrechoOrigem";
@@ -13,8 +15,13 @@ interface Props {
   questoes: Questao[];
   /** Segundos de prova; null desliga o cronômetro. */
   tempoSegundos?: number | null;
+  /** Folha e posição de uma bateria retomada; vazias numa bateria nova. */
+  escolhasIniciais?: Escolhas | null;
+  indiceInicial?: number;
   onConcluir: (respostas: Resposta[], motivo: MotivoFim) => void;
   onSair: () => void;
+  /** Avisa a cada mudança, para a bateria sobreviver a fechar a aba. */
+  onProgresso?: (escolhas: Escolhas, indice: number) => void;
 }
 
 function formatarTempo(s: number): string {
@@ -24,11 +31,17 @@ function formatarTempo(s: number): string {
 export default function TelaSimulado({
   questoes,
   tempoSegundos = null,
+  escolhasIniciais = null,
+  indiceInicial = 0,
   onConcluir,
   onSair,
+  onProgresso,
 }: Props) {
-  const [indice, setIndice] = useState(0);
-  const [escolhas, setEscolhas] = useState(() => folhaVazia(questoes.length));
+  const [indice, setIndice] = useState(indiceInicial);
+  const [escolhas, setEscolhas] = useState<Escolhas>(
+    () => escolhasIniciais ?? folhaVazia(questoes.length),
+  );
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false);
   const topo = useRef<HTMLDivElement>(null);
   const titulo = useRef<HTMLHeadingElement>(null);
   const botaoAvancar = useRef<HTMLButtonElement>(null);
@@ -39,6 +52,14 @@ export default function TelaSimulado({
   const acertos = respostasDe(questoes, escolhas).filter(
     (r) => r.respondeu !== null && r.acertou,
   ).length;
+  const respondidas = contarRespondidas(escolhas);
+
+  // Como o efeito de progresso roda a cada resposta, o callback vai num ref:
+  // do contrário, uma função recriada no pai o dispararia sozinho.
+  const onProgressoRef = useRef(onProgresso);
+  useEffect(() => {
+    onProgressoRef.current = onProgresso;
+  });
 
   const responder = useCallback(
     (valor: boolean) => {
@@ -69,6 +90,16 @@ export default function TelaSimulado({
   const restante = useCronometro(tempoSegundos, () => {
     onConcluir(respostasDe(questoes, escolhas), "tempo");
   });
+
+  // Cada mudança vai para o storage; quem grava é quem tem o contexto da
+  // bateria (matéria, classe, modo, prazo), em `app/page.tsx`.
+  useEffect(() => {
+    onProgressoRef.current?.(escolhas, indice);
+  }, [escolhas, indice]);
+
+  // Só há o que perder depois da primeira resposta: antes disso, voltar e
+  // recarregar continuam saindo direto, sem diálogo nenhum.
+  useGuardaDeSaida(respondidas > 0, () => setConfirmandoSaida(true));
 
   /**
    * Cada questão nova recomeça no alto da tela.
@@ -281,12 +312,42 @@ export default function TelaSimulado({
         </div>
       )}
 
-      <button
-        onClick={onSair}
-        className="w-full py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
-      >
-        Abandonar simulado
-      </button>
+      {/* Abandonar apaga a bateria inteira — só a bateria concluída entra no
+          histórico —, e o link ficava a 24 px do botão principal, na zona do
+          polegar. A confirmação segue o padrão do "Encerrar" da prova cega:
+          inline, sem modal, com a consequência escrita e a saída segura
+          primeiro. Com nada respondido não há o que confirmar. */}
+      {!confirmandoSaida ? (
+        <button
+          onClick={() => (respondidas > 0 ? setConfirmandoSaida(true) : onSair())}
+          className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+        >
+          Abandonar simulado
+        </button>
+      ) : (
+        <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
+          <p className="text-sm font-medium">
+            {respondidas === 1
+              ? "Abandonar apaga a resposta que você já deu"
+              : `Abandonar apaga as ${respondidas} respostas que você já deu`}{" "}
+            — só a bateria concluída entra no histórico.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setConfirmandoSaida(false)}
+              className="rounded-lg border-2 border-slate-400 px-4 py-2 text-sm font-semibold transition hover:border-slate-500"
+            >
+              Continuar o simulado
+            </button>
+            <button
+              onClick={onSair}
+              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
+            >
+              Abandonar mesmo assim
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

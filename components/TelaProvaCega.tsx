@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MotivoFim, Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
+import type { Escolhas } from "@/lib/bateria";
 import {
   contarEmBranco,
   contarRespondidas,
@@ -11,14 +12,25 @@ import {
   respostasDe,
 } from "@/lib/bateria";
 import { useCronometro } from "@/hooks/useCronometro";
+import { useGuardaDeSaida } from "@/hooks/useGuardaDeSaida";
 import FolhaRespostas from "./FolhaRespostas";
 
 interface Props {
   questoes: Questao[];
   /** Segundos de prova; null desliga o cronômetro. */
   tempoSegundos?: number | null;
+  /** Folha, posição e marcações de uma prova retomada. */
+  escolhasIniciais?: Escolhas | null;
+  indiceInicial?: number;
+  marcadasIniciais?: number[];
   onConcluir: (respostas: Resposta[], motivo: MotivoFim) => void;
   onSair: () => void;
+  /** Avisa a cada mudança, para a prova sobreviver a fechar a aba. */
+  onProgresso?: (
+    escolhas: Escolhas,
+    indice: number,
+    marcadas: number[],
+  ) => void;
 }
 
 function formatarTempo(s: number): string {
@@ -41,13 +53,22 @@ function formatarTempo(s: number): string {
 export default function TelaProvaCega({
   questoes,
   tempoSegundos = null,
+  escolhasIniciais = null,
+  indiceInicial = 0,
+  marcadasIniciais,
   onConcluir,
   onSair,
+  onProgresso,
 }: Props) {
-  const [indice, setIndice] = useState(0);
-  const [escolhas, setEscolhas] = useState(() => folhaVazia(questoes.length));
-  const [marcadas, setMarcadas] = useState<ReadonlySet<number>>(() => new Set());
+  const [indice, setIndice] = useState(indiceInicial);
+  const [escolhas, setEscolhas] = useState<Escolhas>(
+    () => escolhasIniciais ?? folhaVazia(questoes.length),
+  );
+  const [marcadas, setMarcadas] = useState<ReadonlySet<number>>(
+    () => new Set(marcadasIniciais ?? []),
+  );
   const [confirmando, setConfirmando] = useState(false);
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false);
   const topo = useRef<HTMLDivElement>(null);
   const titulo = useRef<HTMLHeadingElement>(null);
 
@@ -94,6 +115,23 @@ export default function TelaProvaCega({
 
   // Tempo esgotado: como na prova real, o que ficou em branco conta como erro.
   const restante = useCronometro(tempoSegundos, () => encerrar("tempo"));
+
+  // Como o efeito de progresso roda a cada resposta, o callback vai num ref:
+  // do contrário, uma função recriada no pai o dispararia sozinho.
+  const onProgressoRef = useRef(onProgresso);
+  useEffect(() => {
+    onProgressoRef.current = onProgresso;
+  });
+
+  // Cada mudança vai para o storage; quem grava é quem tem o contexto da
+  // bateria (matéria, classe, modo, prazo), em `app/page.tsx`.
+  useEffect(() => {
+    onProgressoRef.current?.(escolhas, indice, [...marcadas]);
+  }, [escolhas, indice, marcadas]);
+
+  // Aqui a guarda vale mais que no treino: são até 40 minutos de prova cega, e
+  // o gesto de voltar do Android fechava o app instalado.
+  useGuardaDeSaida(respondidas > 0, () => setConfirmandoSaida(true));
 
   /**
    * Cada questão recomeça no alto da tela — inclusive as alcançadas pela folha
@@ -332,12 +370,40 @@ export default function TelaProvaCega({
         </div>
       )}
 
-      <button
-        onClick={onSair}
-        className="w-full py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
-      >
-        Abandonar a prova
-      </button>
+      {/* Mesma confirmação do "Encerrar" logo acima, e pela mesma razão: o
+          link ficava a 24 px do botão principal e apagava a prova inteira num
+          toque. Sem nada respondido, sai direto. */}
+      {!confirmandoSaida ? (
+        <button
+          onClick={() => (respondidas > 0 ? setConfirmandoSaida(true) : onSair())}
+          className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+        >
+          Abandonar a prova
+        </button>
+      ) : (
+        <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
+          <p className="text-sm font-medium">
+            {respondidas === 1
+              ? "Abandonar apaga a resposta que você já deu"
+              : `Abandonar apaga as ${respondidas} respostas que você já deu`}{" "}
+            — só a prova encerrada entra no histórico e mostra o gabarito.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setConfirmandoSaida(false)}
+              className="rounded-lg border-2 border-slate-400 px-4 py-2 text-sm font-semibold transition hover:border-slate-500"
+            >
+              Continuar a prova
+            </button>
+            <button
+              onClick={onSair}
+              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
+            >
+              Abandonar mesmo assim
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

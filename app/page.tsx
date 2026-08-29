@@ -18,6 +18,7 @@ import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaDesafio from "@/components/TelaDesafio";
 import TelaImpressao from "@/components/TelaImpressao";
+import CartaoRetomar from "@/components/CartaoRetomar";
 import { useHistorico } from "@/hooks/useHistorico";
 import {
   questoesParaRevisao,
@@ -31,6 +32,14 @@ import {
   type Desafio,
 } from "@/lib/desafio";
 import { lerAssunto, questoesDoTopico } from "@/lib/ementa";
+import type { Escolhas } from "@/lib/bateria";
+import { respostasDe } from "@/lib/bateria";
+import {
+  gravar as gravarEmCurso,
+  limpar as limparEmCurso,
+  ler as lerEmCurso,
+  type Retomada,
+} from "@/lib/bateria-em-curso";
 import { lerPreferencias } from "@/lib/preferencias";
 import { codigoDaBateria } from "@/lib/semente";
 import { CLASSE_PADRAO, TEMAS, tempoDaBateria } from "@/lib/constantes";
@@ -111,6 +120,21 @@ export default function Home() {
   const [motivoFim, setMotivoFim] = useState<MotivoFim>("manual");
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [linkDesafio, setLinkDesafio] = useState<string | null>(null);
+  /**
+   * O instante em que o cronômetro acaba (epoch ms), espelhando o prazo do
+   * `useCronometro`. Guardado aqui porque é isso que a bateria salva precisa:
+   * segundos restantes só valem enquanto a aba está viva; o instante do fim
+   * sobrevive a ela.
+   */
+  const [prazo, setPrazo] = useState<number | null>(null);
+  /** A bateria interrompida que a home oferece retomar. */
+  const [retomada, setRetomada] = useState<Retomada | null>(null);
+  /** Folha, posição e marcações com que a tela de bateria monta. */
+  const [inicial, setInicial] = useState<{
+    escolhas: Escolhas;
+    indice: number;
+    marcadas: number[];
+  } | null>(null);
   const [impressao, setImpressao] = useState<{
     desafio: Desafio;
     baterias: { tema: Tema; questoes: Questao[] }[];
@@ -149,10 +173,106 @@ export default function Home() {
     // preferida, fica no início em silêncio — `lerAssunto` já é desconfiado, e
     // uma tela de erro para um link velho não ajudaria ninguém.
     const t = lerAssunto(window.location.search);
-    if (!t) return;
-    const doTopico = questoesDoTopico(t, lerPreferencias().classe);
-    if (doTopico.length > 0) iniciarAssunto(doTopico);
+    if (t) {
+      const doTopico = questoesDoTopico(t, lerPreferencias().classe);
+      if (doTopico.length > 0) {
+        iniciarAssunto(doTopico);
+        return;
+      }
+    }
+
+    // Só depois dos links: quem abriu um endereço específico pediu aquilo, e
+    // não a bateria de ontem. A retomada é oferecida, nunca imposta — cair
+    // direto na bateria seria sequestrar a home de quem só queria começar
+    // outra coisa.
+    setRetomada(lerEmCurso());
   }, []);
+
+  /**
+   * Grava a bateria em andamento a cada resposta.
+   *
+   * As telas de bateria avisam a mudança; o contexto (matéria, classe, modo,
+   * regime, prazo, plano e as matérias já concluídas) só existe aqui. Ids em
+   * vez de questões: ver `lib/bateria-em-curso.ts`.
+   */
+  function registrarProgresso(
+    escolhas: Escolhas,
+    indice: number,
+    marcadas: number[] = [],
+  ) {
+    gravarEmCurso({
+      versao: 1,
+      quando: new Date().toISOString(),
+      modo,
+      regime,
+      tema: temaAtual,
+      classe: classeAtual,
+      ids: questoes.map((q) => q.id),
+      escolhas,
+      indice,
+      marcadas,
+      prazo,
+      plano: plano
+        ? {
+            temas: plano.temas,
+            quantidade: plano.quantidade,
+            cronometrar: plano.cronometrar,
+            soIneditas: plano.soIneditas,
+            desafio: plano.desafio,
+          }
+        : null,
+      materias: materiasProva.map((m) => ({
+        tema: m.tema,
+        ids: m.respostas.map((r) => r.questao.id),
+        escolhas: m.respostas.map((r) => r.respondeu),
+      })),
+    });
+  }
+
+  /** Volta ao início e apaga a bateria salva: sair é sair. */
+  function abandonar() {
+    limparEmCurso();
+    setInicial(null);
+    setEtapa("inicio");
+  }
+
+  /** Recompõe o estado da bateria salva e volta para dentro dela. */
+  function retomar(r: Retomada) {
+    const { bateria } = r;
+    setModo(bateria.modo);
+    setRegime(bateria.regime);
+    setTemaAtual(bateria.tema);
+    setClasseAtual(bateria.classe);
+    setQuestoes(r.questoes);
+    setRespostas([]);
+    setTempoSegundos(r.restanteSegundos);
+    setPrazo(bateria.prazo);
+    setMateriasProva(
+      r.materias.map((m) => ({
+        tema: m.tema,
+        respostas: respostasDe(m.questoes, m.escolhas),
+      })),
+    );
+    setPlano(
+      bateria.plano
+        ? {
+            temas: bateria.plano.temas,
+            quantidade: bateria.plano.quantidade,
+            classe: bateria.classe,
+            cronometrar: bateria.plano.cronometrar,
+            soIneditas: bateria.plano.soIneditas,
+            desafio: bateria.plano.desafio,
+          }
+        : null,
+    );
+    setInicial({
+      escolhas: bateria.escolhas,
+      indice: bateria.indice,
+      marcadas: bateria.marcadas,
+    });
+    setRetomada(null);
+    setEtapa("simulado");
+  }
 
   /**
    * Toda troca de tela recomeça no topo.
@@ -188,9 +308,15 @@ export default function Home() {
     );
     setRespostas([]);
     setTemaAtual(tema);
-    setTempoSegundos(
-      p.cronometrar ? tempoDaBateria(p.classe, p.quantidade) : null,
-    );
+    const segundos = p.cronometrar
+      ? tempoDaBateria(p.classe, p.quantidade)
+      : null;
+    setTempoSegundos(segundos);
+    // O mesmo instante que o `useCronometro` vai calcular ao montar: é ele que
+    // permite retomar a prova com o tempo que de fato sobrou, e não com o que
+    // sobrava quando a aba fechou.
+    setPrazo(segundos === null ? null : Date.now() + segundos * 1000);
+    setInicial(null);
     setEtapa("simulado");
   }
 
@@ -234,6 +360,8 @@ export default function Home() {
     setQuestoes(sorteadas);
     setRespostas([]);
     setTempoSegundos(null);
+    setPrazo(null);
+    setInicial(null);
     setEtapa("simulado");
   }
 
@@ -281,12 +409,18 @@ export default function Home() {
     setRespostas([]);
     setClasseAtual(classe);
     setTempoSegundos(null);
+    setPrazo(null);
+    setInicial(null);
     setEtapa("simulado");
   }
 
   function concluir(finais: Resposta[], motivo: MotivoFim) {
     setRespostas(finais);
     setMotivoFim(motivo);
+    setInicial(null);
+    // A bateria concluída não é mais "em curso". Numa prova de várias
+    // matérias, a etapa de intervalo grava a próxima assim que ela começa.
+    limparEmCurso();
     // Só entra no histórico a bateria terminada; abandonar não conta. A
     // revisão e o estudo por assunto também registram: acertar ali tira a
     // questão da lista de erros e alimenta o desempenho por questão.
@@ -372,6 +506,16 @@ export default function Home() {
 
       {etapa === "inicio" && (
         <div className="space-y-8">
+          {retomada && (
+            <CartaoRetomar
+              retomada={retomada}
+              onRetomar={() => retomar(retomada)}
+              onDescartar={() => {
+                limparEmCurso();
+                setRetomada(null);
+              }}
+            />
+          )}
           <ResumoDesempenho
             historico={historico}
             carregado={carregado}
@@ -413,16 +557,23 @@ export default function Home() {
             key={`${temaAtual}-${materiasProva.length}`}
             questoes={questoes}
             tempoSegundos={tempoSegundos}
+            escolhasIniciais={inicial?.escolhas ?? null}
+            indiceInicial={inicial?.indice ?? 0}
+            marcadasIniciais={inicial?.marcadas}
             onConcluir={concluir}
-            onSair={() => setEtapa("inicio")}
+            onSair={abandonar}
+            onProgresso={registrarProgresso}
           />
         ) : (
           <TelaSimulado
             key={`${temaAtual}-${materiasProva.length}`}
             questoes={questoes}
             tempoSegundos={tempoSegundos}
+            escolhasIniciais={inicial?.escolhas ?? null}
+            indiceInicial={inicial?.indice ?? 0}
             onConcluir={concluir}
-            onSair={() => setEtapa("inicio")}
+            onSair={abandonar}
+            onProgresso={registrarProgresso}
           />
         ))}
 
@@ -460,7 +611,7 @@ export default function Home() {
           cronometrado={plano.cronometrar}
           restantes={plano.temas.length - materiasProva.length}
           onProsseguir={() => iniciarMateria(plano, materiasProva.length)}
-          onAbandonar={() => setEtapa("inicio")}
+          onAbandonar={abandonar}
         />
       )}
 
