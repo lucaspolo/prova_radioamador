@@ -155,6 +155,23 @@ export default function Home() {
   }, []);
 
   /**
+   * Toda troca de tela recomeça no topo.
+   *
+   * A rolagem é da janela, e trocar de etapa só troca o conteúdo dentro dela —
+   * então a posição da tela anterior fica. Como o botão que leva à etapa
+   * seguinte costuma estar embaixo (o "Iniciar" da home vem depois de toda a
+   * configuração; o "Imprimir em branco" fica no rodapé), a tela nova abria
+   * pelo meio: a prova cega começava com a questão e o cronômetro acima da
+   * borda superior, e o que se via era a folha de respostas.
+   *
+   * Sem `behavior: "smooth"` de propósito: aqui não é navegação dentro da
+   * página, é troca de tela — animar seria assistir a página anterior passar.
+   */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [etapa]);
+
+  /**
    * Prepara a matéria de índice `i` do plano e entra na bateria.
    *
    * Recebe o plano por parâmetro, e não do estado: quem chama acabou de

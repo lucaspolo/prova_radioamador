@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { MotivoFim, Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import { folhaVazia, respostasDe } from "@/lib/bateria";
@@ -29,6 +29,9 @@ export default function TelaSimulado({
 }: Props) {
   const [indice, setIndice] = useState(0);
   const [escolhas, setEscolhas] = useState(() => folhaVazia(questoes.length));
+  const topo = useRef<HTMLDivElement>(null);
+  const titulo = useRef<HTMLHeadingElement>(null);
+  const botaoAvancar = useRef<HTMLButtonElement>(null);
 
   const questao = questoes[indice];
   const escolhida = escolhas[indice];
@@ -67,6 +70,42 @@ export default function TelaSimulado({
     onConcluir(respostasDe(questoes, escolhas), "tempo");
   });
 
+  /**
+   * Cada questão nova recomeça no alto da tela.
+   *
+   * A rolagem é da janela e não se desfaz sozinha ao trocar de questão: quem
+   * rolou para ler a explicação da anterior, ou para chegar ao botão de
+   * avançar, caía na próxima com a afirmação já acima da borda — via o par
+   * V/F sem ter lido o que responder.
+   *
+   * Rola o bloco de progresso, e não o cartão: o contador e o cronômetro
+   * fazem parte do que se precisa ver ao começar a questão.
+   */
+  useEffect(() => {
+    topo.current?.scrollIntoView({ block: "start" });
+    // O foco vai SEMPRE para o título, e aqui isso é uma proteção, não só
+    // acessibilidade: ao avançar, o botão "Próxima questão" some e o par V/F
+    // toma o lugar dele no DOM — o foco ficava sobre o "Falso" da questão
+    // nova, e o Enter seguinte respondia por conta própria. Nenhum controle
+    // desta tela sobrevive à troca de questão, então não há foco de ninguém a
+    // roubar (na prova cega, onde "Anterior/Próxima" persistem, a regra é
+    // outra).
+    titulo.current?.focus({ preventScroll: true });
+  }, [indice]);
+
+  /**
+   * O foco vai para "Próxima questão" assim que o gabarito aparece.
+   *
+   * Era `autoFocus`, que o React só honra na montagem do elemento — e aqui o
+   * botão nasce dentro de um ramo que troca de conteúdo, não de uma tela nova.
+   * Medido em produção: depois de responder, o foco ficava no `body`, o Tab
+   * seguinte ia parar no "Pular para o conteúdo" e o comentário do atalho de
+   * teclado abaixo descrevia um comportamento que não existia.
+   */
+  useEffect(() => {
+    if (respondida) botaoAvancar.current?.focus({ preventScroll: true });
+  }, [respondida, indice]);
+
   // Atalhos: V / F para responder, Enter ou espaço para avançar. Numa bateria
   // de 20 questões, a mão não precisa sair do teclado.
   useEffect(() => {
@@ -98,7 +137,14 @@ export default function TelaSimulado({
   return (
     <div className="space-y-6">
       {/* Progresso */}
-      <div>
+      <div ref={topo} className="scroll-mt-4">
+        {/* Alvo do foco a cada questão: dá ao leitor de tela a posição na
+            bateria antes da afirmação, que o cartão anuncia por `aria-live`.
+            Fora do cartão de propósito — dentro dele, a mesma informação seria
+            lida duas vezes. */}
+        <h2 ref={titulo} tabIndex={-1} className="sr-only">
+          Questão {indice + 1} de {questoes.length} — {ROTULO_CURTO[questao.tema]}
+        </h2>
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="text-slate-500 dark:text-slate-400">
             Questão {indice + 1} de {questoes.length}
@@ -107,7 +153,7 @@ export default function TelaSimulado({
             <span
               className={`font-mono font-medium tabular-nums ${
                 restante <= 60
-                  ? "text-rose-600 dark:text-rose-400"
+                  ? "text-rose-700 dark:text-rose-400"
                   : "text-slate-600 dark:text-slate-300"
               }`}
               aria-label="tempo restante"
@@ -146,14 +192,20 @@ export default function TelaSimulado({
             className="rounded-xl border-2 border-emerald-500 py-5 text-lg font-bold text-emerald-700 transition hover:bg-emerald-500 hover:text-white dark:text-emerald-300"
           >
             Verdadeiro
-            <span className="ml-2 text-xs font-normal opacity-60">V</span>
+            {/* `aria-hidden` para o leitor de tela não anunciar "VerdadeiroV";
+                sem `opacity`, que deixava a dica em 2,5:1. */}
+            <span aria-hidden className="ml-2 text-xs font-normal">
+              V
+            </span>
           </button>
           <button
             onClick={() => responder(false)}
             className="rounded-xl border-2 border-rose-500 py-5 text-lg font-bold text-rose-700 transition hover:bg-rose-500 hover:text-white dark:text-rose-300"
           >
             Falso
-            <span className="ml-2 text-xs font-normal opacity-60">F</span>
+            <span aria-hidden className="ml-2 text-xs font-normal">
+              F
+            </span>
           </button>
         </div>
       ) : (
@@ -178,7 +230,9 @@ export default function TelaSimulado({
               }`}
             >
               {acertou ? "Acertou" : "Errou"}
-              <span className="ml-2 text-sm font-medium opacity-80">
+              {/* Sem `opacity`: este pedaço é a informação mais importante do
+                  feedback ("a afirmação é FALSA") e a 80% ficava em 3,54:1. */}
+              <span className="ml-2 text-sm font-medium">
                 — a afirmação é{" "}
                 {questao.resposta_correta ? "VERDADEIRA" : "FALSA"}
               </span>
@@ -196,7 +250,7 @@ export default function TelaSimulado({
                   : "Estude o tema em:"}
               </span>{" "}
               {questao.arquivo_origem}
-              <span className="opacity-70"> · página {questao.pagina}</span>
+              <span> · página {questao.pagina}</span>
               <div>
                 <BotaoConsultarMaterial
                   arquivoOrigem={questao.arquivo_origem}
@@ -216,11 +270,13 @@ export default function TelaSimulado({
 
           <button
             onClick={avancar}
-            autoFocus
+            ref={botaoAvancar}
             className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
           >
             {indice + 1 >= questoes.length ? "Ver resultado" : "Próxima questão"}
-            <span className="ml-2 text-xs font-normal opacity-60">Enter</span>
+            <span aria-hidden className="ml-2 text-xs font-normal opacity-80">
+              Enter
+            </span>
           </button>
         </div>
       )}
