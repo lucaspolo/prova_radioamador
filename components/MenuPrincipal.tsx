@@ -97,7 +97,9 @@ export default function MenuPrincipal({
         aria-expanded={aberto}
         aria-controls="menu-principal"
         onClick={() => (aberto ? fechar(true) : setAberto(true))}
-        className="flex items-center gap-2 rounded-xl border-2 border-slate-300 px-3 py-2 text-sm font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+        // Compacto no celular: a 360 px o gatilho comia a largura que faltava
+        // ao título, que quebrava em duas linhas por causa disso.
+        className="flex shrink-0 items-center gap-1.5 rounded-xl border-2 border-slate-300 px-2.5 py-2 text-sm font-medium transition hover:border-slate-400 sm:gap-2 sm:px-3 dark:border-slate-700 dark:hover:border-slate-500"
       >
         <span aria-hidden className="text-lg leading-none">
           ☰

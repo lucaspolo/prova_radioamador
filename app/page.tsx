@@ -470,17 +470,20 @@ export default function Home() {
           emBateria ? "mb-4" : "mb-8"
         }`}
       >
-        <div>
+        <div className="min-w-0">
+          {/* `text-xl` no celular porque a 360 px o título quebrava em duas
+              linhas e deixava "Radioamador" sozinho na segunda — três linhas
+              de cabeçalho antes de qualquer coisa acionável. */}
           <h1
-            className={`font-bold tracking-tight ${
-              emBateria ? "text-lg" : "text-2xl"
+            className={`font-bold tracking-tight text-balance ${
+              emBateria ? "text-lg" : "text-lg leading-tight sm:text-2xl"
             }`}
           >
             Simulados · Radioamador
           </h1>
           {!emBateria && (
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Questões de certo ou errado no formato da prova da Anatel.
+              Certo ou errado, no formato da prova da Anatel.
             </p>
           )}
           {/* O caminho para o material, no alto e sem caixa. Quem instala o app
@@ -492,13 +495,20 @@ export default function Home() {
               resultado seria porta de mão única — sair descartaria o gabarito
               recém-conquistado, pela mesma razão que esconde o menu. */}
           {etapa === "inicio" && (
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              A ementa oficial e os PDFs da Anatel estão no{" "}
+            <p className="mt-1.5 text-sm">
+              {/* A frase inteira é o link. Antes, a explicação em volta dele
+                  ("A ementa oficial e os PDFs da Anatel estão no…") gastava
+                  três linhas a 360 px e ainda deixava o "›" órfão numa quarta —
+                  mais altura do que o destino merece antes de a pessoa ver a
+                  primeira decisão da tela. */}
               <Link
                 href="/estudar"
-                className="font-medium underline underline-offset-4 hover:text-slate-700 dark:hover:text-slate-200"
+                className="font-medium text-slate-500 underline underline-offset-4 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               >
-                material de estudo ›
+                Ementa oficial e PDFs da{" "}
+                {/* O "›" preso à última palavra: solto, ele caía sozinho numa
+                    linha só para ele a 320 px. */}
+                <span className="whitespace-nowrap">Anatel ›</span>
               </Link>
             </p>
           )}
