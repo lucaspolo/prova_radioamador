@@ -1108,10 +1108,11 @@ const PROPS_INICIO = {
   checar("a consulta rápida saiu da home", !home.includes("Consulta rápida"));
   checar("a escolha da prova continua à vista", home.includes("Iniciar modo treino"));
   // O material tem de ser descobrível de fora do menu: quem instala o app não
-  // desconfia que existe uma ementa oficial.
+  // desconfia que existe uma ementa oficial — e é a ementa, e não o nome da
+  // tela, que a linha precisa prometer.
   checar(
     "a home aponta para o material de estudo",
-    home.includes('href="/estudar"') && home.includes("material de estudo"),
+    home.includes('href="/estudar"') && home.includes("Ementa oficial e PDFs"),
   );
 }
 

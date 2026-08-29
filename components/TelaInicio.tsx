@@ -149,15 +149,23 @@ export default function TelaInicio({
               <button
                 key={c}
                 onClick={() => escolherClasse(c)}
-                className={`flex-1 rounded-xl border-2 px-3 py-3 transition ${
+                className={`min-w-0 flex-1 rounded-xl border-2 px-1.5 py-2.5 transition sm:px-3 sm:py-3 ${
                   classe === c
                     ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
                     : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
                 }`}
               >
-                <div className="text-base font-bold">Classe {c}</div>
-                <div className="mt-0.5 text-xs opacity-70">
-                  {FORMATO[c].questoes} questões · mín. {FORMATO[c].minimo}
+                <div className="text-sm font-bold whitespace-nowrap sm:text-base">
+                  Classe {c}
+                </div>
+                {/* Duas linhas fixas em vez de três: a 360 px, "15 questões ·
+                    mín. 8" quebrava em "15 / questões · / mín. 8" e cada
+                    cartão crescia 20 px. A quebra agora é onde faz sentido. */}
+                <div className="mt-0.5 text-xs whitespace-nowrap opacity-70">
+                  {FORMATO[c].questoes} questões
+                </div>
+                <div className="text-xs whitespace-nowrap opacity-70">
+                  mín. {FORMATO[c].minimo}
                 </div>
               </button>
             ))}
