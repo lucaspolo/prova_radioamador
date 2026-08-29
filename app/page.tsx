@@ -446,19 +446,43 @@ export default function Home() {
     setEtapa(plano.temas.length > 1 ? "resultadoProva" : "resultado");
   }
 
+  /**
+   * As telas em que o cabeçalho encolhe: durante a bateria e depois dela.
+   *
+   * O bloco de título com a tagline come cerca de 200 px no celular (o título
+   * quebra em duas linhas a 390 px) — espaço que na bateria pertence à
+   * questão e, no resultado, ao veredito. Fora da bateria ele fica: é ali que
+   * apresenta o produto a quem chegou agora.
+   */
+  const emBateria =
+    etapa === "simulado" ||
+    etapa === "intervalo" ||
+    etapa === "resultado" ||
+    etapa === "resultadoProva";
+
   return (
     <main
       id="conteudo"
       className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:py-12"
     >
-      <header className="mb-8 flex items-start justify-between gap-4">
+      <header
+        className={`flex items-start justify-between gap-4 ${
+          emBateria ? "mb-4" : "mb-8"
+        }`}
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1
+            className={`font-bold tracking-tight ${
+              emBateria ? "text-lg" : "text-2xl"
+            }`}
+          >
             Simulados · Radioamador
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Questões de certo ou errado no formato da prova da Anatel.
-          </p>
+          {!emBateria && (
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Questões de certo ou errado no formato da prova da Anatel.
+            </p>
+          )}
           {/* O caminho para o material, no alto e sem caixa. Quem instala o app
               não desconfia que existe uma ementa oficial, e um item de menu não
               conta isso a ninguém — mas a home é sobre fazer a bateria de hoje,
