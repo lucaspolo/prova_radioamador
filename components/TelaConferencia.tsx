@@ -418,7 +418,7 @@ export default function TelaConferencia() {
             </span>
           )}
           {conferencia.storageRecusou && (
-            <span className="text-xs text-rose-600 dark:text-rose-400">
+            <span className="text-xs text-rose-700 dark:text-rose-400">
               O navegador recusou gravar — baixe a revisão agora.
             </span>
           )}

@@ -37,7 +37,7 @@ export default function FolhaRespostas({
           em branco
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="text-amber-600 dark:text-amber-400">⚑</span>
+          <span className="text-amber-700 dark:text-amber-400">⚑</span>
           marcada
         </span>
       </div>
@@ -74,7 +74,7 @@ export default function FolhaRespostas({
               {marcada && (
                 <span
                   aria-hidden="true"
-                  className="absolute -top-1 -right-1 text-amber-600 dark:text-amber-400"
+                  className="absolute -top-1 -right-1 text-amber-700 dark:text-amber-400"
                 >
                   ⚑
                 </span>

@@ -118,8 +118,8 @@ export default function TelaResultadoProva({
               <div
                 className={`mt-1 text-sm font-semibold ${
                   m.aprovado
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-rose-600 dark:text-rose-400"
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-rose-700 dark:text-rose-400"
                 }`}
               >
                 {m.aprovado ? "Aprovado" : "Reprovado"}

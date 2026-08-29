@@ -26,7 +26,7 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
         onClick={() => alternar(questao.id)}
         className={`mt-2 text-xs underline-offset-2 hover:underline ${
           marcada
-            ? "font-medium text-amber-600 dark:text-amber-400"
+            ? "font-medium text-amber-700 dark:text-amber-400"
             : "text-slate-500 dark:text-slate-400"
         }`}
       >

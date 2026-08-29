@@ -193,7 +193,7 @@ export default function ItemConferencia({
               conferência aqui é contra o que você sabe da matéria.
             </p>
           ) : !trecho ? (
-            <p className="text-xs text-rose-600 dark:text-rose-400">
+            <p className="text-xs text-rose-700 dark:text-rose-400">
               Trecho <code>{q.trecho_id}</code> não está em trechos.json.
             </p>
           ) : passagem ? (

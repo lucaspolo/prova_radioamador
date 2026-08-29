@@ -199,16 +199,23 @@ export default function TelaInicio({
             aria-label="Matérias da bateria"
             className="grid gap-3 sm:grid-cols-3"
           >
-            {TEMAS.map((tema) => (
-              <BotaoTema
-                key={tema}
-                ativo={escolhas.includes(tema)}
-                titulo={ROTULO_CURTO[tema]}
-                detalhe={`${contagem[tema]} questões`}
-                classes={`${COR_TEMA[tema].borda} ${COR_TEMA[tema].texto}`}
-                onClick={() => alternarTema(tema)}
-              />
-            ))}
+            {TEMAS.map((tema) => {
+              const ativo = escolhas.includes(tema);
+              return (
+                <BotaoTema
+                  key={tema}
+                  ativo={ativo}
+                  titulo={ROTULO_CURTO[tema]}
+                  detalhe={`${contagem[tema]} questões`}
+                  // O fundo do tema entra só na escolhida: é ele que passa a
+                  // dizer "selecionada" no lugar do esmaecimento das outras.
+                  classes={`${COR_TEMA[tema].borda} ${COR_TEMA[tema].texto} ${
+                    ativo ? COR_TEMA[tema].fundo : ""
+                  }`}
+                  onClick={() => alternarTema(tema)}
+                />
+              );
+            })}
           </div>
           {escolhas.length > 1 && (
             <p className="mt-3 text-xs text-slate-500 italic dark:text-slate-400">
@@ -314,7 +321,7 @@ export default function TelaInicio({
               className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition ${
                 cronometrar
                   ? "border-slate-900 dark:border-slate-100"
-                  : "border-slate-300 opacity-70 hover:opacity-100 dark:border-slate-700"
+                  : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
               }`}
             >
               <span>
@@ -347,7 +354,7 @@ export default function TelaInicio({
           className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition ${
             soIneditas
               ? "border-slate-900 dark:border-slate-100"
-              : "border-slate-300 opacity-70 hover:opacity-100 dark:border-slate-700"
+              : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
           }`}
         >
           <span>
@@ -483,6 +490,15 @@ function BotaoRegime({
   );
 }
 
+/**
+ * Cartão de matéria.
+ *
+ * Estado não se marca com opacidade: `opacity-70` derrubava o título da
+ * matéria para 2,9–4,2:1 e o detalhe para 2,66:1, abaixo do mínimo AA — e
+ * ainda fazia a matéria disponível parecer desabilitada. A escolhida ganha o
+ * fundo do próprio tema (passado em `classes`); as outras ficam em contraste
+ * cheio.
+ */
 function BotaoTema({
   ativo,
   titulo,
@@ -502,7 +518,7 @@ function BotaoTema({
       className={`rounded-xl border-2 p-4 text-left transition ${classes} ${
         ativo
           ? "ring-2 ring-slate-900 ring-offset-2 ring-offset-[var(--background)] dark:ring-slate-100"
-          : "opacity-70 hover:opacity-100"
+          : "hover:bg-current/5"
       }`}
     >
       <div className="font-semibold">{titulo}</div>

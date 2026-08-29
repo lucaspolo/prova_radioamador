@@ -58,7 +58,7 @@ export default function BotaoConsultarMaterial({
         {/* A p. 1 não se anuncia: abrir um documento na primeira página é só
             abrir o documento, e o sufixo ali seria ruído. */}
         {pagina > 1 && (
-          <span className="ml-1.5 opacity-60">
+          <span className="ml-1.5 font-normal">
             {compacto ? `· p. ${pagina}` : `· página ${pagina}`}
           </span>
         )}
