@@ -141,16 +141,33 @@ export function sortearDesafio(
  * tira da lista (a revisão também entra no histórico); questões nunca vistas
  * ou acertadas por último ficam de fora. Mistura os três temas de propósito —
  * revisão é estudo, não prova, e não recebe veredito de aprovação.
+ *
+ * A ordem é a do `peso`, da mais urgente para a menos: o erro esquecido há
+ * três dias ou mais vem antes do erro de hoje, que é exatamente a curva que
+ * `lib/prioridade.ts` já modela para o sorteio. Antes era embaralhamento puro,
+ * o que fazia diferença zero enquanto a revisão era uma sessão só — e faz toda
+ * a diferença agora que ela vem em lotes: o lote precisa ser o dos vinte erros
+ * mais urgentes, não o de vinte erros quaisquer.
+ *
+ * Sem `limite`, devolve tudo — é assim que a tela inicial conta quantos erros
+ * existem em aberto.
  */
 export function questoesParaRevisao(
   historico: Historico,
   classe: Classe = CLASSE_PADRAO,
+  limite?: number,
 ): Questao[] {
   const desempenho = desempenhoPorQuestao(historico);
   const abertas = acervo(classe).filter(
     (q) => desempenho.get(q.id)?.errouNaUltima,
   );
-  return embaralharSimples(abertas);
+  // Embaralha antes de ordenar: entre erros de mesmo peso — o caso comum, já
+  // que a escala é curta — a ordem passa a variar de sessão para sessão em vez
+  // de seguir para sempre a ordem do banco.
+  const ordenadas = embaralharSimples(abertas).sort(
+    (a, b) => peso(desempenho.get(b.id)) - peso(desempenho.get(a.id)),
+  );
+  return limite === undefined ? ordenadas : ordenadas.slice(0, limite);
 }
 
 /** Quantas questões estão disponíveis numa matéria, para a classe. */

@@ -41,6 +41,10 @@ interface Props {
   onRevisarErros?: () => void;
   /** Leva à lista de assuntos, para estudar o que caiu aqui. */
   onEstudarAssunto?: () => void;
+  /** Erros que continuam em aberto depois desta bateria. */
+  restantesRevisao?: number;
+  /** Abre o próximo lote da revisão. */
+  onContinuarRevisao?: () => void;
 }
 
 export default function TelaResultado({
@@ -56,6 +60,8 @@ export default function TelaResultado({
   onRefazer,
   onRevisarErros,
   onEstudarAssunto,
+  restantesRevisao = 0,
+  onContinuarRevisao,
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -114,6 +120,37 @@ export default function TelaResultado({
   }
 
   if (modo === "revisao" || modo === "assunto") {
+    /**
+     * Em estudo, o próximo passo é continuar de onde parou.
+     *
+     * Não oferece "revisar os erros desta bateria": o que se errou aqui já
+     * voltou para a lista de erros em aberto, e é dela que sai o próximo lote
+     * — repetir agora as mesmas questões seria estudar a mesma página duas
+     * vezes seguidas.
+     */
+    const passosEstudo: Passo[] = [];
+    if (onContinuarRevisao && modo === "revisao" && restantesRevisao > 0) {
+      passosEstudo.push({
+        rotulo: `Continuar revisando · ${restantesRevisao} ${restantesRevisao === 1 ? "erro em aberto" : "erros em aberto"}`,
+        detalhe: `Mais um lote, começando pelos que você errou há mais tempo.`,
+        onClick: onContinuarRevisao,
+      });
+    }
+    if (onRefazer) {
+      passosEstudo.push({
+        rotulo: `Refazer${tema ? ` ${ROTULO_CURTO[tema]}` : ""} · ${total} questões`,
+        detalhe: "Outro sorteio, mesma configuração.",
+        onClick: onRefazer,
+      });
+    }
+    if (onEstudarAssunto) {
+      passosEstudo.push({
+        rotulo: "Estudar por assunto",
+        detalhe:
+          "As seções do material, cada uma com a bateria só daquele assunto.",
+        onClick: onEstudarAssunto,
+      });
+    }
     return (
       <div className="space-y-8">
         <div className="rounded-2xl border-2 border-slate-300 p-8 text-center dark:border-slate-700">
@@ -135,11 +172,18 @@ export default function TelaResultado({
               ? "Estudo por assunto não tem veredito de aprovação: o que você errou entra na revisão de erros."
               : "Revisão não tem veredito de aprovação: o que você acertou sai da lista de erros; o que errou volta a aparecer."}
           </p>
+          {modo === "revisao" && restantesRevisao > 0 && (
+            <p className="mt-2 font-medium">
+              {restantesRevisao === 1
+                ? "Ainda há 1 erro em aberto."
+                : `Ainda há ${restantesRevisao} erros em aberto.`}
+            </p>
+          )}
         </div>
 
         {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
-        <ProximoPasso passos={passos} />
+        <ProximoPasso passos={passosEstudo} />
 
         <AcoesResultado resumo={{ classe, tema, acertos, total }} />
 

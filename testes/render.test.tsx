@@ -893,6 +893,48 @@ const PROPS_INICIO = {
     comMarcadas.includes("Marcadas (3)"),
   );
 
+  // A revisão em lotes precisa dizer o que sobrou e oferecer o próximo lote:
+  // sem isso, terminar 20 de 91 parece ter terminado a revisão.
+  const revisaoParcial = renderToStaticMarkup(
+    <TelaResultado
+      modo="revisao"
+      respostas={questoes.slice(0, 20).map((q, i) => ({
+        questao: q,
+        respondeu: i < 14 ? q.resposta_correta : !q.resposta_correta,
+        acertou: i < 14,
+      }))}
+      onReiniciar={() => {}}
+      restantesRevisao={71}
+      onContinuarRevisao={() => {}}
+    />,
+  );
+  checar(
+    "a revisão diz quantos erros continuam em aberto",
+    revisaoParcial.includes("Ainda há 71 erros em aberto"),
+  );
+  checar(
+    "e oferece o próximo lote",
+    revisaoParcial.includes("Continuar revisando · 71 erros em aberto"),
+  );
+  // Zerou a lista: não há próximo lote a oferecer.
+  const revisaoZerada = renderToStaticMarkup(
+    <TelaResultado
+      modo="revisao"
+      respostas={questoes.slice(0, 5).map((q) => ({
+        questao: q,
+        respondeu: q.resposta_correta,
+        acertou: true,
+      }))}
+      onReiniciar={() => {}}
+      restantesRevisao={0}
+      onContinuarRevisao={() => {}}
+    />,
+  );
+  checar(
+    "sem erro em aberto, não oferece continuar",
+    !revisaoZerada.includes("Continuar revisando"),
+  );
+
   // Modo revisão: estudo, não prova — sem veredito de aprovação.
   const revisao = renderToStaticMarkup(
     <TelaResultado

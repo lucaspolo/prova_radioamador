@@ -24,7 +24,11 @@ interface Props {
   indiceInicial?: number;
   marcadasIniciais?: number[];
   onConcluir: (respostas: Resposta[], motivo: MotivoFim) => void;
-  onSair: () => void;
+  /**
+   * Sair no meio. A prova cega nunca entrega parcial: aqui existe veredito, e
+   * meia prova registrada como bateria falsearia a prontidão.
+   */
+  onSair: (parcial: Resposta[]) => void;
   /** Avisa a cada mudança, para a prova sobreviver a fechar a aba. */
   onProgresso?: (
     escolhas: Escolhas,
@@ -377,7 +381,9 @@ export default function TelaProvaCega({
           toque. Sem nada respondido, sai direto. */}
       {!confirmandoSaida ? (
         <button
-          onClick={() => (respondidas > 0 ? setConfirmandoSaida(true) : onSair())}
+          onClick={() =>
+            respondidas > 0 ? setConfirmandoSaida(true) : onSair([])
+          }
           className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
         >
           Abandonar a prova
@@ -398,7 +404,7 @@ export default function TelaProvaCega({
               Continuar a prova
             </button>
             <button
-              onClick={onSair}
+              onClick={() => onSair([])}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
             >
               Abandonar mesmo assim

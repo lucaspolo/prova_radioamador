@@ -38,6 +38,17 @@ export const CLASSE_PADRAO: Classe = "B";
 
 export const CLASSES: Classe[] = ["C", "B", "A"];
 
+/**
+ * Quantos erros uma sessão de revisão traz por vez.
+ *
+ * A revisão levava TODOS os erros em aberto de uma vez — 91 questões no
+ * histórico de quem estuda há semanas, uma hora de leitura de explicações que
+ * só entrava no histórico se fosse até o fim. Vinte é o tamanho da prova real
+ * da Classe B: cabe numa sentada, e o resultado convida a continuar enquanto
+ * sobrar erro.
+ */
+export const LOTE_REVISAO = 20;
+
 /** Percentual mínimo para aprovação na classe. */
 export function percentualAprovacao(classe: Classe): number {
   const f = FORMATO[classe];
