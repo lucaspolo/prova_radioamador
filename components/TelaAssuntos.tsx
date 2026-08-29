@@ -20,6 +20,19 @@ interface Props {
  * transforma "Eletrônica em 48%" em "o fraco é propagação" — e a bateria sai
  * só dali.
  */
+/** Âncora estável a partir do nome do grupo. */
+function idDoGrupo(grupo: string): string {
+  return (
+    "grupo-" +
+    grupo
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+  );
+}
+
 export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const titulo = useRef<HTMLHeadingElement>(null);
@@ -56,10 +69,41 @@ export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) 
         </p>
       </div>
 
+      {/* Atalhos para os grupos: são 91 assuntos em 10,5 telas de celular, e a
+          ementa de Eletrônica — a matéria que mais reprova — começava a 7,4
+          telas de rolagem. Chips e não campo de busca: digitar no celular custa
+          mais que tocar num de cinco. */}
+      <nav aria-label="Ir para um grupo de assuntos" className="flex flex-wrap gap-2">
+        {[...porGrupo.entries()].map(([grupo, doGrupo]) => (
+          // Botão que rola, e não link de âncora: um `<a href="#…">` faz o
+          // roteador tratar a URL como navegação e remontar a página — a tela
+          // de assuntos voltava para a inicial no meio do caminho.
+          <button
+            key={grupo}
+            type="button"
+            onClick={() =>
+              document
+                .getElementById(idDoGrupo(grupo))
+                ?.scrollIntoView({ block: "start" })
+            }
+            className="rounded-full border-2 border-slate-300 px-3 py-1.5 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+          >
+            {grupo}
+            <span className="ml-1.5 text-slate-500 tabular-nums dark:text-slate-400">
+              {doGrupo.length}
+            </span>
+          </button>
+        ))}
+      </nav>
+
       {[...porGrupo.entries()].map(([grupo, doGrupo]) => (
-        <section key={grupo}>
+        <section key={grupo} id={idDoGrupo(grupo)} className="scroll-mt-4">
           <h3 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
             {grupo}
+            <span className="ml-2 font-normal normal-case tabular-nums">
+              {doGrupo.length}{" "}
+              {doGrupo.length === 1 ? "assunto" : "assuntos"}
+            </span>
           </h3>
           <div className="grid gap-2 sm:grid-cols-2">
             {doGrupo.map(({ titulo, secao, questoes }) => {

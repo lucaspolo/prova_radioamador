@@ -204,6 +204,17 @@ const PROPS_INICIO = {
     "agrupa por documento",
     html.includes("Cartilha do Radioamador") && html.includes("Ato 926/2024"),
   );
+  // São 91 assuntos em dez telas de celular, e a ementa de Eletrônica começava
+  // a sete telas de rolagem: cada grupo vira destino de um atalho no topo.
+  checar(
+    "cada grupo tem âncora e atalho",
+    (html.match(/<section id="grupo-/g) ?? []).length >= 5 &&
+      html.includes('aria-label="Ir para um grupo de assuntos"'),
+  );
+  checar(
+    "o atalho diz quantos assuntos há no grupo",
+    /Cartilha do Radioamador<span[^>]*>\s*\d+/.test(html),
+  );
   checar(
     "diz quantas questões cada assunto tem",
     /\d+ quest(ão|ões)/.test(html),
