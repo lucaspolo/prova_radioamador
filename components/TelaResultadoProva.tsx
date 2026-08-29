@@ -146,6 +146,14 @@ export default function TelaResultadoProva({
                   /{m.respostas.length}
                 </span>
               </div>
+              {/* As em branco aparecem por matéria: numa prova cronometrada,
+                  saber que quatro ficaram sem resposta explica o placar. */}
+              {m.respostas.filter((r) => r.respondeu === null).length > 0 && (
+                <div className="text-xs text-slate-600 dark:text-slate-400">
+                  {m.respostas.filter((r) => r.respondeu === null).length} em
+                  branco
+                </div>
+              )}
               <div
                 className={`mt-1 text-sm font-semibold ${
                   m.aprovado

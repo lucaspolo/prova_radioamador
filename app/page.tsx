@@ -20,6 +20,7 @@ import TelaDesafio from "@/components/TelaDesafio";
 import TelaImpressao from "@/components/TelaImpressao";
 import CartaoRetomar from "@/components/CartaoRetomar";
 import { useHistorico } from "@/hooks/useHistorico";
+import { foiSaidaDaGuarda } from "@/hooks/useGuardaDeSaida";
 import {
   questoesParaRevisao,
   sortearDesafio,
@@ -290,6 +291,38 @@ export default function Home() {
     setRetomada(null);
     setEtapa("simulado");
   }
+
+  /**
+   * As telas de consulta entram no histórico do navegador.
+   *
+   * Fora da bateria, voltar era sair do site: nenhuma etapa empurrava entrada,
+   * então o gesto de voltar do Android — o caminho natural para a home — caía
+   * em `about:blank`. Em Assuntos, Desempenho e Consulta rápida não há
+   * progresso a perder, então aqui voltar simplesmente volta.
+   *
+   * A URL não muda (continua "/"): o service worker responde igual e nenhuma
+   * rota nova precisa existir. É só um marcador de "onde eu estava".
+   */
+  function irPara(destino: Etapa) {
+    window.history.pushState({ etapa: destino }, "");
+    setEtapa(destino);
+  }
+
+  useEffect(() => {
+    function aoVoltar(e: PopStateEvent) {
+      // A bateria tem guarda própria (`useGuardaDeSaida`), que reempurra a
+      // entrada e abre a confirmação de abandono. Se este ouvinte agisse
+      // junto, o voltar sairia da bateria por trás da confirmação.
+      if (etapa === "simulado") return;
+      // A saída normal da bateria desfaz a entrada de guarda com um
+      // `history.back()` programado; ele não é o gesto de voltar de ninguém.
+      if (foiSaidaDaGuarda()) return;
+      const alvo = (e.state as { etapa?: Etapa } | null)?.etapa;
+      setEtapa(alvo && alvo !== "simulado" ? alvo : "inicio");
+    }
+    window.addEventListener("popstate", aoVoltar);
+    return () => window.removeEventListener("popstate", aoVoltar);
+  }, [etapa]);
 
   /**
    * Toda troca de tela recomeça no topo.
@@ -580,8 +613,8 @@ export default function Home() {
           <MenuPrincipal
             atual={etapa === "assuntos" ? "inicio" : etapa}
             onInicio={() => setEtapa("inicio")}
-            onDesempenho={() => setEtapa("desempenho")}
-            onFerramentas={() => setEtapa("ferramentas")}
+            onDesempenho={() => irPara("desempenho")}
+            onFerramentas={() => irPara("ferramentas")}
           />
         )}
       </header>
@@ -609,13 +642,13 @@ export default function Home() {
           <ResumoDesempenho
             historico={historico}
             carregado={carregado}
-            onAbrir={() => setEtapa("desempenho")}
+            onAbrir={() => irPara("desempenho")}
           />
           <TelaInicio
             historico={historico}
             onIniciar={iniciar}
             onRevisar={iniciarRevisao}
-            onAssuntos={() => setEtapa("assuntos")}
+            onAssuntos={() => irPara("assuntos")}
             onImprimir={imprimirBateria}
           />
         </div>
@@ -686,7 +719,7 @@ export default function Home() {
               respostas.filter((r) => !r.acertou).map((r) => r.questao),
             )
           }
-          onEstudarAssunto={() => setEtapa("assuntos")}
+          onEstudarAssunto={() => irPara("assuntos")}
           // Quantos erros continuam em aberto DEPOIS desta bateria — o
           // histórico já foi atualizado por `concluir`.
           restantesRevisao={
@@ -716,6 +749,7 @@ export default function Home() {
           proximoTema={plano.temas[materiasProva.length]}
           cronometrado={plano.cronometrar}
           restantes={plano.temas.length - materiasProva.length}
+          motivoFim={motivoFim}
           onProsseguir={() => iniciarMateria(plano, materiasProva.length)}
           onAbandonar={abandonar}
         />

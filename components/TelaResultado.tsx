@@ -3,6 +3,7 @@
 import type { Classe, MotivoFim, Resposta, Tema } from "@/lib/tipos";
 import AcoesResultado from "./AcoesResultado";
 import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
+import AvisoEmBranco from "./AvisoEmBranco";
 import {
   CLASSE_PADRAO,
   FORMATO,
@@ -248,18 +249,10 @@ export default function TelaResultado({
             gabarito.
           </p>
         )}
-        {/* No modo cego dá para encerrar antes da hora com questões em branco.
-            Anunciar "tempo esgotado" nesse caso seria mentira. */}
-        {naoRespondidas > 0 && (
-          <p className="mt-2 text-sm font-medium text-rose-700 dark:text-rose-400">
-            {motivoFim === "tempo" ? "Tempo esgotado: " : ""}
-            {naoRespondidas}{" "}
-            {naoRespondidas === 1
-              ? "questão ficou sem resposta e conta"
-              : "questões ficaram sem resposta e contam"}{" "}
-            como erro, igual à prova real.
-          </p>
-        )}
+        <AvisoEmBranco
+          naoRespondidas={naoRespondidas}
+          motivoFim={motivoFim}
+        />
       </div>
 
       {gravacaoRecusada && <AvisoGravacaoRecusada />}

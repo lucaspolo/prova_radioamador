@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { Classe, Resposta, Tema } from "@/lib/tipos";
+import type { Classe, MotivoFim, Resposta, Tema } from "@/lib/tipos";
+import AvisoEmBranco from "./AvisoEmBranco";
 import {
   aprovadoNaMateria,
   FORMATO,
@@ -21,6 +22,8 @@ interface Props {
   cronometrado: boolean;
   /** Quantas matérias ainda faltam, contando a próxima. */
   restantes: number;
+  /** Por que a matéria terminou — o aviso de questões em branco depende disso. */
+  motivoFim?: MotivoFim;
   onProsseguir: () => void;
   onAbandonar: () => void;
 }
@@ -40,6 +43,7 @@ export default function TelaIntervalo({
   proximoTema,
   cronometrado,
   restantes,
+  motivoFim = "manual",
   onProsseguir,
   onAbandonar,
 }: Props) {
@@ -49,6 +53,7 @@ export default function TelaIntervalo({
   // O mínimo absoluto só vale no tamanho oficial; fora dele, a proporção.
   const aprovado = aprovadoNaMateria(classe, acertos, respostas.length);
   const minimo = minimoEquivalente(classe, respostas.length);
+  const naoRespondidas = respostas.filter((r) => r.respondeu === null).length;
   const minutos = Math.round(tempoDaBateria(classe, quantidade) / 60);
 
   return (
@@ -86,6 +91,10 @@ export default function TelaIntervalo({
             ? `${acertos - minimo} de folga sobre o mínimo de ${minimo} de ${respostas.length}.`
             : `${minimo - acertos} ${minimo - acertos === 1 ? "acerto faltou" : "acertos faltaram"} para o mínimo de ${minimo} de ${respostas.length}.`}
         </p>
+        <AvisoEmBranco
+          naoRespondidas={naoRespondidas}
+          motivoFim={motivoFim}
+        />
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {respostas.length === formato.questoes
             ? `Critério oficial da Classe ${classe}.`

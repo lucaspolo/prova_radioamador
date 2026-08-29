@@ -3,6 +3,25 @@
 import { useEffect, useRef } from "react";
 
 /**
+ * Ligado enquanto a guarda desfaz a própria entrada de histórico.
+ *
+ * A limpeza chama `history.back()` para não deixar um degrau a mais entre o
+ * usuário e a página anterior — e esse `back` dispara um `popstate` que, para
+ * quem estiver ouvindo de fora, é indistinguível do gesto de voltar. Sem esta
+ * bandeira, o ouvinte de `app/page.tsx` (que leva as telas de consulta ao
+ * histórico) via a saída normal da bateria como um "voltar" e mandava a pessoa
+ * para a home no lugar do resultado.
+ */
+let saindoPelaGuarda = false;
+
+/** Consome a bandeira: devolve true uma única vez, para o pop programado. */
+export function foiSaidaDaGuarda(): boolean {
+  if (!saindoPelaGuarda) return false;
+  saindoPelaGuarda = false;
+  return true;
+}
+
+/**
  * Intercepta as duas formas de sair de uma bateria sem querer: o gesto de
  * voltar e o fechamento da aba.
  *
@@ -57,6 +76,7 @@ export function useGuardaDeSaida(ativo: boolean, aoTentarSair: () => void) {
       // entre o usuário e a página de onde ele veio. O ouvinte já saiu, então
       // este `back` não dispara a confirmação.
       if ((window.history.state as typeof marca | null)?.guardaDeBateria) {
+        saindoPelaGuarda = true;
         window.history.back();
       }
     };

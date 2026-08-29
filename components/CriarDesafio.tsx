@@ -31,21 +31,34 @@ export default function CriarDesafio({
 }) {
   const [aberto, setAberto] = useState(false);
   const rotuloMaterias = temas.map((t) => ROTULO_CURTO[t]).join(", ");
-  const [link, setLink] = useState<string | null>(null);
-  const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
-  const semente = desafio?.semente ?? null;
+  /**
+   * Só a semente é estado; o desafio e o link saem dela mais a configuração
+   * ATUAL da tela.
+   *
+   * Antes, os dois eram congelados no clique enquanto a descrição ao lado
+   * seguia as props vivas: criar o link, trocar para a Classe A e mandar no
+   * grupo enviava `c=B` com o texto dizendo "Classe A", e "Imprimir em branco"
+   * saía com a configuração velha. O organizador mandava um link diferente do
+   * que estava lendo. Derivar resolve na raiz — link, descrição, texto de
+   * compartilhamento e folha impressa não têm como divergir.
+   */
+  const [semente, setSemente] = useState<string | null>(null);
+  const desafio: Desafio | null = semente
+    ? { semente, temas, quantidade, classe }
+    : null;
+  // `window` não existe na geração do HTML; o link só é montado no navegador,
+  // e só depois de a semente existir — que também só nasce num clique.
+  const link =
+    desafio && typeof window !== "undefined"
+      ? linkDoDesafio(
+          desafio,
+          `${window.location.origin}${window.location.pathname}`,
+        )
+      : null;
 
   function criar() {
-    const novo: Desafio = {
-      semente: sementeLegivel(),
-      temas,
-      quantidade,
-      classe,
-    };
-    const base = `${window.location.origin}${window.location.pathname}`;
-    setDesafio(novo);
-    setLink(linkDoDesafio(novo, base));
+    setSemente(sementeLegivel());
     setAviso(null);
   }
 

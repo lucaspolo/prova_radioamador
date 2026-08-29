@@ -43,7 +43,9 @@ export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) 
         </p>
       </div>
 
-      <div className="flex gap-2">
+      {/* `flex-wrap`: a 320 px as três abas somavam 361 px e a página inteira
+          rolava de lado; com fonte grande o estouro chegava a 93 px. */}
+      <div className="flex flex-wrap gap-2">
         <Aba ativa={aba === "tabelas"} onClick={() => setAba("tabelas")}>
           Tabelas
         </Aba>
