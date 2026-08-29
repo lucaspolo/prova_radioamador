@@ -154,6 +154,19 @@ npm run build    # gera o site estático em out/
 npm test         # testes de sorteio, histórico, PDFs e renderização
 ```
 
+Depois de publicar, vale conferir que o host serve as rotas por caminho limpo:
+
+```bash
+npm run checar-rotas -- https://prova-radioamador.vercel.app
+```
+
+O export gera `out/estudar.html`, e é o host que decide se `/estudar` — sem a
+extensão — encontra esse arquivo (`cleanUrls` em `vercel.json`). Enquanto não
+encontrava, o link que a página existe para ser compartilhado devolvia 404, e o
+pré-cache do service worker rejeitava por causa dele: o app ficava sem uso
+offline, sem instalação e sem aviso de atualização. `next dev` não pega esse
+defeito, porque ali quem serve é o Next.
+
 O worker do pdf.js é copiado de `node_modules` para `public/` automaticamente
 antes de `dev` e de `build` (`scripts/preparar_worker.mjs`). Ele é gerado, e não
 versionado, para não ficar defasado da versão instalada do `pdfjs-dist`.

@@ -20,6 +20,7 @@
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
+import { CASCAS } from "./cascas.mjs";
 
 const RAIZ = join(import.meta.dirname, "..");
 const OUT = join(RAIZ, "out");
@@ -31,33 +32,38 @@ function arquivos(dir) {
   });
 }
 
-// As rotas reais do app e o HTML que o export gerou para cada uma.
-//
-// Fonte única das três coisas que dependem disso: o que entra no pré-cache, o
-// que entra no hash de versão e qual casca responde uma navegação offline.
-// Uma rota fora daqui cairia na casca de "/" e renderizaria a home.
-const CASCAS = {
-  "/": "index.html",
-  "/conferencia": "conferencia.html",
-  "/estudar": "estudar.html",
-};
-
 // Casca do app: páginas, manifesto, ícones, assets com hash, worker do pdf.js
 // e os trechos de origem. Os PDFs ficam de fora do pré-cache (entram no cache
 // próprio quando abertos); banco_questoes.json também — ele é embutido no
 // bundle JS e nunca é buscado pela aplicação.
-const precache = [
-  ...Object.keys(CASCAS),
+//
+// O pré-cache vai em duas listas, e a divisão é o que impede um recurso só de
+// derrubar a instalação inteira: `addAll` é atômico — um único não-2xx rejeita
+// a promessa e o worker NÃO instala. Foi o que aconteceu em produção enquanto
+// o host servia o export sem caminho limpo: `/estudar` respondia 404, o
+// `addAll` rejeitava, e o app ficou sem offline, sem instalação e sem aviso de
+// atualização — tudo por uma rota secundária.
+//
+// ESSENCIAL é o mínimo para o app abrir sem rede (a casca de "/" e os assets
+// com hash); só ele é atômico. O resto entra um a um, e o que falhar fica para
+// a primeira visita com rede — a estratégia de fetch já guarda o que passa por
+// ela.
+const essencial = ["/"];
+for (const abs of arquivos(join(OUT, "_next", "static"))) {
+  essencial.push("/" + relative(OUT, abs).replaceAll("\\", "/"));
+}
+
+const extra = [
+  ...Object.keys(CASCAS).filter((r) => r !== "/"),
   "/manifest.webmanifest",
   "/trechos.json",
   "/pdf.worker.min.mjs",
 ];
-for (const abs of arquivos(join(OUT, "_next", "static"))) {
-  precache.push("/" + relative(OUT, abs).replaceAll("\\", "/"));
-}
 for (const nome of readdirSync(OUT)) {
-  if (nome.startsWith("icone-")) precache.push(`/${nome}`);
+  if (nome.startsWith("icone-")) extra.push(`/${nome}`);
 }
+
+const precache = [...essencial, ...extra];
 
 // A versão precisa mudar quando o conteúdo muda. Os arquivos de _next/static
 // têm hash no nome, então a lista basta; os HTML e trechos.json não têm —
@@ -77,8 +83,11 @@ const CACHE = "radioamador-${versao}";
 // pré-download conta os arquivos deste cache para dizer o que já está no
 // aparelho. (Este script roda no build e não pode ser importado de lá.)
 const CACHE_PDFS = "radioamador-pdfs-v1";
-const PRECACHE = ${JSON.stringify(precache, null, 1)};
-// As rotas com casca própria, fora "/". Ver CASCAS em scripts/gerar_sw.mjs.
+// O mínimo para abrir sem rede: a casca de "/" e os assets com hash.
+const ESSENCIAL = ${JSON.stringify(essencial, null, 1)};
+// O que é bom ter em cache, mas não pode impedir a instalação.
+const EXTRA = ${JSON.stringify(extra, null, 1)};
+// As rotas com casca própria, fora "/". Ver CASCAS em scripts/cascas.mjs.
 const ROTAS = ${JSON.stringify(Object.keys(CASCAS).filter((r) => r !== "/"))};
 
 self.addEventListener("install", (e) => {
@@ -86,7 +95,16 @@ self.addEventListener("install", (e) => {
   // aceitar recarregar (o app mostra o convite fora de bateria). Assumir no
   // meio do uso apagava o cache dos chunks antigos com abas abertas, e um
   // import() tardio — o visualizador de PDF é dinâmico — quebrava.
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)));
+  //
+  // Só ESSENCIAL é atômico. EXTRA vai um a um com allSettled: um 404 numa
+  // rota secundária não pode custar o offline do app inteiro (ver o comentário
+  // de gerar_sw.mjs).
+  e.waitUntil(
+    caches.open(CACHE).then(async (c) => {
+      await c.addAll(ESSENCIAL);
+      await Promise.allSettled(EXTRA.map((u) => c.add(u)));
+    })
+  );
 });
 
 self.addEventListener("message", (e) => {
@@ -108,6 +126,9 @@ self.addEventListener("activate", (e) => {
 function cachePrimeiro(req, nomeCache) {
   return caches.match(req).then(
     (hit) => hit || fetch(req).then((resp) => {
+      // Só o que veio bem entra no cache: guardar um 404 o serve de novo a
+      // cada visita, e o erro passa a sobreviver ao conserto do servidor.
+      if (!resp.ok) return resp;
       const copia = resp.clone();
       caches.open(nomeCache).then((c) => c.put(req, copia));
       return resp;
@@ -161,6 +182,9 @@ async function comFaixa(req, nomeCache) {
 function redePrimeiro(req, fallback) {
   return fetch(req)
     .then((resp) => {
+      // Idem: um 404 gravado como casca de "/" deixaria o app abrindo numa
+      // página de erro offline, mesmo depois de o servidor voltar ao normal.
+      if (!resp.ok) return resp;
       const copia = resp.clone();
       caches.open(CACHE).then((c) => c.put(fallback ?? req, copia));
       return resp;
