@@ -103,6 +103,15 @@ export interface Resposta {
    */
   respondeu: boolean | null;
   acertou: boolean;
+  /**
+   * Marcada para revisar durante a prova cega.
+   *
+   * Sobrevive até o resultado porque é o único dado da prova que separa o
+   * acerto sólido do chute — e o gabarito completo existe justamente para
+   * conferir os acertos no chute. Ausente nas baterias de treino, que não têm
+   * marcação.
+   */
+  marcada?: boolean;
 }
 
 /**

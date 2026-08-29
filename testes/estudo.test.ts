@@ -243,6 +243,26 @@ function h(...simulados: SimuladoSalvo[]): Historico {
 
   checar("bateria vazia não divide por zero", resumoDeTexto({ classe: "B", acertos: 0, total: 0 }).includes("(0%)"));
 
+  // O desafio de várias matérias também carrega link e código: era a bateria
+  // mais longa e a única que terminava sem o que comparar.
+  const provaDesafio = resumoDeTexto({
+    classe: "B",
+    acertos: 22,
+    total: 30,
+    aprovado: true,
+    materias: [
+      { tema: "Legislação de Telecomunicações", acertos: 8, total: 10, aprovado: true },
+      { tema: "Técnica e ética operacional", acertos: 7, total: 10, aprovado: true },
+      { tema: "Conhecimentos de Eletrônica e Eletricidade", acertos: 7, total: 10, aprovado: true },
+    ],
+    desafio: { semente: "HP3KLB", link: "https://exemplo/?desafio=HP3KLB", codigo: "0AAFOI2" },
+  });
+  checar(
+    "prova de várias matérias compartilha o desafio",
+    provaDesafio.includes("Desafio HP3KLB · bateria 0AAFOI2") &&
+      provaDesafio.includes("https://exemplo/?desafio=HP3KLB"),
+  );
+
   // Desafio: o texto compartilhado tem de convidar à mesma bateria, e o código
   // é o que denuncia bancos divergentes antes de a comparação virar discussão.
   const desafio = resumoDeTexto({

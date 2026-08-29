@@ -414,6 +414,43 @@ export default function Home() {
     setEtapa("simulado");
   }
 
+  /**
+   * Revisa só os erros da bateria que acabou de sair.
+   *
+   * Diferente de `iniciarRevisao`, que recruta TODOS os erros em aberto: aqui
+   * o conjunto é o desta bateria, no momento em que a pessoa ainda lembra de
+   * ter errado. É estudo, então segue as regras da revisão — treino, sem
+   * cronômetro, sem veredito.
+   */
+  function revisarErrosDaBateria(erradas: Questao[]) {
+    if (erradas.length === 0) return;
+    setModo("revisao");
+    setRegime("treino");
+    setPlano(null);
+    setMateriasProva([]);
+    setQuestoes(erradas);
+    setRespostas([]);
+    setTempoSegundos(null);
+    setPrazo(null);
+    setInicial(null);
+    setEtapa("simulado");
+  }
+
+  /**
+   * Refaz a bateria com a mesma configuração — outro sorteio, mesma matéria,
+   * mesmo tamanho, mesmo regime.
+   *
+   * Sem isto, repetir custava voltar à home e reescolher matéria e quantidade,
+   * que retornam ao padrão. O plano é o que guarda a configuração; quando não
+   * há (revisão e estudo por assunto), não há o que repetir de forma
+   * significativa — o conjunto muda a cada acerto.
+   */
+  function refazerBateria() {
+    if (!plano) return;
+    setMateriasProva([]);
+    iniciarMateria(plano, 0);
+  }
+
   function concluir(finais: Resposta[], motivo: MotivoFim) {
     setRespostas(finais);
     setMotivoFim(motivo);
@@ -623,6 +660,13 @@ export default function Home() {
             modo === "revisao" || modo === "assunto" ? undefined : temaAtual
           }
           gravacaoRecusada={gravacaoRecusada}
+          onRefazer={plano ? refazerBateria : undefined}
+          onRevisarErros={() =>
+            revisarErrosDaBateria(
+              respostas.filter((r) => !r.acertou).map((r) => r.questao),
+            )
+          }
+          onEstudarAssunto={() => setEtapa("assuntos")}
           desafio={
             modo === "desafio" && desafio && linkDesafio
               ? {
@@ -678,6 +722,31 @@ export default function Home() {
           materias={materiasProva}
           onReiniciar={() => setEtapa("inicio")}
           gravacaoRecusada={gravacaoRecusada}
+          onRefazer={plano ? refazerBateria : undefined}
+          onRevisarErros={() =>
+            revisarErrosDaBateria(
+              materiasProva
+                .flatMap((m) => m.respostas)
+                .filter((r) => !r.acertou)
+                .map((r) => r.questao),
+            )
+          }
+          // O desafio de várias matérias chegava ao fim sem código, sem link e
+          // sem menção no texto compartilhado — o organizador ficava sem o que
+          // comparar justamente na bateria mais longa.
+          desafio={
+            modo === "desafio" && desafio && linkDesafio
+              ? {
+                  semente: desafio.semente,
+                  link: linkDesafio,
+                  codigo: codigoDaBateria(
+                    materiasProva.flatMap((m) =>
+                      m.respostas.map((r) => r.questao.id),
+                    ),
+                  ),
+                }
+              : undefined
+          }
         />
       )}
     </main>

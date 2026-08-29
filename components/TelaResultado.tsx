@@ -6,9 +6,12 @@ import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
 import {
   CLASSE_PADRAO,
   FORMATO,
+  minimoEquivalente,
   percentualAprovacao,
+  ROTULO_CURTO,
 } from "@/lib/constantes";
 import Gabarito from "./Gabarito";
+import ProximoPasso, { type Passo } from "./ProximoPasso";
 
 interface Props {
   respostas: Resposta[];
@@ -32,6 +35,12 @@ interface Props {
    * compartilhamento, para o grupo comparar a mesma bateria.
    */
   desafio?: { semente: string; link: string; codigo: string };
+  /** Refaz a mesma bateria, com a mesma configuração. */
+  onRefazer?: () => void;
+  /** Abre uma revisão só com os erros desta bateria. */
+  onRevisarErros?: () => void;
+  /** Leva à lista de assuntos, para estudar o que caiu aqui. */
+  onEstudarAssunto?: () => void;
 }
 
 export default function TelaResultado({
@@ -44,6 +53,9 @@ export default function TelaResultado({
   tema,
   gravacaoRecusada = false,
   desafio,
+  onRefazer,
+  onRevisarErros,
+  onEstudarAssunto,
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -57,6 +69,49 @@ export default function TelaResultado({
   // comparamos pelo percentual equivalente.
   const bateriaOficial = total === formato.questoes;
   const naoRespondidas = respostas.filter((r) => r.respondeu === null).length;
+  const erradas = respostas.filter((r) => !r.acertou);
+  const minimo = minimoEquivalente(classe, total);
+  const faltaram = minimo - acertos;
+  // Marcadas existem só na prova cega; acertar o que se marcou como dúvida é o
+  // que o gabarito completo existe para revelar.
+  const marcadas = respostas.filter((r) => r.marcada);
+  const acertosMarcados = marcadas.filter((r) => r.acertou).length;
+
+  /**
+   * As ações do "E agora?", na ordem do que o resultado pede.
+   *
+   * Revisar vem primeiro quando há erro: é a ação com prazo — o erro fresco é
+   * o que ainda se lembra de ter errado. Sem erro nenhum, o que resta é
+   * repetir; e estudar o assunto fecha a lista porque é a de fôlego mais
+   * longo.
+   */
+  const passos: Passo[] = [];
+  if (onRevisarErros && erradas.length > 0) {
+    passos.push({
+      rotulo: `Revisar ${erradas.length === 1 ? "o erro" : `os ${erradas.length} erros`} agora`,
+      detalhe:
+        "As mesmas questões, em modo treino, com gabarito e explicação a cada uma.",
+      onClick: onRevisarErros,
+    });
+  }
+  if (onRefazer) {
+    passos.push({
+      rotulo: `Refazer${tema ? ` ${ROTULO_CURTO[tema]}` : ""} · ${total} questões`,
+      detalhe:
+        erradas.length > 0
+          ? "Outro sorteio, mesma configuração — o que você errou volta antes."
+          : "Outro sorteio, mesma configuração.",
+      onClick: onRefazer,
+    });
+  }
+  if (onEstudarAssunto) {
+    passos.push({
+      rotulo: "Estudar por assunto",
+      detalhe:
+        "As seções do material, cada uma com a bateria só daquele assunto.",
+      onClick: onEstudarAssunto,
+    });
+  }
 
   if (modo === "revisao" || modo === "assunto") {
     return (
@@ -84,9 +139,9 @@ export default function TelaResultado({
 
         {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
-        <AcoesResultado
-          resumo={{ classe, tema, acertos, total }}
-        />
+        <ProximoPasso passos={passos} />
+
+        <AcoesResultado resumo={{ classe, tema, acertos, total }} />
 
         <Gabarito respostas={respostas} tituloErros="Ainda em aberto" />
 
@@ -123,11 +178,32 @@ export default function TelaResultado({
         >
           {aprovado ? "Aprovado" : "Reprovado"}
         </div>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        {/* A conta que a pessoa faria de cabeça, feita para ela: "40%, critério
+            55%" exige converter percentual em questões logo depois de errar.
+            Quantos acertos faltaram — ou sobraram — é o que se leva embora. */}
+        <p className="mt-2 font-medium">
+          {aprovado
+            ? faltaram <= 0 && minimo - acertos === 0
+              ? `No limite: o mínimo era ${minimo} de ${total}.`
+              : `${acertos - minimo} ${acertos - minimo === 1 ? "acerto" : "acertos"} de folga — o mínimo era ${minimo} de ${total}.`
+            : `${faltaram} ${faltaram === 1 ? "acerto faltou" : "acertos faltaram"} para o mínimo de ${minimo} de ${total}.`}
+        </p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {bateriaOficial
             ? `Classe ${classe} — critério oficial: ${formato.minimo} de ${formato.questoes} acertos.`
             : `Classe ${classe} — critério oficial: ${corte}% (${formato.minimo} de ${formato.questoes} na prova real).`}
         </p>
+        {/* O que o gabarito completo de uma prova cega serve para revelar: o
+            acerto que veio de dúvida assumida não é conhecimento consolidado. */}
+        {marcadas.length > 0 && (
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Você marcou {marcadas.length}{" "}
+            {marcadas.length === 1 ? "questão" : "questões"} como dúvida e
+            acertou {acertosMarcados} — confira{" "}
+            {acertosMarcados === 1 ? "esse acerto" : "esses acertos"} no
+            gabarito.
+          </p>
+        )}
         {/* No modo cego dá para encerrar antes da hora com questões em branco.
             Anunciar "tempo esgotado" nesse caso seria mentira. */}
         {naoRespondidas > 0 && (
@@ -162,6 +238,8 @@ export default function TelaResultado({
           </p>
         </div>
       )}
+
+      <ProximoPasso passos={passos} />
 
       <AcoesResultado
         resumo={{ classe, tema, acertos, total, aprovado, desafio }}

@@ -5,6 +5,7 @@ import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import {
   aprovadoNaMateria,
   FORMATO,
+  minimoEquivalente,
   ROTULO_CURTO,
   COR_TEMA,
   tempoDaBateria,
@@ -47,6 +48,7 @@ export default function TelaIntervalo({
   const acertos = respostas.filter((r) => r.acertou).length;
   // O mínimo absoluto só vale no tamanho oficial; fora dele, a proporção.
   const aprovado = aprovadoNaMateria(classe, acertos, respostas.length);
+  const minimo = minimoEquivalente(classe, respostas.length);
   const minutos = Math.round(tempoDaBateria(classe, quantidade) / 60);
 
   return (
@@ -76,9 +78,17 @@ export default function TelaIntervalo({
         >
           {aprovado ? "Aprovado na matéria" : "Reprovado na matéria"}
         </div>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        {/* O mínimo desta bateria em número, e não como proporção a calcular:
+            quem acabou de fazer 8 de 10 não deveria precisar converter "11 de
+            20 na prova real" para saber com quanto passaria aqui. */}
+        <p className="mt-2 font-medium">
+          {aprovado
+            ? `${acertos - minimo} de folga sobre o mínimo de ${minimo} de ${respostas.length}.`
+            : `${minimo - acertos} ${minimo - acertos === 1 ? "acerto faltou" : "acertos faltaram"} para o mínimo de ${minimo} de ${respostas.length}.`}
+        </p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {respostas.length === formato.questoes
-            ? `Mínimo: ${formato.minimo} de ${formato.questoes}.`
+            ? `Critério oficial da Classe ${classe}.`
             : `Critério oficial: ${formato.minimo} de ${formato.questoes} — aqui, a proporção equivalente.`}{" "}
           A revisão dos erros fica para o fim.
         </p>

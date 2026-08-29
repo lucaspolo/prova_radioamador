@@ -33,35 +33,43 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
               >
                 {ROTULO_CURTO[r.questao.tema]}
               </span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                  r.acertou
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                    : emBranco
-                      ? "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                      : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
-                }`}
-              >
-                {r.acertou ? "Acertou" : emBranco ? "Em branco" : "Errou"}
+              <span className="flex items-center gap-1.5">
+                {/* A dúvida assumida durante a prova vale tanto quanto o
+                  veredito: é ela que distingue o acerto do chute. */}
+                {r.marcada && (
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                    ⚑ marcada
+                  </span>
+                )}
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                    r.acertou
+                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                      : emBranco
+                        ? "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                  }`}
+                >
+                  {r.acertou ? "Acertou" : emBranco ? "Em branco" : "Errou"}
+                </span>
               </span>
             </div>
             <p className="leading-relaxed font-medium">{r.questao.afirmacao}</p>
+            {/* O gabarito primeiro, em negrito, e o que a pessoa marcou depois,
+                em cinza — antes era o contrário, e o olho ia direto ao vermelho
+                da resposta errada enquanto o "Falso" a memorizar era o texto
+                mais apagado do cartão. Quem revisa precisa levar embora a
+                resposta certa, não o próprio erro. */}
             <p className="mt-2 text-sm">
-              <span
-                className={`font-semibold ${
-                  r.acertou
-                    ? "text-emerald-700 dark:text-emerald-400"
-                    : "text-rose-700 dark:text-rose-400"
-                }`}
-              >
-                {emBranco
-                  ? "Não respondida — o tempo esgotou"
-                  : `Você respondeu ${r.respondeu ? "Verdadeiro" : "Falso"}`}
+              <span className="font-semibold">
+                Gabarito: {r.questao.resposta_correta ? "Verdadeiro" : "Falso"}
               </span>
               <span className="text-slate-500 dark:text-slate-400">
-                {" "}
-                · o correto é{" "}
-                {r.questao.resposta_correta ? "Verdadeiro" : "Falso"}
+                {" · "}
+                {emBranco
+                  ? "você deixou em branco"
+                  : `você marcou ${r.respondeu ? "Verdadeiro" : "Falso"}`}
+                {r.acertou && !emBranco ? " — correto" : ""}
               </span>
             </p>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">

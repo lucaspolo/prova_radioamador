@@ -5,9 +5,11 @@ import {
   aprovadoNaMateria,
   COR_TEMA,
   FORMATO,
+  minimoEquivalente,
   ROTULO_CURTO,
 } from "@/lib/constantes";
 import Gabarito from "./Gabarito";
+import ProximoPasso, { type Passo } from "./ProximoPasso";
 import AcoesResultado from "./AcoesResultado";
 import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
 
@@ -22,6 +24,14 @@ interface Props {
   onReiniciar: () => void;
   /** O navegador recusou gravar o registro de alguma matéria no histórico. */
   gravacaoRecusada?: boolean;
+  /**
+   * Bateria de desafio. Chega aqui pelo mesmo motivo que chega ao resultado de
+   * uma matéria só: é o código que prova que a prova foi a mesma, e o link que
+   * leva o resto do radioclube a fazê-la.
+   */
+  desafio?: { semente: string; link: string; codigo: string };
+  onRefazer?: () => void;
+  onRevisarErros?: () => void;
 }
 
 /**
@@ -38,6 +48,9 @@ export default function TelaResultadoProva({
   materias,
   onReiniciar,
   gravacaoRecusada = false,
+  desafio,
+  onRefazer,
+  onRevisarErros,
 }: Props) {
   const formato = FORMATO[classe];
   const porMateria = materias.map((m) => {
@@ -56,6 +69,24 @@ export default function TelaResultadoProva({
   // A prova completa é cega: o gabarito das três matérias só aparece aqui, e
   // aparece inteiro — inclusive o das questões acertadas no chute.
   const todas = materias.flatMap((m) => m.respostas);
+  const erradas = todas.filter((r) => !r.acertou);
+
+  const passos: Passo[] = [];
+  if (onRevisarErros && erradas.length > 0) {
+    passos.push({
+      rotulo: `Revisar ${erradas.length === 1 ? "o erro" : `os ${erradas.length} erros`} agora`,
+      detalhe:
+        "As questões que você errou nas três matérias, em modo treino, com gabarito e explicação.",
+      onClick: onRevisarErros,
+    });
+  }
+  if (onRefazer) {
+    passos.push({
+      rotulo: `Refazer${provaCompleta ? " a prova completa" : ""}`,
+      detalhe: "Outro sorteio, mesma configuração.",
+      onClick: onRefazer,
+    });
+  }
 
   return (
     <div className="space-y-8">
@@ -124,10 +155,38 @@ export default function TelaResultadoProva({
               >
                 {m.aprovado ? "Aprovado" : "Reprovado"}
               </div>
+              {/* Quantos faltaram nesta matéria: no consolidado é ela, e não a
+                  soma, que decide — e "reprovado" sem número não diz se faltou
+                  um acerto ou seis. */}
+              <div className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+                {(() => {
+                  const min = minimoEquivalente(classe, m.respostas.length);
+                  const d = m.acertos - min;
+                  return d >= 0
+                    ? `mínimo ${min} · ${d} de folga`
+                    : `faltaram ${-d} para ${min}`;
+                })()}
+              </div>
             </div>
           ))}
         </div>
       </section>
+
+      {desafio && (
+        <div className="rounded-xl border border-slate-300 p-4 text-sm dark:border-slate-700">
+          <div>
+            Desafio{" "}
+            <span className="font-mono font-bold">{desafio.semente}</span> ·
+            bateria <span className="font-mono font-bold">{desafio.codigo}</span>
+          </div>
+          <p className="mt-1 text-slate-500 dark:text-slate-400">
+            Compare com quem abriu o mesmo link. Código de bateria diferente
+            significa banco de questões diferente — aí não são a mesma prova.
+          </p>
+        </div>
+      )}
+
+      <ProximoPasso passos={passos} />
 
       <AcoesResultado
         resumo={{
@@ -141,6 +200,7 @@ export default function TelaResultadoProva({
             total: m.respostas.length,
             aprovado: m.aprovado,
           })),
+          desafio,
         }}
       />
 
