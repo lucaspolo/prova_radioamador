@@ -22,13 +22,18 @@ export function folhaVazia(total: number): Escolhas {
  * Questão em branco vira `respondeu: null, acertou: false`: como na prova real,
  * não responder conta como erro.
  */
-export function respostasDe(questoes: Questao[], escolhas: Escolhas): Resposta[] {
+export function respostasDe(
+  questoes: Questao[],
+  escolhas: Escolhas,
+  marcadas?: ReadonlySet<number>,
+): Resposta[] {
   return questoes.map((questao, i) => {
     const escolha = escolhas[i] ?? null;
     return {
       questao,
       respondeu: escolha,
       acertou: escolha === questao.resposta_correta,
+      ...(marcadas?.has(i) ? { marcada: true } : {}),
     };
   });
 }

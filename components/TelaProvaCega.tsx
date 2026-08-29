@@ -108,9 +108,11 @@ export default function TelaProvaCega({
 
   const encerrar = useCallback(
     (motivo: MotivoFim) => {
-      onConcluir(respostasDe(questoes, escolhas), motivo);
+      // As marcações vão junto: no gabarito elas separam o acerto sólido do
+      // chute, que é o que mais vale conferir depois de uma prova cega.
+      onConcluir(respostasDe(questoes, escolhas, marcadas), motivo);
     },
-    [questoes, escolhas, onConcluir],
+    [questoes, escolhas, marcadas, onConcluir],
   );
 
   // Tempo esgotado: como na prova real, o que ficou em branco conta como erro.

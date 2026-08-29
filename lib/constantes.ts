@@ -51,6 +51,21 @@ export function percentualAprovacao(classe: Classe): number {
  * só vale no tamanho oficial. Numa bateria de outro tamanho, compara-se pela
  * proporção equivalente — em inteiros, para não depender de arredondamento.
  */
+/**
+ * Quantos acertos são precisos numa bateria de `total` questões.
+ *
+ * No tamanho oficial é o mínimo da norma (11 de 20 na Classe B). Fora dele, é
+ * o menor número que satisfaz a mesma proporção — o mesmo critério que
+ * `aprovadoNaMateria` aplica, dito como número em vez de sim ou não. Existe
+ * porque "faltaram 2 acertos" é acionável e "40%, critério 55%" é uma conta
+ * que a pessoa tem de fazer sozinha logo depois de errar.
+ */
+export function minimoEquivalente(classe: Classe, total: number): number {
+  const f = FORMATO[classe];
+  if (total === f.questoes) return f.minimo;
+  return Math.ceil((f.minimo * total) / f.questoes);
+}
+
 export function aprovadoNaMateria(
   classe: Classe,
   acertos: number,

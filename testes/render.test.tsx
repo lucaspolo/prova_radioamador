@@ -795,7 +795,103 @@ const PROPS_INICIO = {
     <TelaResultado respostas={comBranco} onReiniciar={() => {}} />,
   );
   checar("aviso de tempo esgotado com o total em branco", html4.includes("Tempo esgotado") && html4.includes("5"));
-  checar("questão em branco aparece como não respondida", html4.includes("Não respondida — o tempo esgotou"));
+  // O cartão de erro diz o gabarito primeiro e o que a pessoa fez depois; para
+  // a questão em branco, "você deixou em branco" — sem afirmar a causa, que só
+  // o cabeçalho do resultado conhece (encerrar à mão também deixa brancos).
+  checar(
+    "questão em branco aparece como deixada em branco",
+    html4.includes("você deixou em branco"),
+  );
+  checar(
+    "o gabarito vem antes do que foi respondido",
+    html4.indexOf("Gabarito:") < html4.indexOf("você deixou em branco"),
+  );
+
+  // "E agora?": o resultado tem de oferecer o próximo passo, e o primeiro é
+  // revisar os erros — a ação com prazo, enquanto o erro está fresco.
+  const comAcoes = renderToStaticMarkup(
+    <TelaResultado
+      respostas={comBranco}
+      onReiniciar={() => {}}
+      onRefazer={() => {}}
+      onRevisarErros={() => {}}
+      onEstudarAssunto={() => {}}
+      tema="Legislação de Telecomunicações"
+    />,
+  );
+  checar("o resultado oferece o próximo passo", comAcoes.includes("E agora?"));
+  checar(
+    "revisar os erros é a primeira ação",
+    comAcoes.includes("Revisar os 5 erros agora"),
+  );
+  checar("oferece refazer a mesma bateria", comAcoes.includes("Refazer"));
+  checar(
+    "e estudar por assunto",
+    comAcoes.includes("Estudar por assunto"),
+  );
+  checar(
+    "o próximo passo vem antes do gabarito",
+    comAcoes.indexOf("E agora?") < comAcoes.indexOf("Revisão dos erros"),
+  );
+  // Sem erro nenhum não há o que revisar, e o bloco não inventa uma ação.
+  const semErros = renderToStaticMarkup(
+    <TelaResultado
+      respostas={questoes.slice(0, 10).map((q) => ({
+        questao: q,
+        respondeu: q.resposta_correta,
+        acertou: true,
+      }))}
+      onReiniciar={() => {}}
+      onRevisarErros={() => {}}
+    />,
+  );
+  checar(
+    "sem erros, não oferece revisar",
+    !semErros.includes("Revisar") && !semErros.includes("E agora?"),
+  );
+
+  // Quantos acertos faltaram, em vez de deixar a conta para quem errou:
+  // "40%, critério 55%" obriga a converter percentual em questões.
+  const reprovadoHtml = renderToStaticMarkup(
+    <TelaResultado
+      respostas={questoes.slice(0, 10).map((q, i) => ({
+        questao: q,
+        respondeu: i < 4 ? q.resposta_correta : !q.resposta_correta,
+        acertou: i < 4,
+      }))}
+      onReiniciar={() => {}}
+    />,
+  );
+  checar(
+    "o veredito diz quantos acertos faltaram",
+    reprovadoHtml.includes("2 acertos faltaram para o mínimo de 6 de 10"),
+  );
+  checar(
+    "e quantos sobraram quando passou",
+    html4.includes("4 acertos de folga — o mínimo era 11 de 20"),
+  );
+
+  // Prova cega: a dúvida assumida separa o acerto sólido do chute.
+  const comMarcadas = renderToStaticMarkup(
+    <TelaResultado
+      cega
+      respostas={questoes.slice(0, 10).map((q, i) => ({
+        questao: q,
+        respondeu: q.resposta_correta,
+        acertou: true,
+        ...(i < 3 ? { marcada: true } : {}),
+      }))}
+      onReiniciar={() => {}}
+    />,
+  );
+  checar(
+    "o resultado conta os acertos que vieram de dúvida",
+    comMarcadas.includes("como dúvida e acertou 3"),
+  );
+  checar(
+    "e o gabarito filtra as marcadas",
+    comMarcadas.includes("Marcadas (3)"),
+  );
 
   // Modo revisão: estudo, não prova — sem veredito de aprovação.
   const revisao = renderToStaticMarkup(
