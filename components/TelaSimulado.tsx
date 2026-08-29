@@ -19,7 +19,17 @@ interface Props {
   escolhasIniciais?: Escolhas | null;
   indiceInicial?: number;
   onConcluir: (respostas: Resposta[], motivo: MotivoFim) => void;
-  onSair: () => void;
+  /**
+   * Sair no meio. Recebe o que já foi respondido: em estudo (revisão e
+   * assunto) não há veredito a proteger, então essas respostas contam.
+   */
+  onSair: (parcial: Resposta[]) => void;
+  /**
+   * Bateria de estudo (revisão ou assunto), onde o parcial é registrado. Muda
+   * o que a confirmação de saída promete — e prometer errado aqui é pior que
+   * não avisar.
+   */
+  parcialConta?: boolean;
   /** Avisa a cada mudança, para a bateria sobreviver a fechar a aba. */
   onProgresso?: (escolhas: Escolhas, indice: number) => void;
 }
@@ -36,6 +46,7 @@ export default function TelaSimulado({
   onConcluir,
   onSair,
   onProgresso,
+  parcialConta = false,
 }: Props) {
   const [indice, setIndice] = useState(indiceInicial);
   const [escolhas, setEscolhas] = useState<Escolhas>(
@@ -336,31 +347,46 @@ export default function TelaSimulado({
           primeiro. Com nada respondido não há o que confirmar. */}
       {!confirmandoSaida ? (
         <button
-          onClick={() => (respondidas > 0 ? setConfirmandoSaida(true) : onSair())}
+          onClick={() =>
+            respondidas > 0 ? setConfirmandoSaida(true) : onSair([])
+          }
           className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
         >
-          Abandonar simulado
+          {parcialConta ? "Parar por aqui" : "Abandonar simulado"}
         </button>
       ) : (
         <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
           <p className="text-sm font-medium">
-            {respondidas === 1
-              ? "Abandonar apaga a resposta que você já deu"
-              : `Abandonar apaga as ${respondidas} respostas que você já deu`}{" "}
-            — só a bateria concluída entra no histórico.
+            {parcialConta
+              ? `${
+                  respondidas === 1
+                    ? "A resposta que você já deu fica registrada"
+                    : `As ${respondidas} respostas que você já deu ficam registradas`
+                } — o que você acertou sai da lista de erros.`
+              : `${
+                  respondidas === 1
+                    ? "Abandonar apaga a resposta que você já deu"
+                    : `Abandonar apaga as ${respondidas} respostas que você já deu`
+                } — só a bateria concluída entra no histórico.`}
           </p>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <button
               onClick={() => setConfirmandoSaida(false)}
               className="rounded-lg border-2 border-slate-400 px-4 py-2 text-sm font-semibold transition hover:border-slate-500"
             >
-              Continuar o simulado
+              {parcialConta ? "Continuar estudando" : "Continuar o simulado"}
             </button>
             <button
-              onClick={onSair}
+              onClick={() =>
+                onSair(
+                  respostasDe(questoes, escolhas).filter(
+                    (r) => r.respondeu !== null,
+                  ),
+                )
+              }
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
             >
-              Abandonar mesmo assim
+              {parcialConta ? "Sair mesmo assim" : "Abandonar mesmo assim"}
             </button>
           </div>
         </div>

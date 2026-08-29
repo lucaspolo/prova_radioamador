@@ -7,6 +7,7 @@ import {
   CLASSE_PADRAO,
   COR_TEMA,
   FORMATO,
+  LOTE_REVISAO,
   ROTULO_CURTO,
   tamanhos,
   tempoDaBateria,
@@ -434,7 +435,11 @@ export default function TelaInicio({
           <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             {errosAbertos === 0
               ? "Nenhum erro em aberto — errou, aparece aqui."
-              : "Só as questões que você errou e ainda não corrigiu."}
+              : errosAbertos > LOTE_REVISAO
+                ? // O tamanho da sessão dito antes de começar: sem isto, o
+                  // selo com 91 promete uma hora de leitura de explicações.
+                  `Os ${LOTE_REVISAO} mais urgentes de ${errosAbertos}, começando pelos mais esquecidos.`
+                : "Só as questões que você errou e ainda não corrigiu."}
           </div>
         </button>
         <button

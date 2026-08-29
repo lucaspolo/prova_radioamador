@@ -127,6 +127,41 @@ function h(...simulados: SimuladoSalvo[]): Historico {
   checar("erro antigo nunca corrigido continua", ids.has(c.id));
   checar("nada além dos erros em aberto", revisao.length === 2);
 
+  // A revisão vem em lotes: sem limite, é a lista inteira (é assim que a tela
+  // inicial conta os erros em aberto); com limite, só o começo dela.
+  checar(
+    "com limite, a revisão devolve um lote",
+    questoesParaRevisao(historico, "B", 1).length === 1,
+  );
+  checar(
+    "limite maior que a lista devolve a lista",
+    questoesParaRevisao(historico, "B", 50).length === 2,
+  );
+
+  // E a ordem é a da urgência: o erro esquecido (3+ dias sem ver) vem antes do
+  // erro de ontem. É o mesmo peso que rege o sorteio (lib/prioridade.ts) — sem
+  // isso, o lote de 20 seria 20 erros quaisquer, e não os 20 mais urgentes.
+  {
+    const [x, y] = acervo("B").slice(10, 12);
+    const agora = new Date();
+    const diasAtras = (n: number) =>
+      new Date(agora.getTime() - n * 86400_000).toISOString();
+    const misturado = h(
+      simulado("r2", diasAtras(0), [
+        { questaoId: y.id, tema: y.tema, acertou: false },
+      ]),
+      simulado("r1", diasAtras(10), [
+        { questaoId: x.id, tema: x.tema, acertou: false },
+      ]),
+    );
+    const ordem = questoesParaRevisao(misturado, "B").map((q) => q.id);
+    checar(
+      "o erro esquecido vem antes do erro de hoje",
+      ordem[0] === x.id && ordem[1] === y.id,
+      ordem.join(" · "),
+    );
+  }
+
   // Um erro numa questão exclusiva da Classe A não entra na revisão da B.
   const qa = BANCO.find((q) => q.nivel === "A")!;
   const comA = h(

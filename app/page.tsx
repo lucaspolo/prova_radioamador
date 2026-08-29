@@ -42,7 +42,12 @@ import {
 } from "@/lib/bateria-em-curso";
 import { lerPreferencias } from "@/lib/preferencias";
 import { codigoDaBateria } from "@/lib/semente";
-import { CLASSE_PADRAO, TEMAS, tempoDaBateria } from "@/lib/constantes";
+import {
+  CLASSE_PADRAO,
+  LOTE_REVISAO,
+  TEMAS,
+  tempoDaBateria,
+} from "@/lib/constantes";
 import type {
   Classe,
   MotivoFim,
@@ -229,8 +234,20 @@ export default function Home() {
     });
   }
 
-  /** Volta ao início e apaga a bateria salva: sair é sair. */
-  function abandonar() {
+  /**
+   * Volta ao início e apaga a bateria salva.
+   *
+   * Em revisão e estudo por assunto, o que já foi respondido é registrado
+   * antes: são modos sem veredito de aprovação, então não há o que uma bateria
+   * pela metade pudesse falsear — e a regra de "só a bateria concluída conta",
+   * que protege o simulado, ali só servia para apagar o trabalho de quem
+   * revisou sessenta erros e precisou parar. No simulado nada muda: meia prova
+   * registrada distorceria a prontidão.
+   */
+  function abandonar(parcial: Resposta[] = []) {
+    if ((modo === "revisao" || modo === "assunto") && parcial.length > 0) {
+      registrar(modo, parcial, { classe: classeAtual });
+    }
     limparEmCurso();
     setInicial(null);
     setEtapa("inicio");
@@ -405,7 +422,9 @@ export default function Home() {
     setModo("revisao");
     setRegime("treino");
     setPlano(null);
-    setQuestoes(questoesParaRevisao(historico, classe));
+    // Um lote por vez: a revisão trazia os 91 erros em aberto de uma sentada
+    // só, e o resultado agora convida a continuar enquanto sobrar erro.
+    setQuestoes(questoesParaRevisao(historico, classe, LOTE_REVISAO));
     setRespostas([]);
     setClasseAtual(classe);
     setTempoSegundos(null);
@@ -645,6 +664,7 @@ export default function Home() {
             onConcluir={concluir}
             onSair={abandonar}
             onProgresso={registrarProgresso}
+            parcialConta={modo === "revisao" || modo === "assunto"}
           />
         ))}
 
@@ -667,6 +687,14 @@ export default function Home() {
             )
           }
           onEstudarAssunto={() => setEtapa("assuntos")}
+          // Quantos erros continuam em aberto DEPOIS desta bateria — o
+          // histórico já foi atualizado por `concluir`.
+          restantesRevisao={
+            modo === "revisao"
+              ? questoesParaRevisao(historico, classeAtual).length
+              : 0
+          }
+          onContinuarRevisao={() => iniciarRevisao(classeAtual)}
           desafio={
             modo === "desafio" && desafio && linkDesafio
               ? {
