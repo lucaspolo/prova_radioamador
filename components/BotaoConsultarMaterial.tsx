@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { caminhoPdf } from "@/lib/pdfs";
+import { ROTULO_ARQUIVO } from "@/lib/secoes";
 import type { Origem } from "@/lib/tipos";
 
 /**
@@ -74,7 +75,10 @@ export default function BotaoConsultarMaterial({
       {aberto && (
         <VisualizadorPdf
           caminho={caminho}
-          nomeExibicao={arquivoOrigem}
+          // O rótulo curado, e não o nome do arquivo: o visualizador mostrava
+          // "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf" no título e no
+          // `aria-label` do diálogo.
+          nomeExibicao={ROTULO_ARQUIVO[arquivoOrigem] ?? arquivoOrigem}
           paginaInicial={pagina}
           origem={origem}
           onFechar={() => setAberto(false)}

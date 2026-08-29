@@ -82,7 +82,17 @@ export default function TelaConferencia() {
   const [nivelFiltro, setNivelFiltro] = useState<Nivel | "">("");
   const [filtro, setFiltro] = useState<Filtro>("todas");
   const [modoCego, setModoCego] = useState(false);
-  const [selBruto, setSel] = useState(0);
+  /**
+   * A seleção é o ID da questão, e não o índice dela na lista.
+   *
+   * Com índice, marcar sob o filtro "não revisadas" pulava uma questão: a
+   * marcada saía de `linhas` no mesmo render, a seguinte deslizava para o
+   * índice atual, e o `sel + 1` do "marcar e seguir" pousava na questão
+   * DEPOIS dela — que ficava para trás, sem veredito, invisível. Vale também
+   * para "divergentes" e "com nota", onde mudar o veredito também tira a
+   * questão da lente.
+   */
+  const [selId, setSelId] = useState<string | null>(null);
   const [mensagem, setMensagem] = useState<string | null>(null);
 
   const refNota = useRef<HTMLTextAreaElement>(null);
@@ -137,10 +147,13 @@ export default function TelaConferencia() {
     });
   }, [capitulos, arquivoFiltro, temaFiltro, nivelFiltro, filtro, revisoes]);
 
-  // O índice é preso à lista no momento da leitura: trocar de filtro pode
-  // encurtá-la, e corrigir isso num efeito custaria um render com o painel
-  // apontando para uma questão que não está mais na tela.
-  const sel = Math.min(selBruto, Math.max(linhas.length - 1, 0));
+  // O índice sai do id a cada render: trocar de filtro, ou a questão sair da
+  // lente, resolve sozinho — sem efeito e sem um render apontando para uma
+  // questão que não está mais na tela. Id ausente cai na primeira.
+  const sel = Math.max(
+    0,
+    linhas.findIndex((l) => l.q.id === selId),
+  );
   const atual = linhas[sel]?.q;
 
   const passagem = useMemo(() => {
@@ -152,7 +165,7 @@ export default function TelaConferencia() {
   }, [atual, trechos]);
 
   const irPara = useCallback((indice: number) => {
-    setSel(indice);
+    setSelId(linhas[indice]?.q.id ?? null);
     // O cartão selecionado abre o texto de origem, então cresce: rolar depois
     // que o React remontou, ou a posição calculada é a do cartão fechado.
     requestAnimationFrame(() => {
@@ -160,7 +173,7 @@ export default function TelaConferencia() {
         ?.querySelector(`[data-indice="${indice}"]`)
         ?.scrollIntoView({ block: "nearest" });
     });
-  }, []);
+  }, [linhas]);
 
   /**
    * Atalhos, porque 903 questões no mouse é uma revisão que não acontece.
@@ -193,10 +206,14 @@ export default function TelaConferencia() {
         irPara(Math.max(sel - 1, 0));
       } else if (q && (tecla === "v" || tecla === "f" || tecla === "p")) {
         e.preventDefault();
+        // O alvo é escolhido ANTES de marcar, e por id: se a questão marcada
+        // sair da lente, a lista encurta e qualquer índice calculado agora
+        // apontaria para outra coisa. Na última da lista, o alvo é a anterior.
+        const alvo = linhas[sel + 1]?.q.id ?? linhas[sel - 1]?.q.id ?? null;
         marcar(q.id, tecla.toUpperCase() as Veredito);
         // Marcar e seguir: a próxima questão é quase sempre o próximo passo, e
         // quem quiser justificar aperta Enter antes de andar.
-        irPara(Math.min(sel + 1, linhas.length - 1));
+        setSelId(alvo);
       } else if (e.key === "Enter" && q) {
         e.preventDefault();
         refNota.current?.focus();
@@ -493,7 +510,7 @@ export default function TelaConferencia() {
                       trecho={q.trecho_id ? trechos[q.trecho_id] : undefined}
                       selecionado={i === sel}
                       modoCego={modoCego}
-                      onSelecionar={() => setSel(i)}
+                      onSelecionar={() => setSelId(q.id)}
                       onMarcar={(v) => marcar(q.id, v)}
                       onAnotar={(nota) => anotar(q.id, nota)}
                       onDescarregar={descarregar}

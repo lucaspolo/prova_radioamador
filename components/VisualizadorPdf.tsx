@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -25,6 +26,7 @@ export default function VisualizadorPdf({
   origem,
   onFechar,
 }: Props) {
+  const botaoFechar = useRef<HTMLButtonElement>(null);
   const [totalPaginas, setTotalPaginas] = useState(0);
   const [pagina, setPagina] = useState(paginaInicial);
   const [zoom, setZoom] = useState(1);
@@ -74,7 +76,39 @@ export default function VisualizadorPdf({
     };
   }, []);
 
-  return (
+  /**
+   * O foco entra no diálogo e volta de onde veio.
+   *
+   * `role="dialog"` e `aria-modal` descrevem, mas não movem nada: medido, ao
+   * abrir o foco continuava no botão atrás do overlay, e ao fechar caía no
+   * `body` — quem usa leitor de tela voltava ao topo de uma página de dez mil
+   * pixels em vez de ao "Consultar material" que acabou de acionar.
+   *
+   * `inert` no conteúdo de fundo dá a armadilha de foco sem trocar por
+   * `<dialog>.showModal()`, que traria backdrop próprio e desfaria o desfoque
+   * desta tela.
+   */
+  useEffect(() => {
+    const anterior = document.activeElement as HTMLElement | null;
+    botaoFechar.current?.focus();
+    const fundo = document.getElementById("conteudo");
+    fundo?.setAttribute("inert", "");
+    return () => {
+      fundo?.removeAttribute("inert");
+      anterior?.focus?.();
+    };
+  }, []);
+
+  /**
+   * O diálogo é montado no `body`, e não onde o botão vive.
+   *
+   * Sem isso, `inert` no `#conteudo` desligaria o próprio diálogo — ele é
+   * descendente do main —, e a tela inteira ficava sem receber clique. Com o
+   * portal, o fundo fica inerte de verdade: armadilha de foco e conteúdo
+   * escondido do leitor de tela, sem trocar por `<dialog>.showModal()`, que
+   * traria backdrop próprio no lugar deste desfoque.
+   */
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex flex-col bg-black/70 backdrop-blur-sm"
       role="dialog"
@@ -87,9 +121,13 @@ export default function VisualizadorPdf({
         className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-slate-900 px-4 py-3 text-white"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="min-w-0 flex-1">
+        {/* No celular o título toma a primeira linha inteira e os controles
+            descem para a segunda: espremidos na mesma linha, o nome virava
+            "20…" e "Página 26 de 65" quebrava em quatro linhas, numa barra de
+            109 px — 13% da tela, tirada da página do PDF. */}
+        <div className="min-w-0 basis-full sm:flex-1 sm:basis-auto">
           <div className="truncate text-sm font-medium">{nomeExibicao}</div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">
+          <div className="text-xs whitespace-nowrap text-slate-400">
             {totalPaginas > 0
               ? `Página ${pagina} de ${totalPaginas}`
               : "Carregando…"}
@@ -101,7 +139,7 @@ export default function VisualizadorPdf({
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex w-full items-center justify-between gap-1 sm:w-auto sm:justify-start">
           <Controle
             onClick={() => irPara(pagina - 1)}
             desabilitado={pagina <= 1}
@@ -134,11 +172,17 @@ export default function VisualizadorPdf({
             +
           </Controle>
           <button
+            ref={botaoFechar}
             onClick={onFechar}
             className="ml-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20"
           >
             Fechar
-            <span className="ml-1.5 text-xs opacity-60">Esc</span>
+            {/* A dica só serve a quem tem tecla: no celular era largura
+                gasta, e foi ela que empurrou o "Fechar" para fora da tela a
+                320 px com fonte grande. */}
+            <span className="ml-1.5 hidden text-xs opacity-60 sm:inline">
+              Esc
+            </span>
           </button>
         </div>
       </div>
@@ -179,7 +223,12 @@ export default function VisualizadorPdf({
                 Carregando documento…
               </p>
             }
-            className="flex justify-center"
+            // `justify-center` centraliza também o que é MAIOR que o
+            // container, e aí o excedente da esquerda fica fora de alcance:
+            // com zoom em 150% o canvas nascia em -49px e `scrollLeft` já
+            // estava no mínimo. `w-max mx-auto` centraliza quando cabe e
+            // encosta na borda esquerda quando não cabe.
+            className="w-max mx-auto"
           >
             <Page
               pageNumber={pagina}
@@ -196,7 +245,8 @@ export default function VisualizadorPdf({
           </Document>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
