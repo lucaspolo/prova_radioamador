@@ -375,15 +375,36 @@ export default function TelaInicio({
         </button>
       )}
 
-      <button
-        onClick={() =>
-          onIniciar(escolhas, limite, classe, cronometrar, cego, soIneditas)
-        }
-        className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-      >
-        Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões
-        {escolhas.length > 1 && ` × ${escolhas.length} matérias`}
-      </button>
+      {/* No celular o botão fica colado no rodapé enquanto não chega a vez
+          dele na página.
+          
+          Medido em produção: a configuração inteira empurra o "Iniciar" para
+          1,3 tela (veterano) a 2,2 telas (320 px) abaixo da dobra, e a
+          primeira tela termina na fileira de quantidades — nada indica que há
+          um botão adiante. É `sticky`, e não um segundo botão fixo: o mesmo
+          elemento flutua enquanto está fora de vista e assenta no lugar dele
+          ao ser alcançado, então não existem dois caminhos para iniciar nem
+          rótulo repetido para o leitor de tela.
+          
+          A faixa tem fundo opaco e borda superior porque o conteúdo passa por
+          baixo; `env(safe-area-inset-bottom)` mantém o botão acima da barra de
+          gestos do iPhone.
+
+          O corte é em `lg`, e não em `sm`: o celular deitado tem 640 px de
+          largura e 390 de altura — é justamente onde a barra mais serve. Do
+          desktop para cima ela sai, porque lá a página quase cabe e uma faixa
+          presa roubaria altura de quem já enxerga o conjunto. */}
+      <div className="sticky bottom-0 z-30 -mx-4 border-t border-slate-200 bg-[var(--background)] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 dark:border-slate-800">
+        <button
+          onClick={() =>
+            onIniciar(escolhas, limite, classe, cronometrar, cego, soIneditas)
+          }
+          className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        >
+          Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões
+          {escolhas.length > 1 && ` × ${escolhas.length} matérias`}
+        </button>
+      </div>
 
       {/* A "prova completa" saiu daqui: virou selecionar as três matérias
           acima, que é o que ela sempre foi. Um botão à parte, com formato

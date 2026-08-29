@@ -286,6 +286,13 @@ const PROPS_INICIO = {
     !contem(html, questoes[0].explicacao_curta),
   );
   checar("permite abandonar", html.includes("Abandonar simulado"));
+  // A ação da vez — responder, e depois avançar — mora numa barra que se cola
+  // ao rodapé no celular. É o que tira a rolagem do caminho: sem ela, o
+  // "Próxima questão" nascia fora da tela em questões longas.
+  checar(
+    "V e F ficam na barra de ação",
+    /class="sticky bottom-0[^"]*"><div class="grid grid-cols-2/.test(html),
+  );
   // A confirmação de abandono nasce fechada: quem ainda não respondeu nada não
   // tem o que confirmar, e ver a caixa de aviso antes da primeira resposta
   // seria alarme falso.

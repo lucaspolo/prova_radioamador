@@ -216,30 +216,7 @@ export default function TelaSimulado({
       </div>
 
       {/* Resposta */}
-      {!respondida ? (
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => responder(true)}
-            className="rounded-xl border-2 border-emerald-500 py-5 text-lg font-bold text-emerald-700 transition hover:bg-emerald-500 hover:text-white dark:text-emerald-300"
-          >
-            Verdadeiro
-            {/* `aria-hidden` para o leitor de tela não anunciar "VerdadeiroV";
-                sem `opacity`, que deixava a dica em 2,5:1. */}
-            <span aria-hidden className="ml-2 text-xs font-normal">
-              V
-            </span>
-          </button>
-          <button
-            onClick={() => responder(false)}
-            className="rounded-xl border-2 border-rose-500 py-5 text-lg font-bold text-rose-700 transition hover:bg-rose-500 hover:text-white dark:text-rose-300"
-          >
-            Falso
-            <span aria-hidden className="ml-2 text-xs font-normal">
-              F
-            </span>
-          </button>
-        </div>
-      ) : (
+      {respondida && (
         <div className="space-y-4">
           {/* role="status" = região viva educada: o leitor de tela anuncia o
               veredito e a explicação quando o cartão aparece — sem isto, quem
@@ -299,6 +276,46 @@ export default function TelaSimulado({
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* A barra de ação, colada no rodapé no celular.
+      
+          Medido em 390×844: os V/F ficavam no meio da tela com ~350 px vazios
+          abaixo, e o "Próxima questão" nascia entre 733 e 925 px — fora da
+          tela numa questão de cinco linhas, e sempre fora num celular real,
+          onde a barra do navegador come uns 180 px. O resultado era rolar para
+          responder e rolar de novo para avançar, vinte vezes por bateria.
+      
+          Aqui a rolagem passa a ser só para ler: o que aciona a bateria está
+          sempre no mesmo lugar, na zona do polegar. Fica no fluxo (`sticky`),
+          então no desktop, onde a tela inteira cabe, os botões voltam a
+          aparecer na posição natural. */}
+      <div className="sticky bottom-0 z-30 -mx-4 border-t border-slate-200 bg-[var(--background)] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 dark:border-slate-800">
+        {!respondida ? (
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => responder(true)}
+              className="rounded-xl border-2 border-emerald-500 py-5 text-lg font-bold text-emerald-700 transition hover:bg-emerald-500 hover:text-white dark:text-emerald-300"
+            >
+              Verdadeiro
+              {/* `aria-hidden` para o leitor de tela não anunciar
+                  "VerdadeiroV"; sem `opacity`, que deixava a dica em 2,5:1. */}
+              <span aria-hidden className="ml-2 text-xs font-normal">
+                V
+              </span>
+            </button>
+            <button
+              onClick={() => responder(false)}
+              className="rounded-xl border-2 border-rose-500 py-5 text-lg font-bold text-rose-700 transition hover:bg-rose-500 hover:text-white dark:text-rose-300"
+            >
+              Falso
+              <span aria-hidden className="ml-2 text-xs font-normal">
+                F
+              </span>
+            </button>
+          </div>
+        ) : (
           <button
             onClick={avancar}
             ref={botaoAvancar}
@@ -309,8 +326,8 @@ export default function TelaSimulado({
               Enter
             </span>
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Abandonar apaga a bateria inteira — só a bateria concluída entra no
           histórico —, e o link ficava a 24 px do botão principal, na zona do
