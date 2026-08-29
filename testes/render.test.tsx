@@ -287,6 +287,13 @@ const PROPS_INICIO = {
   );
   checar("permite abandonar", html.includes("Abandonar simulado"));
   checar("sem cronômetro, não mostra relógio", !html.includes("30:00"));
+  // O alvo do foco a cada questão. Sem ele, quem responde pelo teclado ou
+  // pelo toque não recebe anúncio nenhum ao trocar de questão — e o efeito
+  // que rola a tela de volta ao topo não teria onde pousar o foco.
+  checar(
+    "a questão tem um título que recebe o foco",
+    html.includes('<h2 tabindex="-1" class="sr-only">Questão 1 de 20 — Legislação'),
+  );
 
   // Com cronômetro, o tempo inicial aparece formatado.
   const comTempo = renderToStaticMarkup(
@@ -311,6 +318,15 @@ const PROPS_INICIO = {
   );
   checar("TelaProvaCega renderiza", html.length > 0);
   checar("mostra posição na bateria", html.includes("Questão 1 de 20"));
+  // Aqui o título do foco também carrega o estado: com navegação livre, "em
+  // branco ou já respondida?" é a pergunta que o leitor de tela precisa ouvir
+  // ao chegar numa questão.
+  checar(
+    "a questão tem um título com posição e estado",
+    html.includes(
+      '<h2 tabindex="-1" class="sr-only">Questão 1 de 20 — Legislação, em branco</h2>',
+    ),
+  );
   checar("exibe o enunciado da 1ª questão", contem(html, questoes[0].afirmacao.slice(0, 40)));
   checar("oferece Verdadeiro e Falso", html.includes("Verdadeiro") && html.includes("Falso"));
 
@@ -342,9 +358,16 @@ const PROPS_INICIO = {
   );
   // Tabindex rotativo: a grade é uma parada de Tab só — todas as células
   // menos a atual saem do fluxo do teclado, e "Encerrar" fica a um Tab.
+  //
+  // Conta só as CÉLULAS (o `aria-label` de cada uma), e não todo `tabindex`
+  // da tela: o título que recebe o foco a cada questão também é -1, e um
+  // contador global reprovaria essa adição sem que nada da folha mudasse.
+  const celulasForaDoTab = (
+    html.match(/tabindex="-1" aria-label="Questão \d+,/g) ?? []
+  ).length;
   checar(
     "a folha é uma única parada de Tab",
-    (html.match(/tabindex="-1"/g) ?? []).length === questoes.length - 1,
+    celulasForaDoTab === questoes.length - 1,
   );
   checar("permite navegar entre as questões", html.includes("Anterior") && html.includes("Próxima"));
   checar("permite marcar para revisar", html.includes("Marcar para revisar"));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { MotivoFim, Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import {
@@ -48,6 +48,8 @@ export default function TelaProvaCega({
   const [escolhas, setEscolhas] = useState(() => folhaVazia(questoes.length));
   const [marcadas, setMarcadas] = useState<ReadonlySet<number>>(() => new Set());
   const [confirmando, setConfirmando] = useState(false);
+  const topo = useRef<HTMLDivElement>(null);
+  const titulo = useRef<HTMLHeadingElement>(null);
 
   const questao = questoes[indice];
   const escolhida = escolhas[indice];
@@ -93,6 +95,25 @@ export default function TelaProvaCega({
   // Tempo esgotado: como na prova real, o que ficou em branco conta como erro.
   const restante = useCronometro(tempoSegundos, () => encerrar("tempo"));
 
+  /**
+   * Cada questão recomeça no alto da tela — inclusive as alcançadas pela folha
+   * de respostas.
+   *
+   * Aqui doía mais que no treino: com navegação livre, tocar na célula 15 da
+   * folha só movia o anel de "atual" e a questão continuava fora da tela, com
+   * o cronômetro junto. A prova também herda a rolagem da tela inicial ao
+   * começar, e a primeira questão nascia acima da borda.
+   */
+  useEffect(() => {
+    topo.current?.scrollIntoView({ block: "start" });
+    // Só quando o foco está solto (setas, atalhos, toque): quem chegou aqui
+    // pelo Tab até "Próxima ›" continua de onde estava.
+    const ativo = document.activeElement;
+    if (!ativo || ativo === document.body) {
+      titulo.current?.focus({ preventScroll: true });
+    }
+  }, [indice]);
+
   useEffect(() => {
     function aoTeclar(e: KeyboardEvent) {
       const alvo = e.target as HTMLElement | null;
@@ -123,7 +144,19 @@ export default function TelaProvaCega({
     <div className="space-y-6">
       {/* Progresso — sem placar de acertos: em prova cega, saber quantas
           acertou até agora entregaria o gabarito de tudo que já passou. */}
-      <div>
+      <div ref={topo} className="scroll-mt-4">
+        {/* Alvo do foco a cada troca de questão. Diz posição e estado, que a
+            navegação livre torna fácil de perder — o cartão, por `aria-live`,
+            anuncia só a afirmação. */}
+        <h2 ref={titulo} tabIndex={-1} className="sr-only">
+          Questão {indice + 1} de {questoes.length} — {ROTULO_CURTO[questao.tema]}
+          {escolhida === null
+            ? ", em branco"
+            : escolhida
+              ? ", respondida Verdadeiro"
+              : ", respondida Falso"}
+          {marcadas.has(indice) ? ", marcada para revisar" : ""}
+        </h2>
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="text-slate-500 dark:text-slate-400">
             Questão {indice + 1} de {questoes.length}
@@ -132,7 +165,7 @@ export default function TelaProvaCega({
             <span
               className={`font-mono font-medium tabular-nums ${
                 restante <= 60
-                  ? "text-rose-600 dark:text-rose-400"
+                  ? "text-rose-700 dark:text-rose-400"
                   : "text-slate-600 dark:text-slate-300"
               }`}
               aria-label="tempo restante"
@@ -160,7 +193,7 @@ export default function TelaProvaCega({
         <div className={`mb-4 flex items-center justify-between text-xs font-semibold uppercase ${cor.texto}`}>
           <span>{ROTULO_CURTO[questao.tema]}</span>
           {marcadas.has(indice) && (
-            <span className="text-amber-600 dark:text-amber-400">
+            <span className="text-amber-700 dark:text-amber-400">
               ⚑ marcada
             </span>
           )}
@@ -183,7 +216,9 @@ export default function TelaProvaCega({
           }`}
         >
           Verdadeiro
-          <span className="ml-2 text-xs font-normal opacity-60">V</span>
+          <span aria-hidden className="ml-2 text-xs font-normal">
+            V
+          </span>
         </button>
         <button
           onClick={() => responder(false)}
@@ -195,7 +230,9 @@ export default function TelaProvaCega({
           }`}
         >
           Falso
-          <span className="ml-2 text-xs font-normal opacity-60">F</span>
+          <span aria-hidden className="ml-2 text-xs font-normal">
+            F
+          </span>
         </button>
       </div>
 
@@ -212,7 +249,7 @@ export default function TelaProvaCega({
           aria-pressed={marcadas.has(indice)}
           className={`underline-offset-4 hover:underline ${
             marcadas.has(indice)
-              ? "font-medium text-amber-600 dark:text-amber-400"
+              ? "font-medium text-amber-700 dark:text-amber-400"
               : "text-slate-500 dark:text-slate-400"
           }`}
         >
