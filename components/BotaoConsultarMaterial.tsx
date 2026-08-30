@@ -32,6 +32,16 @@ interface Props {
   rotulo?: string;
   /** Enxuto, para as listas de material onde vários botões vêm em sequência. */
   compacto?: boolean;
+  /**
+   * Chamado quando o leitor fecha, para quem tem uma ação seguinte óbvia.
+   *
+   * O visualizador devolve o foco a quem o abriu, como manda o padrão de
+   * diálogo modal — e no treino isso virava armadilha: fechado o PDF, o foco
+   * voltava para "Consultar Material" e o Enter seguinte reabria o leitor em
+   * vez de avançar, que é o que a tela promete logo abaixo ("Próxima questão
+   * · Enter"). Quem consultou o material terminou com esta questão.
+   */
+  aoFechar?: () => void;
 }
 
 export default function BotaoConsultarMaterial({
@@ -40,6 +50,7 @@ export default function BotaoConsultarMaterial({
   origem,
   rotulo = "Consultar Material",
   compacto = false,
+  aoFechar,
 }: Props) {
   const [aberto, setAberto] = useState(false);
   const caminho = caminhoPdf(arquivoOrigem);
@@ -86,6 +97,7 @@ export default function BotaoConsultarMaterial({
           paginaInicial={pagina}
           origem={origem}
           onFechar={() => setAberto(false)}
+          devolverFoco={aoFechar}
         />
       )}
     </>

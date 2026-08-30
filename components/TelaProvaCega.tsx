@@ -5,9 +5,9 @@ import type { MotivoFim, Questao, Resposta } from "@/lib/tipos";
 import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import type { Escolhas } from "@/lib/bateria";
 import {
-  contarEmBranco,
   contarRespondidas,
   folhaVazia,
+  pendencias,
   proximaEmBranco,
   respostasDe,
 } from "@/lib/bateria";
@@ -80,16 +80,26 @@ export default function TelaProvaCega({
   const questao = questoes[indice];
   const escolhida = escolhas[indice];
   const respondidas = contarRespondidas(escolhas);
-  const emBranco = contarEmBranco(escolhas);
   const proximaVazia = proximaEmBranco(escolhas, indice);
+  const pendente = pendencias(escolhas, marcadas);
 
   const responder = useCallback(
     (valor: boolean | null) => {
-      // Trocar de ideia e apagar a resposta fazem parte da prova real: aqui
-      // não há gabarito à vista para a troca ser trapaça.
+      // Trocar de ideia faz parte da prova real: aqui não há gabarito à vista
+      // para a troca ser trapaça. Mas responder é IDEMPOTENTE — tocar de novo
+      // no que já está escolhido não apaga.
+      //
+      // Era um alterna: o segundo toque em "Verdadeiro" devolvia a questão a
+      // em branco, e o único aviso era o preenchimento sumir. Dois botões com
+      // `aria-pressed` exclusivo são um grupo de rádio, e rádio não desmarca
+      // ao re-tocar; num público de 40 a 70 anos, sob cronômetro, o toque
+      // repetido por tremor ou por conferir vira questão em branco — que
+      // conta como erro. Apagar continua existindo, e com nome: "Limpar
+      // resposta", Backspace e 0.
       setEscolhas((anteriores) => {
+        if (anteriores[indice] === valor) return anteriores;
         const proximas = [...anteriores];
-        proximas[indice] = anteriores[indice] === valor ? null : valor;
+        proximas[indice] = valor;
         return proximas;
       });
     },
@@ -254,11 +264,6 @@ export default function TelaProvaCega({
 
       {/* Resposta — os botões ficam marcados, não somem: dá para ver o que foi
           respondido ao voltar numa questão. */}
-      {/* `disabled:opacity-40` deixava o "Anterior" da questão 1 a 2,53:1 — a
-          WCAG isenta controle desabilitado do critério de contraste, mas um
-          botão que não dá para ver não informa nem que existe, e é ele que diz
-          "você está no começo". A 60% chega a ~4,6:1 e continua lendo como
-          apagado ao lado do irmão ativo. */}
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => responder(true)}
@@ -318,7 +323,12 @@ export default function TelaProvaCega({
         </button>
       </div>
 
-      {/* Navegação */}
+      {/* Navegação.
+          `disabled:opacity-40` deixava o "Anterior" da questão 1 a 2,53:1 — a
+          WCAG isenta controle desabilitado do critério de contraste, mas um
+          botão que não dá para ver não informa nem que existe, e é ele que diz
+          "você está no começo". A 60% chega a ~4,6:1 e continua lendo como
+          apagado ao lado do irmão ativo. */}
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => ir(indice - 1)}
@@ -362,32 +372,80 @@ export default function TelaProvaCega({
       {!confirmando ? (
         <button
           onClick={() =>
-            emBranco > 0 ? setConfirmando(true) : encerrar("manual")
+            pendente.primeira !== null ? setConfirmando(true) : encerrar("manual")
           }
           className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
         >
           Encerrar e ver o gabarito
         </button>
       ) : (
-        <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
-          <p className="text-sm font-medium">
-            {emBranco === 1
-              ? "Falta 1 questão em branco"
-              : `Faltam ${emBranco} questões em branco`}{" "}
-            — em branco conta como erro, igual à prova real.
-          </p>
+        /* A confirmação só olhava as em branco: com tudo respondido e duas
+           questões marcadas, "Encerrar" ia direto ao gabarito e a bandeira
+           não servia para nada. E dizia quantas eram sem dizer QUAIS — o
+           número sozinho não permite decidir se vale voltar.
+
+           `role="alert"` porque o botão que tinha o foco desmonta aqui: sem
+           isso, o leitor de tela não anuncia nada e o foco cai no body. */
+        <div
+          role="alert"
+          className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40"
+        >
+          <div className="space-y-1 text-sm font-medium">
+            {pendente.emBranco.length > 0 && (
+              <p>
+                <ListaDeQuestoes
+                  rotulo={
+                    pendente.emBranco.length === 1
+                      ? "1 questão em branco:"
+                      : `${pendente.emBranco.length} questões em branco:`
+                  }
+                  indices={pendente.emBranco}
+                  onIr={(i) => {
+                    setConfirmando(false);
+                    ir(i);
+                  }}
+                />{" "}
+                <span className="font-normal">
+                  Em branco conta como erro, igual à prova real.
+                </span>
+              </p>
+            )}
+            {pendente.marcadas.length > 0 && (
+              <p>
+                <ListaDeQuestoes
+                  rotulo={
+                    pendente.marcadas.length === 1
+                      ? "1 marcada para revisar:"
+                      : `${pendente.marcadas.length} marcadas para revisar:`
+                  }
+                  indices={pendente.marcadas}
+                  onIr={(i) => {
+                    setConfirmando(false);
+                    ir(i);
+                  }}
+                />
+              </p>
+            )}
+          </div>
+          {/* Pesos invertidos: o sólido é o que dá para desfazer. "Encerrar"
+              é irreversível — a prova acaba e o gabarito aparece —, e estava
+              com o peso do botão principal, ao lado de um contornado. */}
           <div className="mt-3 grid grid-cols-2 gap-3">
             <button
-              onClick={() => setConfirmando(false)}
+              onClick={() => encerrar("manual")}
               className="rounded-lg border-2 border-slate-400 px-4 py-2 text-sm font-semibold transition hover:border-slate-500"
             >
-              Continuar respondendo
+              Encerrar mesmo assim
             </button>
             <button
-              onClick={() => encerrar("manual")}
+              autoFocus
+              onClick={() => {
+                setConfirmando(false);
+                if (pendente.primeira !== null) ir(pendente.primeira);
+              }}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900"
             >
-              Encerrar mesmo assim
+              Voltar e responder
             </button>
           </div>
         </div>
@@ -432,5 +490,45 @@ export default function TelaProvaCega({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Os números das questões pendentes, cada um levando à sua.
+ *
+ * "Faltam 14 questões em branco" não permite decidir nada: quem está a três
+ * minutos do fim precisa saber SE são as difíceis do começo ou as últimas que
+ * nem leu. Com os números — e podendo tocar neles — a confirmação vira uma
+ * ferramenta em vez de um aviso.
+ */
+function ListaDeQuestoes({
+  rotulo,
+  indices,
+  onIr,
+}: {
+  rotulo: string;
+  indices: number[];
+  onIr: (indice: number) => void;
+}) {
+  // Passar de uma dúzia de números vira parede de dígitos, e a decisão já foi
+  // tomada muito antes do décimo terceiro.
+  const MOSTRAR = 12;
+  const visiveis = indices.slice(0, MOSTRAR);
+  return (
+    <>
+      {rotulo}{" "}
+      {visiveis.map((i, n) => (
+        <span key={i}>
+          {n > 0 && ", "}
+          <button
+            onClick={() => onIr(i)}
+            className="font-bold tabular-nums underline underline-offset-2"
+          >
+            {i + 1}
+          </button>
+        </span>
+      ))}
+      {indices.length > MOSTRAR && ` e mais ${indices.length - MOSTRAR}`}.
+    </>
   );
 }

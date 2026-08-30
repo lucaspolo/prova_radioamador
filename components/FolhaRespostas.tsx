@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import type { Escolhas } from "@/lib/bateria";
 import Icone from "./Icone";
 
@@ -23,6 +24,26 @@ export default function FolhaRespostas({
   atual,
   onIr,
 }: Props) {
+  const grade = useRef<HTMLDivElement>(null);
+  const celulaAtual = useRef<HTMLButtonElement>(null);
+
+  /**
+   * O foco segue a parada de Tab.
+   *
+   * O tabindex rotativo movia a PARADA quando ← / → mudavam de questão, mas
+   * não o foco: quem estava na célula 1 continuava lá, agora com
+   * `tabindex="-1"`, e o Enter seguinte disparava o clique dela — a prova
+   * voltava para a questão 1. Roving focus só funciona se o foco rodar junto.
+   *
+   * Só quando o foco já está DENTRO da folha: mexer nas setas com o foco no
+   * corpo da questão não deve arrastar ninguém para cá.
+   */
+  useEffect(() => {
+    if (grade.current?.contains(document.activeElement)) {
+      celulaAtual.current?.focus({ preventScroll: true });
+    }
+  }, [atual]);
+
   return (
     <section aria-label="folha de respostas">
       <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
@@ -46,7 +67,7 @@ export default function FolhaRespostas({
         </span>
       </div>
 
-      <div className="grid grid-cols-5 gap-1.5 sm:grid-cols-10">
+      <div ref={grade} className="grid grid-cols-5 gap-1.5 sm:grid-cols-10">
         {escolhas.map((escolha, i) => {
           const respondida = escolha !== null;
           const marcada = marcadas.has(i);
@@ -54,6 +75,7 @@ export default function FolhaRespostas({
           return (
             <button
               key={i}
+              ref={ehAtual ? celulaAtual : undefined}
               onClick={() => onIr(i)}
               // Tabindex rotativo: a grade inteira é UMA parada de Tab (a
               // célula atual), senão até 30 botões separavam a questão do

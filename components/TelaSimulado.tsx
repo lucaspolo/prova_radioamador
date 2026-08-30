@@ -148,6 +148,18 @@ export default function TelaSimulado({
     if (respondida) botaoAvancar.current?.focus({ preventScroll: true });
   }, [respondida, indice]);
 
+  /**
+   * De volta ao avançar, depois de consultar o material ou marcar a suspeita.
+   *
+   * As duas são ações terminais desta questão, e as duas deixavam o foco no
+   * próprio controle: o Enter seguinte reabria o PDF ou desmarcava a suspeita,
+   * enquanto o botão logo abaixo anunciava "Próxima questão · Enter". Quem faz
+   * vinte questões em série usa mouse para o detalhe e Enter para andar.
+   */
+  const voltarAoAvancar = useCallback(() => {
+    botaoAvancar.current?.focus({ preventScroll: true });
+  }, []);
+
   // Atalhos: V / F para responder, Enter ou espaço para avançar. Numa bateria
   // de 20 questões, a mão não precisa sair do teclado.
   useEffect(() => {
@@ -276,13 +288,14 @@ export default function TelaSimulado({
                   arquivoOrigem={questao.arquivo_origem}
                   pagina={questao.pagina}
                   origem={questao.origem}
+                  aoFechar={voltarAoAvancar}
                 />
                 <TrechoOrigem
                   trechoId={questao.trecho_id}
                   afirmacao={questao.afirmacao}
                 />
                 <div>
-                  <BotaoSuspeita questao={questao} />
+                  <BotaoSuspeita questao={questao} aoAlternar={voltarAoAvancar} />
                 </div>
               </div>
             </div>

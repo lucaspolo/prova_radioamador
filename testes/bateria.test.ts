@@ -2,6 +2,7 @@ import {
   contarEmBranco,
   contarRespondidas,
   folhaVazia,
+  pendencias,
   proximaEmBranco,
   respostasDe,
   type Escolhas,
@@ -117,6 +118,46 @@ const questoes = [
   );
   checar("folha vazia devolve null", proximaEmBranco([], 0) === null);
 }
+
+// --- O que fica pendente ao encerrar --------------------------------------
+// A confirmação de "Encerrar" só olhava as em branco: com tudo respondido e
+// duas questões marcadas, a prova ia direto ao gabarito e a bandeira não
+// servia para nada — ela existe justamente para voltar depois, e encerrar é o
+// último momento em que dá para agir sobre ela.
+{
+  const e: Escolhas = [true, null, false, null, true];
+
+  const nada = pendencias([true, false, true], new Set());
+  checar("sem pendência não há por que confirmar", nada.primeira === null);
+
+  const soBranco = pendencias(e, new Set());
+  checar(
+    "as em branco vêm em ordem e por índice",
+    soBranco.emBranco.join(",") === "1,3" && soBranco.marcadas.length === 0,
+  );
+
+  const soMarcada = pendencias([true, false, true], new Set([2, 0]));
+  checar("marcada sozinha também é pendência", soMarcada.primeira === 0);
+  checar("as marcadas saem ordenadas", soMarcada.marcadas.join(",") === "0,2");
+
+  const ambas = pendencias(e, new Set([4]));
+  checar(
+    "as duas listas convivem sem se misturar",
+    ambas.emBranco.join(",") === "1,3" && ambas.marcadas.join(",") === "4",
+  );
+  // Responder vem antes de revisar: em branco conta como erro na hora, e uma
+  // marcada já tem uma resposta gravada.
+  checar("a em branco tem precedência sobre a marcada", ambas.primeira === 1);
+
+  // Uma questão pode estar nas duas listas — em branco E marcada —, e o texto
+  // precisa dizer as duas coisas dela.
+  const nasDuas = pendencias(e, new Set([1]));
+  checar(
+    "uma questão pode ser em branco e marcada ao mesmo tempo",
+    nasDuas.emBranco.includes(1) && nasDuas.marcadas.includes(1),
+  );
+}
+
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE BATERIA PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

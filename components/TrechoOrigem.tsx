@@ -115,7 +115,16 @@ function TextoDoTrecho({
         </button>
       </div>
 
-      <div className="mt-1.5 max-h-72 overflow-y-auto overscroll-contain rounded-lg border border-slate-300 bg-white/70 p-3 text-[13px] leading-relaxed whitespace-pre-wrap text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
+      {/* `tabIndex={0}` porque a caixa rola e o trecho chega a milhares de
+          caracteres: sem parada de teclado, quem não usa mouse não consegue
+          ler além das primeiras linhas (WCAG 2.1.1). O anel de foco é o que
+          diz onde as setas passam a atuar. */}
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Trecho de origem"
+        className="mt-1.5 max-h-72 overflow-y-auto overscroll-contain rounded-lg border border-slate-300 bg-white/70 p-3 text-[13px] leading-relaxed whitespace-pre-wrap text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300"
+      >
         {partes[0]}
         {partes[1] && (
           <mark
