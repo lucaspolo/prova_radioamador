@@ -151,22 +151,26 @@ export const COR_TEMA: Record<Tema, EstiloTema> = {
     texto: "text-sky-700 dark:text-sky-300",
     fundo: "bg-sky-50 dark:bg-sky-950/40",
     borda: "border-sky-300 dark:border-sky-800",
-    barra: "bg-sky-500",
-    linha: "stroke-sky-500",
+    barra: "bg-sky-600",
+    linha: "stroke-sky-600",
   },
   "Técnica e ética operacional": {
     texto: "text-violet-700 dark:text-violet-300",
     fundo: "bg-violet-50 dark:bg-violet-950/40",
     borda: "border-violet-300 dark:border-violet-800",
-    barra: "bg-violet-500",
-    linha: "stroke-violet-500",
+    barra: "bg-violet-600",
+    linha: "stroke-violet-600",
   },
+  // Teal, e não âmbar: o âmbar já era a cor de "atenção" (abaixo do corte) e
+  // de "marcada para revisar". Na tela de desempenho, a barra da matéria e o
+  // aviso de que ela está abaixo do corte ficavam da mesma cor — a cor deixava
+  // de significar uma coisa só. Nenhuma família cumpre dois papéis.
   "Conhecimentos de Eletrônica e Eletricidade": {
-    texto: "text-amber-700 dark:text-amber-300",
-    fundo: "bg-amber-50 dark:bg-amber-950/40",
-    borda: "border-amber-300 dark:border-amber-800",
-    barra: "bg-amber-500",
-    linha: "stroke-amber-500",
+    texto: "text-teal-700 dark:text-teal-300",
+    fundo: "bg-teal-50 dark:bg-teal-950/40",
+    borda: "border-teal-300 dark:border-teal-800",
+    barra: "bg-teal-600",
+    linha: "stroke-teal-600",
   },
 };
 

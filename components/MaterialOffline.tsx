@@ -79,7 +79,7 @@ export default function MaterialOffline() {
   }
 
   return (
-    <section className="rounded-xl border border-slate-300 p-4 dark:border-slate-700">
+    <section className="rounded-xl border border-borda bg-superficie p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="font-semibold">Material para consulta offline</h3>

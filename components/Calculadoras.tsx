@@ -99,7 +99,7 @@ function Bloco({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-slate-300 p-4 dark:border-slate-700">
+    <section className="rounded-xl border border-borda bg-superficie p-4">
       <h3 className="font-semibold">{titulo}</h3>
       <p className="mt-0.5 mb-3 text-sm text-slate-500 dark:text-slate-400">
         {descricao}
@@ -271,14 +271,28 @@ function Onda() {
       descricao="A regra prática que a Cartilha ensina: λ (m) ≈ 300 / f (MHz)."
     >
       <div className="grid grid-cols-2 gap-3">
-        <Campo rotulo="Frequência" unidade="MHz" valor={mhz} onChange={setMhz} />
+        <Campo
+          rotulo="Frequência"
+          unidade="MHz"
+          valor={mhz}
+          onChange={setMhz}
+        />
       </div>
       <Resultado
         itens={[
-          ["λ (regra prática)", `${fmt(f === null ? null : comprimentoPratico(f), 3)} m`],
-          ["λ (c / f)", `${fmt(f === null ? null : comprimentoDeOnda(f * 1e6), 3)} m`],
+          [
+            "λ (regra prática)",
+            `${fmt(f === null ? null : comprimentoPratico(f), 3)} m`,
+          ],
+          [
+            "λ (c / f)",
+            `${fmt(f === null ? null : comprimentoDeOnda(f * 1e6), 3)} m`,
+          ],
           ["Dipolo de ½ onda", `${fmt(f === null ? null : meiaOnda(f), 3)} m`],
-          ["Vertical de ¼ de onda", `${fmt(f === null ? null : quartoDeOnda(f), 3)} m`],
+          [
+            "Vertical de ¼ de onda",
+            `${fmt(f === null ? null : quartoDeOnda(f), 3)} m`,
+          ],
         ]}
       />
       <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
@@ -306,8 +320,14 @@ function Decibel() {
       </div>
       <Resultado
         itens={[
-          ["Em dBm", `${fmt(watts === null ? null : wattsParaDbm(watts), 2)} dBm`],
-          ["Em watts", `${fmt(emDbm === null ? null : dbmParaWatts(emDbm), 4)} W`],
+          [
+            "Em dBm",
+            `${fmt(watts === null ? null : wattsParaDbm(watts), 2)} dBm`,
+          ],
+          [
+            "Em watts",
+            `${fmt(emDbm === null ? null : dbmParaWatts(emDbm), 4)} W`,
+          ],
         ]}
       />
     </Bloco>
@@ -322,7 +342,9 @@ function LC() {
   const henry = l === null ? null : l * 1e-6;
   const farad = c === null ? null : c * 1e-12;
   const f0 =
-    henry === null || farad === null ? null : frequenciaRessonancia(henry, farad);
+    henry === null || farad === null
+      ? null
+      : frequenciaRessonancia(henry, farad);
 
   return (
     <Bloco

@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { RST_SEM_FONTE, TABELAS, type TabelaReferencia } from "@/lib/referencia";
+import {
+  RST_SEM_FONTE,
+  TABELAS,
+  type TabelaReferencia,
+} from "@/lib/referencia";
 import AtalhosDaProva from "./AtalhosDaProva";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
@@ -19,7 +23,11 @@ import Relampago from "./Relampago";
  * Não há link para cá de dentro de uma bateria, e é de propósito: na prova
  * cega seria cola, e no treino seria distração.
  */
-export default function TelaFerramentas({ onVoltar }: { onVoltar: () => void }) {
+export default function TelaFerramentas({
+  onVoltar,
+}: {
+  onVoltar: () => void;
+}) {
   const [aba, setAba] = useState<"tabelas" | "calculadoras" | "relampago">(
     "tabelas",
   );
@@ -103,7 +111,7 @@ function Aba({
       className={`rounded-lg border-2 px-4 py-2 text-sm font-semibold transition ${
         ativa
           ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-          : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+          : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
       }`}
     >
       {children}
@@ -129,7 +137,7 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
       : `páginas ${paginas[0]}–${paginas[paginas.length - 1]}`;
 
   return (
-    <section className="rounded-xl border border-slate-300 dark:border-slate-700">
+    <section className="rounded-xl border border-borda bg-superficie">
       <button
         onClick={() => setAberta((a) => !a)}
         aria-expanded={aberta}
@@ -147,7 +155,7 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
       </button>
 
       {aberta && (
-        <div className="border-t border-slate-200 p-4 dark:border-slate-800">
+        <div className="border-t border-borda p-4">
           {tabela.linhas.length > 12 && (
             <input
               type="search"
@@ -174,7 +182,7 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
                 {linhas.map((l) => (
                   <tr
                     key={l.celulas.join("|")}
-                    className="border-t border-slate-200 dark:border-slate-800"
+                    className="border-t border-borda"
                   >
                     {l.celulas.map((c, i) => (
                       <td
@@ -204,7 +212,7 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
             </p>
           )}
 
-          <div className="mt-3 border-t border-slate-200 pt-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+          <div className="mt-3 border-t border-borda pt-3 text-xs text-slate-500 dark:text-slate-400">
             <span className="font-medium">Fonte:</span> {tabela.fonte.arquivo}
             <span className="opacity-70">
               {" "}
@@ -230,7 +238,7 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
  */
 function SemFonte() {
   return (
-    <section className="rounded-xl border border-dashed border-slate-300 p-4 dark:border-slate-700">
+    <section className="rounded-xl border border-dashed border-borda p-4">
       <h3 className="font-semibold text-slate-500 dark:text-slate-400">
         {RST_SEM_FONTE.titulo}
         <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-bold dark:bg-slate-800">
@@ -238,9 +246,9 @@ function SemFonte() {
         </span>
       </h3>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        {RST_SEM_FONTE.motivo} Escrevê-la de memória seria fácil e
-        provavelmente daria certo — e é justamente por isso que não se faz: o
-        valor destas tabelas está em serem conferíveis contra a fonte.
+        {RST_SEM_FONTE.motivo} Escrevê-la de memória seria fácil e provavelmente
+        daria certo — e é justamente por isso que não se faz: o valor destas
+        tabelas está em serem conferíveis contra a fonte.
       </p>
     </section>
   );

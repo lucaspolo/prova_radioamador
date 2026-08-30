@@ -164,16 +164,19 @@ export default function TelaConferencia() {
     return p ? trecho.texto.slice(p.inicio, p.fim) : null;
   }, [atual, trechos]);
 
-  const irPara = useCallback((indice: number) => {
-    setSelId(linhas[indice]?.q.id ?? null);
-    // O cartão selecionado abre o texto de origem, então cresce: rolar depois
-    // que o React remontou, ou a posição calculada é a do cartão fechado.
-    requestAnimationFrame(() => {
-      refLista.current
-        ?.querySelector(`[data-indice="${indice}"]`)
-        ?.scrollIntoView({ block: "nearest" });
-    });
-  }, [linhas]);
+  const irPara = useCallback(
+    (indice: number) => {
+      setSelId(linhas[indice]?.q.id ?? null);
+      // O cartão selecionado abre o texto de origem, então cresce: rolar depois
+      // que o React remontou, ou a posição calculada é a do cartão fechado.
+      requestAnimationFrame(() => {
+        refLista.current
+          ?.querySelector(`[data-indice="${indice}"]`)
+          ?.scrollIntoView({ block: "nearest" });
+      });
+    },
+    [linhas],
+  );
 
   /**
    * Atalhos, porque 903 questões no mouse é uma revisão que não acontece.
@@ -304,10 +307,14 @@ export default function TelaConferencia() {
         );
       }
       if (m.atualizadas) {
-        partes.push(`${m.atualizadas} atualizada${m.atualizadas === 1 ? "" : "s"}`);
+        partes.push(
+          `${m.atualizadas} atualizada${m.atualizadas === 1 ? "" : "s"}`,
+        );
       }
       if (m.mantidas) {
-        partes.push(`${m.mantidas} mantida${m.mantidas === 1 ? "" : "s"} daqui`);
+        partes.push(
+          `${m.mantidas} mantida${m.mantidas === 1 ? "" : "s"} daqui`,
+        );
       }
       setMensagem(partes.join(" · ") + ".");
     } catch {

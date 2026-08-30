@@ -53,9 +53,83 @@
   color-scheme: dark;
 }
 
+/* Superfícies e texto: os degraus que faltavam.
+   ---------------------------------------------------------------------------
+   O app tinha duas cores estruturais — fundo e texto — e um recurso só para
+   tudo o mais: a borda. 373 `border` contra 3 sombras; seção, cartão, chip e
+   botão eram todos "caixa com contorno", e no feedback do treino chegavam a
+   quatro molduras aninhadas. No escuro isso desmoronava: as bordas ficavam em
+   1,3:1 sobre o fundo e os cartões, que não tinham preenchimento próprio,
+   viravam texto solto — o tema escuro era uma inversão, não um desenho.
+
+   Daí três superfícies em vez de uma. Um cartão existe porque tem fundo
+   próprio, não porque tem contorno; a borda passa a ser reforço, e some do
+   caminho quando não é necessária.
+
+   `--elevado` é o que flutua sobre o resto (menu, leitor de PDF): no claro se
+   separa pela sombra, no escuro pela cor, porque sombra preta sobre fundo
+   quase preto não existe.
+
+   Os tons de texto seguem a mesma lógica: `--texto-2` para apoio (7,6:1 no
+   claro, 6,7:1 no escuro sobre a superfície) e `--texto-3` para rótulos de
+   seção em 12px (4,8:1) — nunca o slate-400 em texto corrido, que media
+   2,5:1. */
+:root,
+:root[data-tema="claro"] {
+  --superficie: #ffffff;
+  --rebaixado: #f1f5f9;
+  --elevado: #ffffff;
+  --borda: #e2e8f0;
+  --borda-controle: #94a3b8;
+  --texto-2: #475569;
+  --texto-3: #64748b;
+  --trilha: #e2e8f0;
+  --sombra-elevado: 0 8px 24px rgb(15 23 42 / 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    --superficie: #121b30;
+    --rebaixado: #0b1120;
+    --elevado: #1a2540;
+    --borda: #2a3650;
+    --borda-controle: #475569;
+    --texto-2: #94a3b8;
+    --texto-3: #94a3b8;
+    --trilha: #1e293b;
+    --sombra-elevado: 0 12px 32px rgb(0 0 0 / 0.6);
+  }
+}
+
+:root[data-tema="escuro"] {
+  --superficie: #121b30;
+  --rebaixado: #0b1120;
+  --elevado: #1a2540;
+  --borda: #2a3650;
+  --borda-controle: #475569;
+  --texto-2: #94a3b8;
+  --texto-3: #94a3b8;
+  --trilha: #1e293b;
+  --sombra-elevado: 0 12px 32px rgb(0 0 0 / 0.6);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-superficie: var(--superficie);
+  --color-rebaixado: var(--rebaixado);
+  --color-elevado: var(--elevado);
+  --color-borda: var(--borda);
+  --color-borda-controle: var(--borda-controle);
+  --color-texto-2: var(--texto-2);
+  --color-texto-3: var(--texto-3);
+  --color-trilha: var(--trilha);
+}
+
+/* A elevação de verdade: cor no escuro, sombra no claro. */
+@utility elevado {
+  background-color: var(--elevado);
+  box-shadow: var(--sombra-elevado);
 }
 
 /* Todo o app usa unidades relativas do Tailwind, então mexer na raiz escala a

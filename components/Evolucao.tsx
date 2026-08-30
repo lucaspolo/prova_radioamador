@@ -1,6 +1,11 @@
 "use client";
 
-import { COR_TEMA, PERCENTUAL_CORTE, ROTULO_CURTO, TEMAS } from "@/lib/constantes";
+import {
+  COR_TEMA,
+  PERCENTUAL_CORTE,
+  ROTULO_CURTO,
+  TEMAS,
+} from "@/lib/constantes";
 import type { Historico } from "@/lib/historico";
 import type { Tema } from "@/lib/tipos";
 
@@ -21,7 +26,10 @@ function seriePorTema(historico: Historico, tema: Tema): Ponto[] {
     const doTema = s.itens.filter((i) => i.tema === tema);
     if (doTema.length === 0) continue;
     const certos = doTema.filter((i) => i.acertou).length;
-    pontos.push({ data: s.data, pct: Math.round((certos / doTema.length) * 100) });
+    pontos.push({
+      data: s.data,
+      pct: Math.round((certos / doTema.length) * 100),
+    });
   }
   // O histórico é guardado do mais recente para o mais antigo.
   return pontos.reverse().slice(-12);
@@ -35,12 +43,17 @@ function seriePorTema(historico: Historico, tema: Tema): Ponto[] {
  * três serem comparáveis entre si e com a linha de corte tracejada.
  */
 export default function Evolucao({ historico }: { historico: Historico }) {
-  const series = TEMAS.map((tema) => ({ tema, pontos: seriePorTema(historico, tema) }))
-    .filter((s) => s.pontos.length >= 2);
+  const series = TEMAS.map((tema) => ({
+    tema,
+    pontos: seriePorTema(historico, tema),
+  })).filter((s) => s.pontos.length >= 2);
   if (series.length === 0) return null;
 
   // Geometria do viewBox: x de 4 a 96, y de 4 (100%) a 32 (0%).
-  const X0 = 4, X1 = 96, Y0 = 4, Y1 = 32;
+  const X0 = 4,
+    X1 = 96,
+    Y0 = 4,
+    Y1 = 32;
   const x = (i: number, n: number) => X0 + ((X1 - X0) * i) / (n - 1);
   const y = (pct: number) => Y1 - ((Y1 - Y0) * pct) / 100;
 

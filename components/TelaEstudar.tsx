@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import mapa from "@/lib/mapa-pdfs.json";
-import { CLASSES, CLASSE_PADRAO, FORMATO, ROTULO_CURTO } from "@/lib/constantes";
+import {
+  CLASSES,
+  CLASSE_PADRAO,
+  FORMATO,
+  ROTULO_CURTO,
+} from "@/lib/constantes";
 import {
   EMENTA,
   FONTE_EMENTA,
@@ -87,7 +92,7 @@ export default function TelaEstudar() {
 
         {/* A fonte antes do conteúdo, e não num rodapé: o valor de tudo que vem
             abaixo é ser o texto da Anatel, não o nosso resumo dele. */}
-        <section className="rounded-xl border border-slate-300 p-4 dark:border-slate-700">
+        <section className="rounded-xl border border-borda bg-superficie p-4">
           <h2 className="font-semibold">De onde isto vem</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             O conteúdo programático é o do{" "}
@@ -112,9 +117,7 @@ export default function TelaEstudar() {
         {/* O fim da leitura tem de ter para onde ir. Sem isto a página é um
             documento sem saída, e quem terminou de ler volta ao navegador. */}
         <section className="rounded-2xl border-2 border-slate-900 p-5 dark:border-slate-100">
-          <h2 className="text-lg font-bold">
-            Agora teste seus conhecimentos
-          </h2>
+          <h2 className="text-lg font-bold">Agora teste seus conhecimentos</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Ler cobre o programa; responder mostra o que ficou. A prova é de
             certo ou errado, uma matéria por vez, no tempo e no mínimo de
@@ -154,7 +157,7 @@ function SeletorClasse({
             className={`flex-1 rounded-xl border-2 px-3 py-3 transition ${
               classe === c
                 ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-                : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+                : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
             }`}
           >
             <div className="text-base font-bold">Classe {c}</div>
@@ -239,7 +242,7 @@ function Bloco({
       )}
 
       {bloco.cumulativo && (
-        <p className="mb-3 rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <p className="mb-3 rounded-lg border border-dashed border-borda px-3 py-2 text-sm text-slate-500 dark:text-slate-400">
           {bloco.cumulativo}
         </p>
       )}
@@ -255,21 +258,13 @@ function Bloco({
   );
 }
 
-function Topico({
-  topico,
-  classe,
-}: {
-  topico: TopicoEmenta;
-  classe: Classe;
-}) {
+function Topico({ topico, classe }: { topico: TopicoEmenta; classe: Classe }) {
   const secoes = secoesDoTopico(topico);
   const quantas = questoesDoTopico(topico, classe).length;
 
   return (
-    <article className="rounded-xl border border-slate-300 p-4 dark:border-slate-700">
-      {topico.titulo && (
-        <h3 className="font-semibold">{topico.titulo}</h3>
-      )}
+    <article className="rounded-xl border border-borda bg-superficie p-4">
+      {topico.titulo && <h3 className="font-semibold">{topico.titulo}</h3>}
       <p
         className={`text-sm text-slate-600 dark:text-slate-300 ${
           topico.titulo ? "mt-1" : ""
@@ -393,7 +388,7 @@ function MaterialOficial() {
           return (
             <li
               key={arquivo}
-              className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 rounded-xl border border-slate-300 px-4 py-3 dark:border-slate-700"
+              className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 rounded-xl border border-borda bg-superficie px-4 py-3"
             >
               <div className="min-w-0 flex-1 basis-64">
                 <div className="text-sm font-medium">

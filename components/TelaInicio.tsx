@@ -153,7 +153,7 @@ export default function TelaInicio({
       {/* Classe, matéria e quantidade são UMA decisão — a bateria de hoje. Em
           três seções separadas por vãos largos, a tela parecia três telas, e
           o botão de iniciar caía longe demais do que ele inicia. */}
-      <section className="space-y-5 rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+      <section className="space-y-5 rounded-2xl border border-borda bg-superficie p-4">
         <div>
           <Rotulo>Classe</Rotulo>
           {/* `role="group"` com rótulo, como as matérias já tinham: sem isso o
@@ -168,7 +168,7 @@ export default function TelaInicio({
                 className={`min-w-0 flex-1 rounded-xl border-2 px-1.5 py-2.5 transition sm:px-3 sm:py-3 ${
                   classe === c
                     ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-                    : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+                    : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
                 }`}
               >
                 <div className="text-sm font-bold whitespace-nowrap sm:text-base">
@@ -205,9 +205,7 @@ export default function TelaInicio({
 
         <div>
           <div className="flex items-center justify-between gap-3">
-            <Rotulo>
-              {escolhas.length > 1 ? "Matérias" : "Matéria"}
-            </Rotulo>
+            <Rotulo>{escolhas.length > 1 ? "Matérias" : "Matéria"}</Rotulo>
             {/* As três de uma vez são a prova completa da Anatel — o botão
                 separado que existia aqui fazia exatamente isto. */}
             {/* Era um link de 12 px com alvo de 57×16 — abaixo do mínimo de
@@ -274,7 +272,7 @@ export default function TelaInicio({
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
                   quantidade === n
                     ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-                    : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+                    : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
                 }`}
               >
                 {n}
@@ -306,7 +304,7 @@ export default function TelaInicio({
           <button
             onClick={() => setAjusteManual(true)}
             aria-expanded={false}
-            className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left text-sm transition hover:border-slate-400 dark:border-slate-800 dark:hover:border-slate-500"
+            className="flex w-full items-center justify-between gap-3 rounded-xl border border-borda bg-superficie px-4 py-3 text-left text-sm transition hover:border-slate-400 dark:hover:border-slate-500"
           >
             <span>
               <span className="font-semibold">
@@ -356,7 +354,7 @@ export default function TelaInicio({
               className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition ${
                 cronometrar
                   ? "border-slate-900 dark:border-slate-100"
-                  : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+                  : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
               }`}
             >
               <span>
@@ -389,7 +387,7 @@ export default function TelaInicio({
           className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition ${
             soIneditas
               ? "border-slate-900 dark:border-slate-100"
-              : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+              : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
           }`}
         >
           <span>
@@ -429,7 +427,7 @@ export default function TelaInicio({
           largura e 390 de altura — é justamente onde a barra mais serve. Do
           desktop para cima ela sai, porque lá a página quase cabe e uma faixa
           presa roubaria altura de quem já enxerga o conjunto. */}
-      <div className="sticky bottom-0 z-30 -mx-4 border-t border-slate-200 bg-[var(--background)] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 dark:border-slate-800">
+      <div className="sticky bottom-0 z-30 -mx-4 border-t border-borda bg-[var(--background)] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:py-0">
         <button
           onClick={() =>
             onIniciar(escolhas, limite, classe, cronometrar, cego, soIneditas)
@@ -525,7 +523,7 @@ function BotaoRegime({
       className={`rounded-xl border-2 p-4 text-left transition ${
         ativo
           ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-          : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+          : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
       }`}
     >
       <div className="flex items-center gap-2 font-semibold">
@@ -591,7 +589,9 @@ function BotaoTema({
         <span
           aria-hidden
           className={`grid h-4 w-4 shrink-0 place-items-center rounded border-2 ${
-            ativo ? "border-current bg-current" : "border-slate-400 dark:border-slate-600"
+            ativo
+              ? "border-current bg-current"
+              : "border-slate-400 dark:border-slate-600"
           }`}
         >
           {ativo && (

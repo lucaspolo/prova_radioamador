@@ -185,7 +185,8 @@ export default function TelaSimulado({
             Fora do cartão de propósito — dentro dele, a mesma informação seria
             lida duas vezes. */}
         <h2 ref={titulo} tabIndex={-1} className="sr-only">
-          Questão {indice + 1} de {questoes.length} — {ROTULO_CURTO[questao.tema]}
+          Questão {indice + 1} de {questoes.length} —{" "}
+          {ROTULO_CURTO[questao.tema]}
         </h2>
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="text-slate-500 dark:text-slate-400">
@@ -286,7 +287,6 @@ export default function TelaSimulado({
               </div>
             </div>
           </div>
-
         </div>
       )}
 
@@ -332,7 +332,9 @@ export default function TelaSimulado({
             ref={botaoAvancar}
             className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
           >
-            {indice + 1 >= questoes.length ? "Ver resultado" : "Próxima questão"}
+            {indice + 1 >= questoes.length
+              ? "Ver resultado"
+              : "Próxima questão"}
             <span aria-hidden className="ml-2 text-xs font-normal opacity-80">
               Enter
             </span>

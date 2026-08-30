@@ -75,7 +75,11 @@ export default function Relampago() {
       const n = Number(e.key);
       if (!respondida && n >= 1 && n <= atual!.alternativas.length) {
         responder(atual!.alternativas[n - 1]);
-      } else if (!emBotao && respondida && (e.key === "Enter" || e.key === " ")) {
+      } else if (
+        !emBotao &&
+        respondida &&
+        (e.key === "Enter" || e.key === " ")
+      ) {
         e.preventDefault();
         avancar();
       }
@@ -106,9 +110,7 @@ export default function Relampago() {
               rotulo={b.rotulo}
               onClick={() =>
                 setSelecao((s) =>
-                  s.includes(b.id)
-                    ? s.filter((x) => x !== b.id)
-                    : [...s, b.id],
+                  s.includes(b.id) ? s.filter((x) => x !== b.id) : [...s, b.id],
                 )
               }
             />
@@ -281,7 +283,7 @@ function Chip({
       className={`rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition ${
         ativo
           ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-          : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+          : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
       }`}
     >
       {rotulo}

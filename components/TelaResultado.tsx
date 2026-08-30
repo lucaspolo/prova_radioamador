@@ -249,19 +249,17 @@ export default function TelaResultado({
             gabarito.
           </p>
         )}
-        <AvisoEmBranco
-          naoRespondidas={naoRespondidas}
-          motivoFim={motivoFim}
-        />
+        <AvisoEmBranco naoRespondidas={naoRespondidas} motivoFim={motivoFim} />
       </div>
 
       {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
       {desafio && (
-        <div className="rounded-xl border border-slate-300 p-4 text-sm dark:border-slate-700">
+        <div className="rounded-xl border border-borda bg-superficie p-4 text-sm">
           <div>
-            Desafio <span className="font-mono font-bold">{desafio.semente}</span>{" "}
-            · bateria{" "}
+            Desafio{" "}
+            <span className="font-mono font-bold">{desafio.semente}</span> ·
+            bateria{" "}
             <span className="font-mono font-bold">{desafio.codigo}</span>
           </div>
           {/* O código é a impressão digital das questões sorteadas. Se dois
@@ -293,4 +291,3 @@ export default function TelaResultado({
     </div>
   );
 }
-

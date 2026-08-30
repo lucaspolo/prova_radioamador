@@ -89,7 +89,7 @@ export default function CriarDesafio({
       <button
         onClick={() => setAberto(true)}
         aria-expanded={false}
-        className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left transition hover:border-slate-400 dark:border-slate-800 dark:hover:border-slate-500"
+        className="flex w-full items-center justify-between gap-3 rounded-xl border border-borda bg-superficie px-4 py-3 text-left transition hover:border-slate-400 dark:hover:border-slate-500"
       >
         <span>
           <span className="font-semibold">Desafiar o radioclube</span>
@@ -119,11 +119,11 @@ export default function CriarDesafio({
         </button>
       </div>
       <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-        Um link, a mesma bateria para todos: {rotuloMaterias},{" "}
-        {quantidade} questões {temas.length > 1 ? "por matéria " : ""}da Classe{" "}
-        {classe}, em modo prova e com o cronômetro oficial. As questões saem da
-        semente do link, e não do histórico de cada um — por isso dá para
-        comparar os resultados.
+        Um link, a mesma bateria para todos: {rotuloMaterias}, {quantidade}{" "}
+        questões {temas.length > 1 ? "por matéria " : ""}da Classe {classe}, em
+        modo prova e com o cronômetro oficial. As questões saem da semente do
+        link, e não do histórico de cada um — por isso dá para comparar os
+        resultados.
       </p>
       <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         A mesma bateria também sai <strong>impressa</strong>: folha em branco
@@ -154,7 +154,7 @@ export default function CriarDesafio({
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <button
               onClick={() => void compartilhar()}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+              className="rounded-lg border border-borda bg-superficie px-3 py-1.5 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
             >
               Compartilhar link
             </button>
@@ -163,13 +163,13 @@ export default function CriarDesafio({
                 questões. */}
             <button
               onClick={() => desafio && onImprimir(desafio)}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+              className="rounded-lg border border-borda bg-superficie px-3 py-1.5 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
             >
               Imprimir em branco
             </button>
             <button
               onClick={criar}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+              className="rounded-lg border border-borda bg-superficie px-3 py-1.5 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
             >
               Outra semente
             </button>

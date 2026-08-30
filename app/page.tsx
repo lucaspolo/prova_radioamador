@@ -19,6 +19,7 @@ import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaDesafio from "@/components/TelaDesafio";
 import TelaImpressao from "@/components/TelaImpressao";
 import CartaoRetomar from "@/components/CartaoRetomar";
+import Antena from "@/components/Antena";
 import { useHistorico } from "@/hooks/useHistorico";
 import { foiSaidaDaGuarda } from "@/hooks/useGuardaDeSaida";
 import {
@@ -146,8 +147,14 @@ export default function Home() {
     baterias: { tema: Tema; questoes: Questao[] }[];
     link: string;
   } | null>(null);
-  const { historico, carregado, gravacaoRecusada, registrar, importar, limpar } =
-    useHistorico();
+  const {
+    historico,
+    carregado,
+    gravacaoRecusada,
+    registrar,
+    importar,
+    limpar,
+  } = useHistorico();
 
   /**
    * O que chega pela query string: um desafio, ou um assunto vindo de
@@ -524,7 +531,10 @@ export default function Home() {
       setEtapa("resultado");
       return;
     }
-    const concluidas = [...materiasProva, { tema: temaAtual, respostas: finais }];
+    const concluidas = [
+      ...materiasProva,
+      { tema: temaAtual, respostas: finais },
+    ];
     setMateriasProva(concluidas);
     if (concluidas.length < plano.temas.length) {
       setEtapa("intervalo");
@@ -560,14 +570,20 @@ export default function Home() {
         }`}
       >
         <div className="min-w-0">
-          {/* `text-xl` no celular porque a 360 px o título quebrava em duas
+          {/* A antena ao lado do título: é a marca do ícone instalado, e era o
+              único desenho do produto que a interface não usava.
+
+              `text-lg` no celular porque a 360 px o título quebrava em duas
               linhas e deixava "Radioamador" sozinho na segunda — três linhas
               de cabeçalho antes de qualquer coisa acionável. */}
           <h1
-            className={`font-bold tracking-tight text-balance ${
+            className={`flex items-center gap-2 font-bold tracking-tight text-balance ${
               emBateria ? "text-lg" : "text-lg leading-tight sm:text-2xl"
             }`}
           >
+            <Antena
+              className={`shrink-0 ${emBateria ? "h-5 w-5" : "h-6 w-6 sm:h-7 sm:w-7"}`}
+            />
             Simulados · Radioamador
           </h1>
           {!emBateria && (
