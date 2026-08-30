@@ -120,9 +120,7 @@ export default function TelaResultadoProva({
       {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
       <section>
-        <h2 className="rotulo-secao mb-3">
-          Resultado por matéria
-        </h2>
+        <h2 className="rotulo-secao mb-3">Resultado por matéria</h2>
         <div
           className={`grid gap-3 ${materias.length > 2 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
         >
@@ -142,7 +140,11 @@ export default function TelaResultadoProva({
               </div>
               <div className="mt-2 text-3xl font-bold">
                 {m.acertos}
-                <span className="text-base font-normal opacity-50">
+                {/* `opacity-50` num texto de 16 px dava 3,36:1 — abaixo dos
+                    4,5:1 de AA, e a fração é o que diz de quanto era o total.
+                    A cor de rótulo passa nos dois temas, e 18 px param de
+                    parecer ruído ao lado de um número de 30. */}
+                <span className="text-lg font-normal text-slate-500 dark:text-slate-400">
                   /{m.respostas.length}
                 </span>
               </div>

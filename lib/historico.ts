@@ -1,5 +1,5 @@
 import type { Classe, Resposta, Tema } from "./tipos";
-import { TEMAS } from "./constantes";
+import { PERCENTUAL_CORTE, percentualAprovacao, TEMAS } from "./constantes";
 
 export const CHAVE_STORAGE = "prova-radioamador:historico";
 
@@ -227,7 +227,8 @@ export function estatisticasPorTema(historico: Historico): EstatisticaTema[] {
       tema,
       respondidas,
       acertos,
-      percentual: respondidas > 0 ? Math.round((acertos / respondidas) * 100) : 0,
+      percentual:
+        respondidas > 0 ? Math.round((acertos / respondidas) * 100) : 0,
     };
   });
 }
@@ -248,4 +249,39 @@ export function resumo(historico: Historico): Resumo {
     acertos,
     percentual: respondidas > 0 ? Math.round((acertos / respondidas) * 100) : 0,
   };
+}
+
+export interface CorteDoPainel {
+  /** Percentual a marcar no gráfico. */
+  percentual: number;
+  /** A classe a que ele pertence, ou null quando o histórico mistura classes. */
+  classe: Classe | null;
+}
+
+/**
+ * A linha de corte que o painel deve desenhar.
+ *
+ * O painel marcava sempre 55% — o corte da Classe B, o mais exigente dos três
+ * — e explicava entre parênteses que "A e C aprovam com 53%". O argumento
+ * conservador vale quando o histórico mistura classes: quem passa do corte
+ * mais alto passa em qualquer uma. Mas a mesma tela já sabe a classe escolhida
+ * e a usa duas linhas abaixo ("Últimas baterias · corte da Classe C"), e aí a
+ * marca ficava contradizendo o texto ao lado dela.
+ *
+ * Registros anteriores ao campo `classe` não contam como divergência: são de
+ * quando o app não perguntava, e presumir que mudaram de classe seria inventar.
+ */
+export function corteDoPainel(
+  historico: Historico,
+  classePreferida: Classe,
+): CorteDoPainel {
+  const misturado = historico.simulados.some(
+    (s) => s.classe !== undefined && s.classe !== classePreferida,
+  );
+  return misturado
+    ? { percentual: PERCENTUAL_CORTE, classe: null }
+    : {
+        percentual: percentualAprovacao(classePreferida),
+        classe: classePreferida,
+      };
 }

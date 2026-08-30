@@ -85,7 +85,7 @@ export default function ItemConferencia({
               decidido === v
                 ? v === "P"
                   ? "border-amber-500 bg-amber-500 text-white"
-                  : "border-sky-600 bg-sky-600 text-white"
+                  : "border-sky-700 bg-sky-700 text-white"
                 : "border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
             }`}
           >
@@ -110,7 +110,7 @@ export default function ItemConferencia({
           className={`rounded px-1.5 py-0.5 text-xs font-medium ${
             q.nivel === "A"
               ? "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"
-              : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
           }`}
           title={
             q.nivel === "A"
@@ -199,9 +199,7 @@ export default function ItemConferencia({
             </p>
           ) : passagem ? (
             <div>
-              <p className="rotulo-secao">
-                Texto original
-              </p>
+              <p className="rotulo-secao">Texto original</p>
               <pre className="mt-1 max-h-48 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-2 text-[12px] leading-relaxed whitespace-pre-wrap dark:border-slate-800 dark:bg-slate-950">
                 {trecho.texto.slice(passagem.inicio, passagem.fim)}
               </pre>

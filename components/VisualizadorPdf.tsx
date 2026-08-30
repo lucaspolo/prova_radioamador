@@ -268,7 +268,7 @@ function Controle({
       disabled={desabilitado}
       aria-label={rotulo}
       title={rotulo}
-      className="h-11 w-11 rounded-lg bg-white/10 text-lg leading-none hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-30"
+      className="h-11 w-11 rounded-lg bg-white/10 text-lg leading-none hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {children}
     </button>

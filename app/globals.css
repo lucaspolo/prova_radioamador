@@ -70,10 +70,17 @@
    separa pela sombra, no escuro pela cor, porque sombra preta sobre fundo
    quase preto não existe.
 
-   Os tons de texto seguem a mesma lógica: `--texto-2` para apoio (7,6:1 no
-   claro, 6,7:1 no escuro sobre a superfície) e `--texto-3` para rótulos de
-   seção em 12px (4,8:1) — nunca o slate-400 em texto corrido, que media
-   2,5:1. */
+   Os tons de texto seguem a mesma lógica: `--texto-2` para apoio e `--texto-3`
+   para rótulos de seção em 12px — nunca o slate-400 em texto corrido, que
+   media 2,5:1.
+
+   `--texto-3` era o slate-500 (#64748b), que dá 4,86:1 sobre o branco da
+   superfície: passa em AA por 0,36 de margem, e essa margem acaba assim que o
+   rótulo cai num cartão tinto — sobre o rose-50 do feedback ou o emerald-50 do
+   veredito ele media 4,33:1. Agora é o mesmo tom do apoio, exatamente como já
+   era no tema escuro (os dois são #94a3b8 lá): 7,5:1 sobre o branco e 6,9:1
+   sobre os cartões coloridos. O rótulo continua se distinguindo do texto de
+   apoio por tamanho, peso, caixa-alta e tracking — nunca dependeu só da cor. */
 :root,
 :root[data-tema="claro"] {
   --superficie: #ffffff;
@@ -82,7 +89,7 @@
   --borda: #e2e8f0;
   --borda-controle: #94a3b8;
   --texto-2: #475569;
-  --texto-3: #64748b;
+  --texto-3: #475569;
   --trilha: #e2e8f0;
   --sombra-elevado: 0 8px 24px rgb(15 23 42 / 0.12);
 }

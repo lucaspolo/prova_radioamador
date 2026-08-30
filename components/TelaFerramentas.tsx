@@ -248,7 +248,9 @@ function SemFonte() {
     <section className="rounded-xl border border-dashed border-borda p-4">
       <h3 className="font-semibold text-slate-500 dark:text-slate-400">
         {RST_SEM_FONTE.titulo}
-        <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-bold dark:bg-slate-800">
+        {/* Cor própria: herdando o slate-500 do título, o selo media 3,87:1
+              sobre o slate-200 do próprio chip. */}
+        <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
           sem fonte
         </span>
       </h3>

@@ -2,6 +2,7 @@ import {
   CHAVE_STORAGE,
   MAX_SIMULADOS,
   VERSAO_HISTORICO,
+  corteDoPainel,
   estatisticasPorTema,
   gravar,
   ler,
@@ -212,6 +213,39 @@ function respostasFalsas(qtd: number, acertos: number): Resposta[] {
   checar("resumo de histórico vazio é 0, não NaN", r.percentual === 0 && !Number.isNaN(r.percentual));
   checar("estatísticas de histórico vazio são 0", estatisticasPorTema(vazio).every((e) => e.percentual === 0));
 }
+
+// --- A linha de corte que o painel desenha --------------------------------
+// O painel marcava sempre 55% (o corte da Classe B, o mais exigente) e
+// explicava entre parênteses que "A e C aprovam com 53%" — contradizendo a
+// linha logo abaixo, que já dizia "corte da Classe C". O conservador só faz
+// sentido quando o histórico mistura classes.
+{
+  const bateria = (classe?: "C" | "B" | "A"): SimuladoSalvo => ({
+    id: `x${Math.random()}`,
+    data: new Date().toISOString(),
+    escolha: "Legislação de Telecomunicações",
+    total: 10,
+    acertos: 6,
+    itens: [],
+    ...(classe ? { classe } : {}),
+  });
+  const hist = (...s: SimuladoSalvo[]): Historico => ({ versao: VERSAO_HISTORICO, simulados: s });
+
+  const soC = corteDoPainel(hist(bateria("C"), bateria("C")), "C");
+  checar("histórico de uma classe só usa o corte dela", soC.percentual === 53 && soC.classe === "C");
+
+  const misto = corteDoPainel(hist(bateria("C"), bateria("B")), "C");
+  checar("histórico misturado volta ao corte conservador", misto.percentual === 55 && misto.classe === null);
+
+  // Registros anteriores ao campo `classe` são de quando o app não perguntava:
+  // presumir que mudaram de classe seria inventar um dado que não existe.
+  const antigos = corteDoPainel(hist(bateria(), bateria("C")), "C");
+  checar("registro sem classe não conta como divergência", antigos.percentual === 53 && antigos.classe === "C");
+
+  const vazio = corteDoPainel(hist(), "A");
+  checar("sem histórico, o corte é o da classe escolhida", vazio.percentual === 53 && vazio.classe === "A");
+}
+
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE HISTÓRICO PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

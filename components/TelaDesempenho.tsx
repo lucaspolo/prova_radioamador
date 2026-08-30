@@ -5,10 +5,15 @@ import type { Classe } from "@/lib/tipos";
 import {
   CLASSE_PADRAO,
   COR_TEMA,
-  PERCENTUAL_CORTE,
+  FORMATO,
   ROTULO_CURTO,
 } from "@/lib/constantes";
-import { estatisticasPorTema, resumo, type Historico } from "@/lib/historico";
+import {
+  corteDoPainel,
+  estatisticasPorTema,
+  resumo,
+  type Historico,
+} from "@/lib/historico";
 import { prontidao } from "@/lib/prontidao";
 import { cobertura } from "@/lib/questoes";
 import { lerPreferencias } from "@/lib/preferencias";
@@ -70,8 +75,11 @@ export default function TelaDesempenho({
   const abrangencia = cobertura(historico, classePreferida);
   const aptidao = prontidao(historico, classePreferida);
   const estatisticas = estatisticasPorTema(historico);
+  // O corte da classe escolhida quando o histórico é todo dela; o conservador
+  // dos 55% só quando ele mistura classes (ver `corteDoPainel`).
+  const corte = corteDoPainel(historico, classePreferida);
   const atencao = estatisticas
-    .filter((e) => e.respondidas > 0 && e.percentual < PERCENTUAL_CORTE)
+    .filter((e) => e.respondidas > 0 && e.percentual < corte.percentual)
     .sort((a, b) => a.percentual - b.percentual);
 
   return (
@@ -105,9 +113,7 @@ export default function TelaDesempenho({
       ) : (
         <section className="space-y-5 rounded-xl border border-borda bg-superficie p-5">
           <div className="flex items-baseline justify-between">
-            <h3 className="rotulo-secao">
-              Por matéria
-            </h3>
+            <h3 className="rotulo-secao">Por matéria</h3>
             <span className="text-sm text-slate-500 dark:text-slate-400">
               {geral.simulados}{" "}
               {geral.simulados === 1 ? "simulado" : "simulados"} ·{" "}
@@ -117,7 +123,7 @@ export default function TelaDesempenho({
 
           <div className="space-y-4">
             {estatisticas.map((e) => {
-              const aprovando = e.percentual >= PERCENTUAL_CORTE;
+              const aprovando = e.percentual >= corte.percentual;
               return (
                 <div key={e.tema}>
                   <div className="mb-1 flex items-baseline justify-between text-sm">
@@ -139,15 +145,25 @@ export default function TelaDesempenho({
                     </span>
                   </div>
 
-                  {/* A linha vertical marca os 55% exigidos para aprovação. */}
-                  <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+                  {/* A marca do corte é a informação central desta tela — é
+                      ela que responde "passei nesta matéria?". Era um fio de
+                      1 px a 60% de opacidade DENTRO da trilha (que tem
+                      `overflow-hidden`), medindo 2,1 a 3,2:1 sobre as barras:
+                      abaixo dos 3:1 que a WCAG 1.4.11 pede para elemento
+                      gráfico, e no escuro quase sumia. Agora são 2 px de cor
+                      cheia, e a marca sai da trilha em cima e embaixo — é o
+                      que a faz ser lida como marca, e não como emenda da
+                      barra. */}
+                  <div className="relative w-full py-1">
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+                      <div
+                        className={`h-full rounded-full ${COR_TEMA[e.tema].barra}`}
+                        style={{ width: `${e.percentual}%` }}
+                      />
+                    </div>
                     <div
-                      className={`h-full rounded-full ${COR_TEMA[e.tema].barra}`}
-                      style={{ width: `${e.percentual}%` }}
-                    />
-                    <div
-                      className="absolute inset-y-0 w-px bg-slate-900/60 dark:bg-white/70"
-                      style={{ left: `${PERCENTUAL_CORTE}%` }}
+                      className="absolute inset-y-0 w-0.5 -translate-x-px rounded-full bg-slate-900 dark:bg-white"
+                      style={{ left: `${corte.percentual}%` }}
                       aria-hidden
                     />
                   </div>
@@ -156,9 +172,13 @@ export default function TelaDesempenho({
             })}
           </div>
 
+          {/* Uma linha, porque a marca agora se explica sozinha: 2 px de cor
+              cheia saindo da trilha lê-se como corte sem precisar de três
+              linhas dizendo qual traço é qual. */}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            A marca vertical é a linha de corte mais exigente das três classes:{" "}
-            {PERCENTUAL_CORTE}% (11 de 20 na Classe B; A e C aprovam com 53%).
+            {corte.classe
+              ? `A marca vertical é o corte da Classe ${corte.classe}: ${FORMATO[corte.classe].minimo} de ${FORMATO[corte.classe].questoes} (${corte.percentual}%).`
+              : `A marca vertical é o corte mais exigente das três classes: ${corte.percentual}% — seu histórico mistura classes.`}
           </p>
 
           {atencao.length > 0 && (
@@ -240,7 +260,7 @@ export default function TelaDesempenho({
             </div>
           </div>
 
-          <Evolucao historico={historico} />
+          <Evolucao historico={historico} corte={corte.percentual} />
           <Suspeitas suspeitas={suspeitas} />
 
           <div className="flex flex-wrap items-center gap-x-2 border-t border-borda pt-1">
