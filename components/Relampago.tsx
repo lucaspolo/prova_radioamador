@@ -280,7 +280,7 @@ function Chip({
     <button
       onClick={onClick}
       aria-pressed={ativo}
-      className={`rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition ${
+      className={`alvo-toque rounded-full border-2 px-4 text-sm font-semibold transition ${
         ativo
           ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
           : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"

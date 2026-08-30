@@ -106,16 +106,16 @@ export default function ExportarImportar({
   }
 
   return (
-    <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+    <span className="flex flex-wrap items-center gap-x-2 text-sm">
       <button
         onClick={exportar}
-        className="text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+        className="alvo-toque -mx-2 rounded-lg px-2 text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
       >
         Exportar histórico
       </button>
       <button
         onClick={() => arquivoRef.current?.click()}
-        className="text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+        className="alvo-toque -mx-2 rounded-lg px-2 text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
       >
         Importar
       </button>

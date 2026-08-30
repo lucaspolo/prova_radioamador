@@ -61,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             até receber foco. */}
         <a
           href="#conteudo"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-slate-900 focus:px-4 focus:py-2 focus:font-semibold focus:text-white dark:focus:bg-slate-100 dark:focus:text-slate-900"
+          className="sr-only focus:not-sr-only focus:alvo-toque focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-slate-900 focus:px-4 focus:font-semibold focus:text-white dark:focus:bg-slate-100 dark:focus:text-slate-900"
         >
           Pular para o conteúdo
         </a>
@@ -73,7 +73,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             href="https://github.com/lucaspolo/prova_radioamador"
             target="_blank"
             rel="noreferrer"
-            className="underline underline-offset-4 hover:text-slate-600 dark:hover:text-slate-300"
+            className="alvo-toque -my-2 rounded px-1 underline underline-offset-4 hover:text-slate-600 dark:hover:text-slate-300"
           >
             github.com/lucaspolo/prova_radioamador
           </a>

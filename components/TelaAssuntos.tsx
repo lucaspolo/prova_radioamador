@@ -93,7 +93,7 @@ export default function TelaAssuntos({
                 .getElementById(idDoGrupo(grupo))
                 ?.scrollIntoView({ block: "start" })
             }
-            className="rounded-full border-2 border-slate-300 px-3 py-1.5 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+            className="alvo-toque rounded-full border-2 border-slate-300 px-4 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
           >
             {grupo}
             <span className="ml-1.5 text-slate-500 tabular-nums dark:text-slate-400">

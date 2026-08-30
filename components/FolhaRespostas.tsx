@@ -64,7 +64,7 @@ export default function FolhaRespostas({
               aria-label={`Questão ${i + 1}, ${
                 respondida ? "respondida" : "em branco"
               }${marcada ? ", marcada para revisar" : ""}`}
-              className={`relative rounded-lg border-2 py-2 text-sm font-medium tabular-nums transition ${
+              className={`relative min-h-11 rounded-lg border-2 text-sm font-medium tabular-nums transition ${
                 respondida
                   ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
                   : "border-dashed border-slate-400 text-slate-500 hover:border-slate-500 dark:border-slate-600 dark:text-slate-400"

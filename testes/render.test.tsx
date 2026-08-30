@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import TelaAssuntos from "@/components/TelaAssuntos";
 import TelaInicio from "@/components/TelaInicio";
@@ -1392,6 +1393,89 @@ const PROPS_INICIO = {
     comTriagem.includes("divergência") && !comTriagem.includes("bg-rose-100"),
   );
 }
+
+// --- Área de toque --------------------------------------------------------
+// O app é usado no celular por gente de 40 a 70 anos, com o polegar. Havia
+// controles de 16 px de altura em lugares caros: "Marcar como suspeita" em
+// cada cartão do gabarito, e "Limpar resposta" / "Marcar para revisar" dentro
+// de uma prova cronometrada, onde errar o toque custa segundos contados.
+//
+// O teste não mede pixel — isso é o navegador que faz, e foi medido lá: zero
+// controles abaixo de 44 px em todas as telas. Aqui a asserção é a regra: os
+// controles que eram pequenos carregam a marca da área de toque, e ela existe
+// com os 44 px que promete.
+{
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  checar(
+    "a área de toque existe e vale 44 px",
+    /@utility alvo-toque \{[^}]*min-height: 2\.75rem/.test(css),
+  );
+
+  /** A classe do primeiro controle cujo texto contém o rótulo. */
+  function classeDoControle(markup: string, rotulo: string): string | null {
+    const re = /<(button|a|summary)\b([^>]*)>([\s\S]*?)<\/\1>/g;
+    for (const m of markup.matchAll(re)) {
+      const texto = m[3].replace(/<[^>]*>/g, "").replace(/\s+/g, " ");
+      if (texto.includes(rotulo)) return /class="([^"]*)"/.exec(m[2])?.[1] ?? "";
+    }
+    return null;
+  }
+  const temArea = (markup: string, rotulo: string) => {
+    const cls = classeDoControle(markup, rotulo);
+    return cls !== null && (cls.includes("alvo-toque") || cls.includes("min-h-11"));
+  };
+
+  const questoes = sortearDesafio(TEMAS[0], 5, "B", "PY2-SP");
+  const cega = renderToStaticMarkup(
+    <TelaProvaCega questoes={questoes} onConcluir={() => {}} onSair={() => {}} />,
+  );
+  checar("na prova, limpar a resposta tem área de dedo", temArea(cega, "Limpar resposta"));
+  checar("na prova, marcar para revisar tem área de dedo", temArea(cega, "Marcar para revisar"));
+  checar("na prova, abandonar tem área de dedo", temArea(cega, "Abandonar a prova"));
+  // A folha de respostas é uma grade de 20 a 90 células: se alguma encolher,
+  // a prova inteira vira um campo minado para o polegar.
+  checar(
+    "as células da folha de respostas têm 44 px",
+    (cega.match(/min-h-11/g) ?? []).length >= questoes.length,
+  );
+
+  const respostas: Resposta[] = questoes.map((q, i) => ({
+    questao: q,
+    respondeu: i === 0 ? !q.resposta_correta : q.resposta_correta,
+    acertou: i !== 0,
+  }));
+  const resultado = renderToStaticMarkup(
+    <TelaResultado respostas={respostas} onReiniciar={() => {}} classe="B" cega />,
+  );
+  // O botão de suspeita só existe depois que o hook lê o localStorage, então
+  // não aparece no render estático — aqui a asserção olha a fonte. Era o pior
+  // alvo do app: 255x16 px, repetido em cada cartão do gabarito.
+  const fonteSuspeita = readFileSync(
+    new URL("../components/BotaoSuspeita.tsx", import.meta.url),
+    "utf8",
+  );
+  checar(
+    "no gabarito, marcar suspeita tem área de dedo",
+    (fonteSuspeita.match(/alvo-toque/g) ?? []).length === 2,
+  );
+  checar("os filtros do gabarito têm área de dedo", temArea(resultado, "Só os erros"));
+  checar(
+    "compartilhar e imprimir têm área de dedo",
+    temArea(resultado, "Compartilhar resultado") && temArea(resultado, "Imprimir revisão"),
+  );
+
+  const inicio = renderToStaticMarkup(<TelaInicio {...PROPS_INICIO} />);
+  checar("a escolha de quantidade tem área de dedo", temArea(inicio, "40"));
+  checar("o atalho das três matérias tem área de dedo", temArea(inicio, "todas as 3"));
+
+  // O link do cabeçalho é a exceção que confirma a regra: são dois pedaços de
+  // texto com um espaço entre eles, e `display: flex` descarta nós de texto em
+  // branco — virava "PDFs daAnatel". Ali os 44 px vêm de padding, e o que o
+  // teste guarda é o espaço.
+  const home = renderToStaticMarkup(<Home />);
+  checar("o link do material não perdeu o espaço", home.includes("PDFs da"));
+}
+
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

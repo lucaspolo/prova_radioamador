@@ -46,7 +46,7 @@ export default function TrechoOrigem({ trechoId, afirmacao }: Props) {
       <button
         onClick={abrir}
         disabled={estado.fase === "carregando"}
-        className="mt-3 ml-2 rounded-lg border border-current/30 px-3 py-1.5 text-sm font-medium transition hover:bg-current/10 disabled:opacity-60"
+        className="alvo-toque mt-3 ml-2 rounded-lg border border-current/30 px-3 text-sm font-medium transition hover:bg-current/10 disabled:opacity-60"
       >
         {estado.fase === "carregando" ? "Carregando…" : "Ver trecho de origem"}
       </button>
@@ -100,7 +100,7 @@ function TextoDoTrecho({
 
   return (
     <div className="mt-3">
-      <div className="flex items-baseline justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <span className="rotulo-secao">
           Trecho de origem ·{" "}
           {trecho.fim > trecho.pagina
@@ -109,7 +109,7 @@ function TextoDoTrecho({
         </span>
         <button
           onClick={onFechar}
-          className="text-xs text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
+          className="alvo-toque -my-2 -mr-2 rounded-lg px-2 text-xs text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
         >
           Fechar
         </button>

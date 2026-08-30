@@ -116,7 +116,7 @@ function Opcao({
       onClick={onClick}
       aria-pressed={ativa}
       aria-label={descricao}
-      className={`rounded-lg border px-3 py-2 font-medium transition ${
+      className={`alvo-toque min-w-11 justify-center rounded-lg border px-3 font-medium transition ${
         ativa
           ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
           : "border-slate-300 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300"

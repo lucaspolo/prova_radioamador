@@ -51,8 +51,12 @@ export default function BotaoConsultarMaterial({
     <>
       <button
         onClick={() => setAberto(true)}
-        className={`rounded-lg border border-current/30 font-medium transition hover:bg-current/10 ${
-          compacto ? "px-2.5 py-1 text-xs" : "mt-3 px-3 py-1.5 text-sm"
+        /* O compacto existe para as listas em que vinte destes vêm em
+           sequência — mas ali é justamente onde o dedo erra. No celular ele
+           também tem 44 px; a partir de `sm`, onde há mouse, volta ao desenho
+           enxuto que a lista pede. */
+        className={`alvo-toque rounded-lg border border-current/30 font-medium transition hover:bg-current/10 ${
+          compacto ? "px-2.5 py-1 text-xs sm:min-h-0" : "mt-3 px-3 text-sm"
         }`}
       >
         {rotulo}

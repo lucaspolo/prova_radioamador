@@ -243,14 +243,14 @@ export default function TelaDesempenho({
           <Evolucao historico={historico} />
           <Suspeitas suspeitas={suspeitas} />
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-borda pt-3">
+          <div className="flex flex-wrap items-center gap-x-2 border-t border-borda pt-1">
             <ExportarImportar
               historico={historico}
               onImportar={onImportar}
               suspeitas={suspeitas}
             />
             {confirmando ? (
-              <span className="flex items-center gap-3 text-sm">
+              <span className="flex items-center gap-2 text-sm">
                 <span className="text-slate-600 dark:text-slate-400">
                   Apagar todo o histórico?
                 </span>
@@ -259,13 +259,13 @@ export default function TelaDesempenho({
                     onLimpar();
                     setConfirmando(false);
                   }}
-                  className="font-medium text-rose-700 underline-offset-4 hover:underline dark:text-rose-400"
+                  className="alvo-toque -mx-2 rounded-lg px-2 font-medium text-rose-700 underline-offset-4 hover:underline dark:text-rose-400"
                 >
                   Apagar
                 </button>
                 <button
                   onClick={() => setConfirmando(false)}
-                  className="text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+                  className="alvo-toque -mx-2 rounded-lg px-2 text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
                 >
                   Cancelar
                 </button>
@@ -273,7 +273,7 @@ export default function TelaDesempenho({
             ) : (
               <button
                 onClick={() => setConfirmando(true)}
-                className="text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+                className="alvo-toque -mx-2 rounded-lg px-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
               >
                 Limpar histórico
               </button>

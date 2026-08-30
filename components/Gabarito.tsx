@@ -93,7 +93,7 @@ function FiltroBotao({
     <button
       onClick={onClick}
       aria-pressed={ativo}
-      className={`rounded-full border px-3 py-1 font-medium transition ${
+      className={`alvo-toque rounded-full border px-4 font-medium transition ${
         ativo
           ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
           : "border-slate-300 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300"

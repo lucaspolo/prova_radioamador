@@ -175,7 +175,7 @@ export default function VisualizadorPdf({
           <button
             ref={botaoFechar}
             onClick={onFechar}
-            className="ml-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20"
+            className="alvo-toque ml-2 rounded-lg bg-white/10 px-4 text-sm font-medium hover:bg-white/20"
           >
             Fechar
             {/* A dica só serve a quem tem tecla: no celular era largura
@@ -268,7 +268,7 @@ function Controle({
       disabled={desabilitado}
       aria-label={rotulo}
       title={rotulo}
-      className="h-9 w-9 rounded-lg bg-white/10 text-lg leading-none hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-30"
+      className="h-11 w-11 rounded-lg bg-white/10 text-lg leading-none hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-30"
     >
       {children}
     </button>
