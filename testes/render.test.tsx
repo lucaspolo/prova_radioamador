@@ -14,6 +14,8 @@ import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaEstudar, { TodosOsBlocos } from "@/components/TelaEstudar";
 import Relampago from "@/components/Relampago";
 import TelaDesafio from "@/components/TelaDesafio";
+import TelaAssuntoPouso from "@/components/TelaAssuntoPouso";
+import DesafioPendente from "@/components/DesafioPendente";
 import TelaImpressao from "@/components/TelaImpressao";
 import TelaIntervalo from "@/components/TelaIntervalo";
 import TelaResultadoProva from "@/components/TelaResultadoProva";
@@ -23,6 +25,7 @@ import { sortearDesafio, sortearSimulado, BANCO } from "@/lib/questoes";
 import { codigoDaBateria } from "@/lib/semente";
 import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
 import { TEMAS } from "@/lib/constantes";
+import { topicos } from "@/lib/ementa";
 import type { Resposta } from "@/lib/tipos";
 
 let falhas = 0;
@@ -560,9 +563,11 @@ const PROPS_INICIO = {
     "avisa o formato antes de começar",
     html.includes("modo prova") && html.includes("30 min"),
   );
+  // "Agora não" soava definitivo, e era: a home não mostrava que o desafio
+  // existia, então a única volta era recarregar o link.
   checar(
-    "deixa recusar",
-    html.includes("Agora não") && html.includes("Começar o desafio"),
+    "deixa adiar sem perder o desafio",
+    html.includes("Deixar para depois") && html.includes("Começar o desafio"),
   );
 
   // Desafio de prova completa: as três matérias, com a quantidade POR matéria.
@@ -1588,6 +1593,94 @@ const PROPS_INICIO = {
     "o leitor só desvia o foco quando pedem",
     fonte("VisualizadorPdf.tsx").includes("if (destino) destino();\n        else anterior?.focus?.();"),
   );
+}
+
+
+// --- Fim de fluxo: para onde se vai depois --------------------------------
+// O app terminava cada caminho despejando o candidato na home: acabou o
+// assunto, home; reprovou numa matéria da prova completa, role e filtre você
+// mesmo; deixou o desafio para depois, ele some.
+{
+  // O "Treinar" de /estudar caía direto na questão 1 de 37 — sem dizer antes
+  // que seriam 37, e sem volta ao material que não fosse "Abandonar". É a
+  // mesma tela de pouso que o desafio tem, e pela mesma razão.
+  const topico = topicos().find((t) => t.titulo !== null)!;
+  const pouso = renderToStaticMarkup(
+    <TelaAssuntoPouso topico={topico} quantidade={37} onComecar={() => {}} />,
+  );
+  checar("o pouso do assunto diz o tamanho da bateria", pouso.includes("37 questões"));
+  checar(
+    "o pouso diz o regime antes de começar",
+    pouso.includes("modo treino") && pouso.includes("sem cronômetro"),
+  );
+  checar("o pouso traz o item da ementa", contem(pouso, topico.texto.slice(0, 40)));
+  checar(
+    "o pouso deixa voltar ao material",
+    pouso.includes('href="/estudar"') && pouso.includes("Voltar ao material"),
+  );
+
+  // "Deixar para depois" era um beco: a home não mostrava que havia um
+  // desafio, e a única forma de voltar era recarregar ou reabrir a mensagem.
+  const pendente = { semente: "PY2-SP", temas: [TEMAS[0]], quantidade: 10, classe: "B" as const };
+  const faixa = renderToStaticMarkup(<DesafioPendente desafio={pendente} onAbrir={() => {}} />);
+  checar(
+    "a faixa identifica o desafio pendente",
+    faixa.includes("PY2-SP") && faixa.includes("10 questões"),
+  );
+
+  // O consolidado dizia onde se reprovou e o gabarito ficava mil pixels
+  // abaixo, numa lista única com dois filtros só.
+  const porMateria = TEMAS.map((t) => {
+    const qs = sortearDesafio(t, 5, "B", "PY2-SP");
+    return {
+      tema: t,
+      respostas: qs.map((q, i) => ({
+        questao: q,
+        respondeu: i < 3 ? q.resposta_correta : !q.resposta_correta,
+        acertou: i < 3,
+      })),
+    };
+  });
+  const consolidado = renderToStaticMarkup(
+    <TelaResultadoProva classe="B" materias={porMateria} onReiniciar={() => {}} />,
+  );
+  checar(
+    "cada matéria do consolidado leva aos erros dela",
+    (consolidado.match(/ver os 2 erros/g) ?? []).length === 3,
+  );
+  checar(
+    "o gabarito ganha filtro por matéria quando há mais de uma",
+    consolidado.includes('aria-label="Filtrar o gabarito por matéria"'),
+  );
+  // Numa bateria de matéria só, o filtro não filtraria nada.
+  const umaMateria = renderToStaticMarkup(
+    <TelaResultado respostas={porMateria[0].respostas} onReiniciar={() => {}} classe="B" cega />,
+  );
+  checar(
+    "com uma matéria só, não há filtro por matéria",
+    !umaMateria.includes('aria-label="Filtrar o gabarito por matéria"'),
+  );
+  // "Novo simulado" voltava à home com tudo por escolher. Repetir já existe,
+  // com esse nome, no "E agora?".
+  checar(
+    "o CTA do resultado não promete um simulado novo",
+    !umaMateria.includes("Novo simulado") && umaMateria.includes("Voltar ao início"),
+  );
+
+  // Terminar um assunto largava o candidato na home: quem queria fazer três
+  // seguidos reabria a lista de dez telas três vezes.
+  const assunto = renderToStaticMarkup(
+    <TelaResultado
+      respostas={porMateria[0].respostas}
+      onReiniciar={() => {}}
+      classe="B"
+      modo="assunto"
+      onOutroAssunto={() => {}}
+      onEstudarAssunto={() => {}}
+    />,
+  );
+  checar("o assunto oferece o próximo assunto", assunto.includes("Escolher outro assunto"));
+  checar("e não se oferece a si mesmo de novo", !assunto.includes(">Estudar por assunto<"));
 }
 
 

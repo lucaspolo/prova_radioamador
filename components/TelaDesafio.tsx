@@ -21,9 +21,7 @@ export default function TelaDesafio({
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border-2 border-slate-900 p-6 dark:border-slate-100">
-        <div className="rotulo-secao">
-          Desafio recebido
-        </div>
+        <div className="rotulo-secao">Desafio recebido</div>
         <h2 className="mt-1 text-2xl font-bold">
           <span className="font-mono">{desafio.semente}</span>
         </h2>
@@ -61,7 +59,10 @@ export default function TelaDesafio({
         onClick={onIgnorar}
         className="w-full rounded-xl border-2 border-slate-300 px-6 py-3 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
       >
-        Agora não — ir para o início
+        {/* "Agora não" soava definitivo, e era: a home não mostrava que o
+            desafio existia. Agora ele fica lá numa faixa, e o rótulo promete o
+            que a home cumpre. */}
+        Deixar para depois
       </button>
     </div>
   );

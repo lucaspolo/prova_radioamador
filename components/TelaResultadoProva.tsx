@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import type { Classe, Resposta, Tema } from "@/lib/tipos";
 import {
   aprovadoNaMateria,
@@ -8,10 +9,11 @@ import {
   minimoEquivalente,
   ROTULO_CURTO,
 } from "@/lib/constantes";
-import Gabarito from "./Gabarito";
+import Gabarito, { type GabaritoApi } from "./Gabarito";
 import ProximoPasso, { type Passo } from "./ProximoPasso";
 import AcoesResultado from "./AcoesResultado";
 import AvisoGravacaoRecusada from "./AvisoGravacaoRecusada";
+import Icone from "./Icone";
 
 export interface MateriaConcluida {
   tema: Tema;
@@ -71,6 +73,10 @@ export default function TelaResultadoProva({
   const todas = materias.flatMap((m) => m.respostas);
   const erradas = todas.filter((r) => !r.acertou);
 
+  // O gabarito responde ao clique nos cartões por matéria: filtra por ela e
+  // rola até lá.
+  const gabarito = useRef<GabaritoApi>(null);
+
   const passos: Passo[] = [];
   if (onRevisarErros && erradas.length > 0) {
     passos.push({
@@ -124,61 +130,87 @@ export default function TelaResultadoProva({
         <div
           className={`grid gap-3 ${materias.length > 2 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
         >
-          {porMateria.map((m) => (
-            <div
-              key={m.tema}
-              className={`rounded-xl border-2 p-4 text-center ${
-                m.aprovado
-                  ? "border-emerald-300 dark:border-emerald-900"
-                  : "border-rose-300 dark:border-rose-900"
-              }`}
-            >
-              <div
-                className={`text-xs font-semibold uppercase ${COR_TEMA[m.tema].texto}`}
+          {porMateria.map((m) => {
+            const errosDaMateria = m.respostas.filter((r) => !r.acertou).length;
+            return (
+              /* O cartão é um botão: ele diz onde você reprovou e o gabarito da
+               matéria fica mil pixels abaixo, numa lista única de até 90
+               questões com dois filtros só. "Faltou em Técnica e Ética" tinha
+               de virar "ver essas questões" em um toque. Sem erro nenhum não
+               há para onde ir, e aí volta a ser um cartão. */
+              <button
+                key={m.tema}
+                onClick={
+                  errosDaMateria > 0
+                    ? () => gabarito.current?.focarMateria(m.tema)
+                    : undefined
+                }
+                disabled={errosDaMateria === 0}
+                className={`rounded-xl border-2 p-4 text-center transition ${
+                  m.aprovado
+                    ? "border-emerald-300 dark:border-emerald-900"
+                    : "border-rose-300 dark:border-rose-900"
+                } ${errosDaMateria > 0 ? "hover:border-slate-500 dark:hover:border-slate-400" : ""}`}
               >
-                {ROTULO_CURTO[m.tema]}
-              </div>
-              <div className="mt-2 text-3xl font-bold">
-                {m.acertos}
-                {/* `opacity-50` num texto de 16 px dava 3,36:1 — abaixo dos
+                <div
+                  className={`text-xs font-semibold uppercase ${COR_TEMA[m.tema].texto}`}
+                >
+                  {ROTULO_CURTO[m.tema]}
+                </div>
+                <div className="mt-2 text-3xl font-bold">
+                  {m.acertos}
+                  {/* `opacity-50` num texto de 16 px dava 3,36:1 — abaixo dos
                     4,5:1 de AA, e a fração é o que diz de quanto era o total.
                     A cor de rótulo passa nos dois temas, e 18 px param de
                     parecer ruído ao lado de um número de 30. */}
-                <span className="text-lg font-normal text-slate-500 dark:text-slate-400">
-                  /{m.respostas.length}
-                </span>
-              </div>
-              {/* As em branco aparecem por matéria: numa prova cronometrada,
-                  saber que quatro ficaram sem resposta explica o placar. */}
-              {m.respostas.filter((r) => r.respondeu === null).length > 0 && (
-                <div className="text-xs text-slate-600 dark:text-slate-400">
-                  {m.respostas.filter((r) => r.respondeu === null).length} em
-                  branco
+                  <span className="text-lg font-normal text-slate-500 dark:text-slate-400">
+                    /{m.respostas.length}
+                  </span>
                 </div>
-              )}
-              <div
-                className={`mt-1 text-sm font-semibold ${
-                  m.aprovado
-                    ? "text-emerald-700 dark:text-emerald-400"
-                    : "text-rose-700 dark:text-rose-400"
-                }`}
-              >
-                {m.aprovado ? "Aprovado" : "Reprovado"}
-              </div>
-              {/* Quantos faltaram nesta matéria: no consolidado é ela, e não a
+                {/* As em branco aparecem por matéria: numa prova cronometrada,
+                  saber que quatro ficaram sem resposta explica o placar. */}
+                {m.respostas.filter((r) => r.respondeu === null).length > 0 && (
+                  <div className="text-xs text-slate-600 dark:text-slate-400">
+                    {m.respostas.filter((r) => r.respondeu === null).length} em
+                    branco
+                  </div>
+                )}
+                <div
+                  className={`mt-1 text-sm font-semibold ${
+                    m.aprovado
+                      ? "text-emerald-700 dark:text-emerald-400"
+                      : "text-rose-700 dark:text-rose-400"
+                  }`}
+                >
+                  {m.aprovado ? "Aprovado" : "Reprovado"}
+                </div>
+                {/* Quantos faltaram nesta matéria: no consolidado é ela, e não a
                   soma, que decide — e "reprovado" sem número não diz se faltou
                   um acerto ou seis. */}
-              <div className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-                {(() => {
-                  const min = minimoEquivalente(classe, m.respostas.length);
-                  const d = m.acertos - min;
-                  return d >= 0
-                    ? `mínimo ${min} · ${d} de folga`
-                    : `faltaram ${-d} para ${min}`;
-                })()}
-              </div>
-            </div>
-          ))}
+                <div className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+                  {(() => {
+                    const min = minimoEquivalente(classe, m.respostas.length);
+                    const d = m.acertos - min;
+                    return d >= 0
+                      ? `mínimo ${min} · ${d} de folga`
+                      : `faltaram ${-d} para ${min}`;
+                  })()}
+                </div>
+                {errosDaMateria > 0 && (
+                  <div className="mt-2 text-xs font-semibold">
+                    ver{" "}
+                    {errosDaMateria === 1
+                      ? "o erro"
+                      : `os ${errosDaMateria} erros`}
+                    <Icone
+                      nome="seta-direita"
+                      className="ml-0.5 h-3 w-3 align-[-1px]"
+                    />
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -215,7 +247,7 @@ export default function TelaResultadoProva({
         }}
       />
 
-      <Gabarito respostas={todas} permitirTodas />
+      <Gabarito respostas={todas} permitirTodas ref={gabarito} />
 
       <button
         onClick={onReiniciar}

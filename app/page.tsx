@@ -17,8 +17,10 @@ import ResumoDesempenho from "@/components/ResumoDesempenho";
 import TelaDesempenho from "@/components/TelaDesempenho";
 import TelaFerramentas from "@/components/TelaFerramentas";
 import TelaDesafio from "@/components/TelaDesafio";
+import TelaAssuntoPouso from "@/components/TelaAssuntoPouso";
 import TelaImpressao from "@/components/TelaImpressao";
 import CartaoRetomar from "@/components/CartaoRetomar";
+import DesafioPendente from "@/components/DesafioPendente";
 import Antena from "@/components/Antena";
 import Icone from "@/components/Icone";
 import { useHistorico } from "@/hooks/useHistorico";
@@ -34,7 +36,7 @@ import {
   linkDoDesafio,
   type Desafio,
 } from "@/lib/desafio";
-import { lerAssunto, questoesDoTopico } from "@/lib/ementa";
+import { lerAssunto, questoesDoTopico, type TopicoEmenta } from "@/lib/ementa";
 import type { Escolhas } from "@/lib/bateria";
 import { respostasDe } from "@/lib/bateria";
 import {
@@ -64,6 +66,7 @@ type Etapa =
   | "inicio"
   | "assuntos"
   | "desafio"
+  | "assuntoPouso"
   | "impressao"
   | "simulado"
   | "resultado"
@@ -143,6 +146,11 @@ export default function Home() {
     indice: number;
     marcadas: number[];
   } | null>(null);
+  /** Assunto que chegou por link e ainda não começou — ver `assuntoPouso`. */
+  const [pouso, setPouso] = useState<{
+    topico: TopicoEmenta;
+    questoes: Questao[];
+  } | null>(null);
   const [impressao, setImpressao] = useState<{
     desafio: Desafio;
     baterias: { tema: Tema; questoes: Questao[] }[];
@@ -190,7 +198,11 @@ export default function Home() {
     if (t) {
       const doTopico = questoesDoTopico(t, lerPreferencias().classe);
       if (doTopico.length > 0) {
-        iniciarAssunto(doTopico);
+        // Pousa antes de começar, como no desafio: o "Treinar" de `/estudar`
+        // caía direto na questão 1 de 37 — sem dizer que seriam 37, e sem
+        // volta ao material que não fosse "Abandonar".
+        setPouso({ topico: t, questoes: doTopico });
+        setEtapa("assuntoPouso");
         return;
       }
     }
@@ -259,7 +271,10 @@ export default function Home() {
     }
     limparEmCurso();
     setInicial(null);
-    setEtapa("inicio");
+    // Sair de um assunto devolve à lista de assuntos, e não à home: foi de lá
+    // que se entrou, e é lá que está o próximo. A home fica a um toque no
+    // "Voltar ao início" da própria lista.
+    setEtapa(modo === "assunto" ? "assuntos" : "inicio");
   }
 
   /** Recompõe o estado da bateria salva e volta para dentro dela. */
@@ -667,6 +682,15 @@ export default function Home() {
               }}
             />
           )}
+          {/* O desafio que ficou para depois continua à vista enquanto a URL
+              o trouxer: sem isto, "Deixar para depois" era caminho de mão
+              única. */}
+          {desafio && (
+            <DesafioPendente
+              desafio={desafio}
+              onAbrir={() => setEtapa("desafio")}
+            />
+          )}
           <ResumoDesempenho
             historico={historico}
             carregado={carregado}
@@ -680,6 +704,14 @@ export default function Home() {
             onImprimir={imprimirBateria}
           />
         </div>
+      )}
+
+      {etapa === "assuntoPouso" && pouso && (
+        <TelaAssuntoPouso
+          topico={pouso.topico}
+          quantidade={pouso.questoes.length}
+          onComecar={() => iniciarAssunto(pouso.questoes)}
+        />
       )}
 
       {etapa === "assuntos" && (
@@ -748,6 +780,9 @@ export default function Home() {
             )
           }
           onEstudarAssunto={() => irPara("assuntos")}
+          onOutroAssunto={
+            modo === "assunto" ? () => irPara("assuntos") : undefined
+          }
           // Quantos erros continuam em aberto DEPOIS desta bateria — o
           // histórico já foi atualizado por `concluir`.
           restantesRevisao={
