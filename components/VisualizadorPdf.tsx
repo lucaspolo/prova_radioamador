@@ -15,6 +15,15 @@ interface Props {
   paginaInicial: number;
   origem: Origem;
   onFechar: () => void;
+  /**
+   * Para onde mandar o foco ao fechar, quando o padrão não serve.
+   *
+   * O padrão é devolver a quem abriu, como manda o diálogo modal. No treino
+   * isso deixava o Enter seguinte reabrindo o leitor em vez de avançar — ali
+   * quem consultou o material terminou com a questão, e o destino certo é o
+   * "Próxima questão".
+   */
+  devolverFoco?: () => void;
 }
 
 const ZOOM_MIN = 0.5;
@@ -26,6 +35,7 @@ export default function VisualizadorPdf({
   paginaInicial,
   origem,
   onFechar,
+  devolverFoco,
 }: Props) {
   const botaoFechar = useRef<HTMLButtonElement>(null);
   const [totalPaginas, setTotalPaginas] = useState(0);
@@ -89,6 +99,12 @@ export default function VisualizadorPdf({
    * `<dialog>.showModal()`, que traria backdrop próprio e desfaria o desfoque
    * desta tela.
    */
+  // Num ref para a limpeza não depender da identidade da função: o efeito roda
+  // uma vez, e uma prop recriada a cada render remontaria o diálogo.
+  const devolverFocoRef = useRef(devolverFoco);
+  useEffect(() => {
+    devolverFocoRef.current = devolverFoco;
+  });
   useEffect(() => {
     const anterior = document.activeElement as HTMLElement | null;
     botaoFechar.current?.focus();
@@ -96,7 +112,13 @@ export default function VisualizadorPdf({
     fundo?.setAttribute("inert", "");
     return () => {
       fundo?.removeAttribute("inert");
-      anterior?.focus?.();
+      // O `inert` some no mesmo quadro, mas o navegador só volta a aceitar
+      // foco no conteúdo depois que ele sai — daí o foco ir num microtask.
+      const destino = devolverFocoRef.current;
+      queueMicrotask(() => {
+        if (destino) destino();
+        else anterior?.focus?.();
+      });
     };
   }, []);
 
@@ -189,7 +211,13 @@ export default function VisualizadorPdf({
       </div>
 
       {/* Documento */}
+      {/* Mesma razão da caixa do trecho: a área do documento rola e não tinha
+          parada de teclado, então a página do PDF era inalcançável sem mouse
+          — o foco ficava preso nos botões da barra (WCAG 2.1.1). */}
       <div
+        tabIndex={0}
+        role="region"
+        aria-label="Página do documento"
         className="flex-1 overflow-auto p-4"
         onClick={(e) => e.stopPropagation()}
       >

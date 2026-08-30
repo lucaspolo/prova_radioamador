@@ -1517,5 +1517,79 @@ const PROPS_INICIO = {
 }
 
 
+// --- Prova cega: o que o render estático não alcança ----------------------
+// Responder, marcar, abrir o leitor e a caixa de confirmação só existem depois
+// de um clique, e este arquivo renderiza o primeiro quadro. As regras abaixo
+// foram verificadas no navegador; aqui ficam presas à fonte, que é onde uma
+// regressão apareceria.
+{
+  const fonte = (arquivo: string) =>
+    readFileSync(new URL(`../components/${arquivo}`, import.meta.url), "utf8");
+
+  // Dois botões com `aria-pressed` exclusivo são um grupo de rádio, e rádio
+  // não desmarca ao re-tocar. Era um alterna: o segundo toque em "Verdadeiro"
+  // devolvia a questão a em branco — que conta como erro — e o único aviso era
+  // o preenchimento sumir.
+  const cega = fonte("TelaProvaCega.tsx");
+  checar(
+    "responder é idempotente",
+    !cega.includes("anteriores[indice] === valor ? null : valor") &&
+      cega.includes("if (anteriores[indice] === valor) return anteriores;"),
+  );
+  // Apagar continua existindo, e com nome.
+  checar(
+    "apagar continua tendo controle próprio",
+    cega.includes("Limpar resposta") && cega.includes('k === "backspace"'),
+  );
+  // A confirmação só olhava as em branco, e o botão que tinha o foco desmonta
+  // ao abri-la: sem `role="alert"`, o leitor de tela não anuncia nada.
+  checar(
+    "encerrar confirma também com questões marcadas",
+    cega.includes("pendente.primeira !== null") &&
+      cega.includes("marcadas para revisar"),
+  );
+  checar("a confirmação é anunciada", cega.includes('role="alert"'));
+
+  // Roving focus só funciona se o foco rodar junto com a parada de Tab: as
+  // setas moviam o `tabindex` e deixavam o foco na célula antiga, então o
+  // Enter seguinte devolvia a prova para ela.
+  const folha = fonte("FolhaRespostas.tsx");
+  checar(
+    "a seta leva o foco junto na folha",
+    folha.includes("grade.current?.contains(document.activeElement)") &&
+      folha.includes("celulaAtual.current?.focus"),
+  );
+
+  // WCAG 2.1.1: caixa que rola sem parada de teclado é conteúdo inalcançável.
+  checar(
+    "a caixa do trecho é alcançável pelo teclado",
+    /tabIndex=\{0\}[\s\S]{0,80}aria-label="Trecho de origem"/.test(
+      fonte("TrechoOrigem.tsx"),
+    ),
+  );
+  checar(
+    "a página do documento é alcançável pelo teclado",
+    /tabIndex=\{0\}[\s\S]{0,80}aria-label="Página do documento"/.test(
+      fonte("VisualizadorPdf.tsx"),
+    ),
+  );
+
+  // Consultar o material e marcar a suspeita são ações terminais da questão;
+  // com o foco parado nelas, o Enter seguinte reabria o PDF ou desmarcava —
+  // enquanto o botão logo abaixo anuncia "Próxima questão · Enter".
+  const treino = fonte("TelaSimulado.tsx");
+  checar(
+    "depois de consultar ou marcar, o Enter volta a avançar",
+    (treino.match(/voltarAoAvancar/g) ?? []).length === 3,
+  );
+  // Fora do treino o leitor segue o padrão de diálogo modal: o foco volta a
+  // quem o abriu.
+  checar(
+    "o leitor só desvia o foco quando pedem",
+    fonte("VisualizadorPdf.tsx").includes("if (destino) destino();\n        else anterior?.focus?.();"),
+  );
+}
+
+
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE RENDER PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

@@ -60,3 +60,36 @@ export function proximaEmBranco(escolhas: Escolhas, de: number): number | null {
   }
   return null;
 }
+
+export interface Pendencias {
+  /** Índices (base 0) das questões sem resposta. */
+  emBranco: number[];
+  /** Índices (base 0) das questões marcadas para revisar. */
+  marcadas: number[];
+  /** Para onde levar quem escolher continuar: a primeira em branco, senão a primeira marcada. */
+  primeira: number | null;
+}
+
+/**
+ * O que ainda está pendente quando alguém pede para encerrar.
+ *
+ * A confirmação só olhava as em branco, e dizia quantas eram sem dizer quais.
+ * Marcar para revisar existe justamente para voltar depois — encerrar por cima
+ * das marcadas esvazia o sentido da bandeira, e é o último momento em que dá
+ * para agir sobre ela.
+ */
+export function pendencias(
+  escolhas: Escolhas,
+  marcadas: ReadonlySet<number>,
+): Pendencias {
+  const emBranco: number[] = [];
+  escolhas.forEach((e, i) => {
+    if (e === null) emBranco.push(i);
+  });
+  const marcadasOrdenadas = [...marcadas].sort((a, b) => a - b);
+  return {
+    emBranco,
+    marcadas: marcadasOrdenadas,
+    primeira: emBranco[0] ?? marcadasOrdenadas[0] ?? null,
+  };
+}

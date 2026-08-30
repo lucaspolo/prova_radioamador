@@ -16,7 +16,20 @@ import Icone from "./Icone";
  * corrige o banco. São dois passos de propósito: no meio de uma bateria
  * cronometrada, um botão que joga o usuário em outra aba custaria caro.
  */
-export default function BotaoSuspeita({ questao }: { questao: Questao }) {
+export default function BotaoSuspeita({
+  questao,
+  aoAlternar,
+}: {
+  questao: Questao;
+  /**
+   * Chamado depois de marcar ou desmarcar, para quem tem uma ação seguinte.
+   *
+   * Marcar é uma ação terminal: com o foco parado neste botão, o Enter
+   * seguinte DESMARCAVA a questão em vez de avançar — e o único sinal era o
+   * texto voltar ao normal.
+   */
+  aoAlternar?: () => void;
+}) {
   const { ids, carregado, alternar } = useSuspeitas();
   if (!carregado) return null;
 
@@ -24,7 +37,10 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
   return (
     <>
       <button
-        onClick={() => alternar(questao.id)}
+        onClick={() => {
+          alternar(questao.id);
+          aoAlternar?.();
+        }}
         /* -mx-2 devolve o padding lateral à margem: o texto continua alinhado
            com o resto do cartão, mas o dedo tem os 44 px de altura e mais
            8 px de folga de cada lado. */
