@@ -1,11 +1,12 @@
 import {
   amostrarPonderado,
   desempenhoPorQuestao,
+  DIAS_PARA_VENCER,
   peso,
   type Desempenho,
 } from "@/lib/prioridade";
 import { VERSAO_HISTORICO, type Historico, type SimuladoSalvo } from "@/lib/historico";
-import { sortearSimulado, acervo } from "@/lib/questoes";
+import { errosVencidos, sortearSimulado, acervo } from "@/lib/questoes";
 import type { Tema } from "@/lib/tipos";
 
 let falhas = 0;
@@ -284,6 +285,51 @@ function historicoCom(
   const zerado = amostrarPonderado(itens, () => 0, 10);
   checar("peso zero ainda devolve a quantidade pedida", zerado.length === 10);
 }
+
+// --- Erros vencidos -------------------------------------------------------
+// O peso já empurrava o erro sem rever há três dias ou mais, e a tela mostrava
+// só o total: "Revisar erros 91" não diz se a revisão de hoje é urgente. O
+// critério anunciado na interface tem de ser o mesmo que o sorteio aplica —
+// daí a constante compartilhada.
+{
+  const agora = new Date("2026-08-30T12:00:00Z");
+  const bateria = (dias: number, ids: string[], acertou: boolean): SimuladoSalvo => ({
+    id: `b${dias}${acertou}`,
+    data: new Date(agora.getTime() - dias * 86_400_000).toISOString(),
+    escolha: TEMA,
+    total: ids.length,
+    acertos: acertou ? ids.length : 0,
+    itens: ids.map((questaoId) => ({ questaoId, tema: TEMA, acertou, respondeu: true })),
+  });
+  const ids = doTema.slice(0, 4).map((q) => q.id);
+
+  const soHoje: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [bateria(0, ids, false)],
+  };
+  checar("erro de hoje não está vencido", errosVencidos(soHoje, "B", agora) === 0);
+
+  const velhos: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [bateria(DIAS_PARA_VENCER, ids, false)],
+  };
+  checar(
+    "erro parado há três dias está vencido",
+    errosVencidos(velhos, "B", agora) === ids.length,
+  );
+
+  // Vencido é erro EM ABERTO: acertar depois tira da conta, como tira da
+  // revisão.
+  const corrigido: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [bateria(0, ids, true), bateria(10, ids, false)],
+  };
+  checar("erro corrigido deixa de vencer", errosVencidos(corrigido, "B", agora) === 0);
+
+  const nenhum: Historico = { versao: VERSAO_HISTORICO, simulados: [] };
+  checar("sem histórico não há vencidos", errosVencidos(nenhum, "B", agora) === 0);
+}
+
 
 console.log(`\n${falhas === 0 ? "TODOS OS TESTES DE PRIORIDADE PASSARAM" : falhas + " FALHA(S)"}`);
 process.exit(falhas === 0 ? 0 : 1);

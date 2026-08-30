@@ -17,8 +17,10 @@ import {
   contarPorTema,
   disponiveis,
   questoesIneditas,
+  errosVencidos,
   questoesParaRevisao,
 } from "@/lib/questoes";
+import { DIAS_PARA_VENCER } from "@/lib/prioridade";
 import type { Historico } from "@/lib/historico";
 import {
   gravarPreferencias,
@@ -81,10 +83,21 @@ export default function TelaInicio({
   const total = Math.min(...escolhas.map((t) => disponiveis(t, classe)));
   const limite = Math.min(quantidade, total);
   const errosAbertos = questoesParaRevisao(historico, classe).length;
+  // Quantos desses erros já passaram do prazo. O sorteio da revisão sempre
+  // priorizou os esquecidos; a tela só mostrava o total, e 91 não diz se a
+  // revisão de hoje é urgente ou pode esperar.
+  const vencidos = errosVencidos(historico, classe);
   const ineditasNasEscolhidas = escolhas.reduce(
     (s, t) => s + questoesIneditas(historico, classe, t).length,
     0,
   );
+  // Quanto do acervo das matérias escolhidas já foi visto: é o que decide se
+  // "priorizar inéditas" tem alguma coisa a dizer.
+  const totalNasEscolhidas = escolhas.reduce(
+    (s, t) => s + disponiveis(t, classe),
+    0,
+  );
+  const cobertas = totalNasEscolhidas - ineditasNasEscolhidas;
   const todasAsMaterias = escolhas.length === TEMAS.length;
 
   /**
@@ -104,8 +117,7 @@ export default function TelaInicio({
         ? escolhas
         : escolhas.filter((t) => t !== tema)
       : TEMAS.filter((t) => t === tema || escolhas.includes(t));
-    setEscolhas(proximas);
-    if (proximas.length === 1) setSozinhaAnterior(proximas[0]);
+    escolherTemas(proximas);
   }
 
   // Trocar de classe muda o formato da prova; a quantidade acompanha, senão
@@ -114,6 +126,11 @@ export default function TelaInicio({
     setClasse(nova);
     setQuantidade(FORMATO[nova].questoes);
   }
+
+  // A hidratação usa `trocarClasse`, que redefine a quantidade — por isso ela
+  // é lida do storage DEPOIS, e por isso trocar de classe pela interface tem
+  // de gravar a quantidade nova junto: senão o storage guardaria um número
+  // que a tela não está mostrando.
 
   // A classe escolhida sobrevive à bateria e ao recarregamento: quem estuda
   // para a C ou a A estuda para ela todo dia, e o componente é desmontado a
@@ -128,6 +145,13 @@ export default function TelaInicio({
     }
     setCego(salvas.regime === "cego");
     setCronometrar(salvas.cronometrar);
+    // Matéria e quantidade voltam junto com a classe. Sem isto, quem treinava
+    // a prova completa reencontrava "Legislação · 20 questões" a cada volta —
+    // e a quantidade tinha de vir DEPOIS de `trocarClasse`, que a redefine
+    // para o formato da classe.
+    setEscolhas(salvas.temas);
+    if (salvas.temas.length === 1) setSozinhaAnterior(salvas.temas[0]);
+    setQuantidade(salvas.quantidade);
   }, []);
 
   // Mesclam por cima do storage atual, e não do estado local: tema e escala
@@ -135,7 +159,11 @@ export default function TelaInicio({
   // gravar o objeto daqui apagaria uma escolha feita lá nesta mesma sessão.
   function escolherClasse(nova: Classe) {
     trocarClasse(nova);
-    gravarPreferencias({ ...lerPreferencias(), classe: nova });
+    gravarPreferencias({
+      ...lerPreferencias(),
+      classe: nova,
+      quantidade: FORMATO[nova].questoes,
+    });
   }
 
   function escolherRegime(novo: Regime) {
@@ -146,6 +174,17 @@ export default function TelaInicio({
   function escolherCronometro(ligado: boolean) {
     setCronometrar(ligado);
     gravarPreferencias({ ...lerPreferencias(), cronometrar: ligado });
+  }
+
+  function escolherTemas(novos: Tema[]) {
+    setEscolhas(novos);
+    if (novos.length === 1) setSozinhaAnterior(novos[0]);
+    gravarPreferencias({ ...lerPreferencias(), temas: novos });
+  }
+
+  function escolherQuantidade(nova: number) {
+    setQuantidade(nova);
+    gravarPreferencias({ ...lerPreferencias(), quantidade: nova });
   }
 
   return (
@@ -214,7 +253,7 @@ export default function TelaInicio({
                 está perto do exame: vira pílula, com altura de dedo. */}
             <button
               onClick={() =>
-                setEscolhas(todasAsMaterias ? [ultimaSozinha] : TEMAS)
+                escolherTemas(todasAsMaterias ? [ultimaSozinha] : TEMAS)
               }
               aria-pressed={todasAsMaterias}
               className="alvo-toque mb-1 rounded-full border-2 border-slate-300 px-4 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
@@ -266,7 +305,7 @@ export default function TelaInicio({
             {opcoes.map((n) => (
               <button
                 key={n}
-                onClick={() => setQuantidade(n)}
+                onClick={() => escolherQuantidade(n)}
                 aria-pressed={quantidade === n}
                 disabled={n > total}
                 className={`alvo-toque rounded-lg border px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
@@ -379,8 +418,14 @@ export default function TelaInicio({
 
       {/* Fora do bloco recolhível de propósito: o número de inéditas é
           informação, não só controle — e some sozinho quando não há histórico
-          ou quando o tema já foi coberto. */}
-      {historico.simulados.length > 0 && ineditasNasEscolhidas > 0 && (
+          ou quando o tema já foi coberto.
+
+          Também some no começo: para quem viu 20 de 350, "330 que você nunca
+          viu" é uma obviedade que ocupa um cartão inteiro logo abaixo do botão
+          principal — e o controle não muda nada, porque quase toda questão
+          sorteada já vai ser inédita. Só passa a valer quando a cobertura
+          avança e escolher o inédito começa a exigir esforço do sorteio. */}
+      {ineditasNasEscolhidas > 0 && cobertas / totalNasEscolhidas >= 0.2 && (
         <button
           onClick={() => setSoIneditas((v) => !v)}
           aria-pressed={soIneditas}
@@ -466,8 +511,12 @@ export default function TelaInicio({
               : errosAbertos > LOTE_REVISAO
                 ? // O tamanho da sessão dito antes de começar: sem isto, o
                   // selo com 91 promete uma hora de leitura de explicações.
-                  `Os ${LOTE_REVISAO} mais urgentes de ${errosAbertos}, começando pelos mais esquecidos.`
-                : "Só as questões que você errou e ainda não corrigiu."}
+                  // E quantos estão vencidos, porque é o que decide se a
+                  // revisão é para hoje: o lote sai deles primeiro.
+                  `Os ${LOTE_REVISAO} mais urgentes de ${errosAbertos}${vencidos > 0 ? `, dos quais ${vencidos} sem rever há ${DIAS_PARA_VENCER} dias ou mais` : ", começando pelos mais esquecidos"}.`
+                : vencidos > 0
+                  ? `${vencidos} de ${errosAbertos} sem rever há ${DIAS_PARA_VENCER} dias ou mais.`
+                  : "Só as questões que você errou e ainda não corrigiu."}
           </div>
         </button>
         <button

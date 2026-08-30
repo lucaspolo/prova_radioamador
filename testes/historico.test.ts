@@ -4,6 +4,8 @@ import {
   VERSAO_HISTORICO,
   corteDoPainel,
   estatisticasPorTema,
+  estatisticasRecentesPorTema,
+  frequencia,
   gravar,
   ler,
   migrar,
@@ -13,6 +15,7 @@ import {
   type SimuladoSalvo,
 } from "@/lib/historico";
 import { sortearSimulado } from "@/lib/questoes";
+import { TEMAS } from "@/lib/constantes";
 import type { Resposta, Tema } from "@/lib/tipos";
 
 let falhas = 0;
@@ -244,6 +247,122 @@ function respostasFalsas(qtd: number, acertos: number): Resposta[] {
 
   const vazio = corteDoPainel(hist(), "A");
   checar("sem histórico, o corte é o da classe escolhida", vazio.percentual === 53 && vazio.classe === "A");
+}
+
+
+// --- O que a home mostra: estado atual, não média da vida toda -------------
+// A linha de resumo dizia "12 simulados · 57%" — percentual que não existe no
+// exame, onde a aprovação é matéria a matéria — e marcava a matéria abaixo do
+// corte pela média do histórico inteiro: uma matéria a 63% acumulado podia
+// estar em 50% na última bateria sem aparecer, e outra corrigida há duas
+// semanas continuava marcada.
+{
+  const LEG = TEMAS[0], TEC = TEMAS[1];
+  const bat = (tema: Tema, acertos: number, total: number, data: string): SimuladoSalvo => ({
+    id: `b${data}${tema}${acertos}`,
+    data,
+    escolha: tema,
+    total,
+    acertos,
+    itens: Array.from({ length: total }, (_, i) => ({
+      questaoId: `q${i}`,
+      tema,
+      acertou: i < acertos,
+      respondeu: true,
+    })),
+  });
+  // Do mais recente para o mais antigo, como o storage guarda.
+  const h: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      bat(LEG, 5, 10, "2026-08-30T10:00:00Z"),
+      bat(LEG, 5, 10, "2026-08-29T10:00:00Z"),
+      bat(LEG, 5, 10, "2026-08-28T10:00:00Z"),
+      bat(LEG, 10, 10, "2026-08-01T10:00:00Z"),
+      bat(LEG, 10, 10, "2026-07-01T10:00:00Z"),
+    ],
+  };
+  const acumulado = estatisticasPorTema(h).find((e) => e.tema === LEG)!;
+  const recente = estatisticasRecentesPorTema(h).find((e) => e.tema === LEG)!;
+  checar("o acumulado dilui a queda recente", acumulado.percentual === 70);
+  checar(
+    "a janela recente mostra o estado atual",
+    recente.percentual === 50 && recente.baterias === 3,
+  );
+  const naoFeita = estatisticasRecentesPorTema(h).find((e) => e.tema === TEC)!;
+  checar(
+    "matéria sem bateria aparece zerada, e não some",
+    naoFeita.baterias === 0 && naoFeita.respondidas === 0,
+  );
+  // A janela conta baterias DAQUELA matéria: quem fez dez de Legislação e uma
+  // de Técnica tem uma janela recente em cada uma.
+  const misto: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [
+      bat(LEG, 1, 10, "2026-08-30T10:00:00Z"),
+      bat(LEG, 1, 10, "2026-08-29T10:00:00Z"),
+      bat(LEG, 1, 10, "2026-08-28T10:00:00Z"),
+      bat(TEC, 9, 10, "2026-08-01T10:00:00Z"),
+    ],
+  };
+  const tec = estatisticasRecentesPorTema(misto).find((e) => e.tema === TEC)!;
+  checar(
+    "a janela de cada matéria é independente",
+    tec.baterias === 1 && tec.percentual === 90,
+  );
+}
+
+// --- Ritmo de estudo ------------------------------------------------------
+// O histórico guarda a data de cada bateria e nada na interface a usava fora
+// do tooltip do gráfico, que no celular não existe.
+{
+  const bat = (data: string): SimuladoSalvo => ({
+    id: `x${data}`,
+    data,
+    escolha: TEMAS[0],
+    total: 1,
+    acertos: 1,
+    itens: [],
+  });
+  const hist = (...datas: string[]): Historico => ({
+    versao: VERSAO_HISTORICO,
+    simulados: datas.map(bat),
+  });
+  const agora = new Date("2026-08-30T20:00:00");
+
+  checar(
+    "sem histórico não há ritmo",
+    frequencia(hist(), agora).diasDesdeUltima === null &&
+      frequencia(hist(), agora).diasSeguidos === 0,
+  );
+
+  const tres = frequencia(
+    hist("2026-08-30T09:00:00", "2026-08-29T09:00:00", "2026-08-28T09:00:00"),
+    agora,
+  );
+  checar("três dias seguidos contam três", tres.diasSeguidos === 3 && tres.diasDesdeUltima === 0);
+
+  // Duas baterias no mesmo dia não são dois dias.
+  const mesmoDia = frequencia(
+    hist("2026-08-30T09:00:00", "2026-08-30T20:00:00", "2026-08-29T09:00:00"),
+    agora,
+  );
+  checar("duas baterias num dia contam um dia", mesmoDia.diasSeguidos === 2);
+
+  // A sequência aceita terminar ontem: cortá-la à meia-noite transformaria o
+  // número num cobrador, e o app é de estudo adulto.
+  const ontem = frequencia(hist("2026-08-29T09:00:00", "2026-08-28T09:00:00"), agora);
+  checar("a sequência sobrevive a terminar ontem", ontem.diasSeguidos === 2 && ontem.diasDesdeUltima === 1);
+
+  const sumiu = frequencia(hist("2026-08-25T09:00:00", "2026-08-24T09:00:00"), agora);
+  checar("sumiço quebra a sequência e conta os dias", sumiu.diasSeguidos === 0 && sumiu.diasDesdeUltima === 5);
+
+  const buraco = frequencia(hist("2026-08-30T09:00:00", "2026-08-28T09:00:00"), agora);
+  checar("um dia pulado corta a sequência", buraco.diasSeguidos === 1);
+
+  // Relógio do aparelho adiantado não pode virar sequência negativa.
+  const futuro = frequencia(hist("2026-09-05T09:00:00"), agora);
+  checar("data no futuro não quebra a conta", futuro.diasDesdeUltima === 0);
 }
 
 

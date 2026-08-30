@@ -1,5 +1,5 @@
-import type { Classe, Regime } from "./tipos";
-import { CLASSES, CLASSE_PADRAO } from "./constantes";
+import type { Classe, Regime, Tema } from "./tipos";
+import { CLASSES, CLASSE_PADRAO, TEMAS as TODOS_OS_TEMAS } from "./constantes";
 
 export const CHAVE_PREFERENCIAS = "prova-radioamador:preferencias";
 
@@ -27,6 +27,17 @@ export interface Preferencias {
    */
   regime: Regime;
   cronometrar: boolean;
+  /**
+   * Matérias e tamanho da última bateria montada.
+   *
+   * A classe já era lembrada pela mesma razão ("cada volta ao início
+   * recomeçava na B"), e matéria e quantidade tinham ficado de fora — mas quem
+   * treina a prova completa a repete todo dia, e quem estuda em blocos de 10
+   * reconfigurava a home a cada bateria. Voltar do consolidado das três
+   * matérias e reencontrar "Legislação · 20 questões" é começar de novo.
+   */
+  temas: Tema[];
+  quantidade: number;
 }
 
 export const PREFERENCIAS_PADRAO: Preferencias = {
@@ -35,6 +46,8 @@ export const PREFERENCIAS_PADRAO: Preferencias = {
   classe: CLASSE_PADRAO,
   regime: "treino",
   cronometrar: true,
+  temas: [TODOS_OS_TEMAS[0]],
+  quantidade: 20,
 };
 
 /** Multiplicador do tamanho de fonte da raiz. */
@@ -47,6 +60,12 @@ export const FATOR_ESCALA: Record<Escala, number> = {
 const TEMAS: PreferenciaTema[] = ["claro", "escuro", "automatico"];
 const ESCALAS: Escala[] = ["pequeno", "normal", "grande"];
 const REGIMES: Regime[] = ["treino", "cego"];
+
+function temasValidos(bruto: unknown): Tema[] {
+  if (!Array.isArray(bruto)) return PREFERENCIAS_PADRAO.temas;
+  const limpos = TODOS_OS_TEMAS.filter((t) => bruto.includes(t));
+  return limpos.length > 0 ? limpos : PREFERENCIAS_PADRAO.temas;
+}
 
 /** Aceita o que reconhece e ignora o resto, como o resto do storage do app. */
 export function validarPreferencias(dados: unknown): Preferencias {
@@ -73,6 +92,20 @@ export function validarPreferencias(dados: unknown): Preferencias {
       typeof bruto.cronometrar === "boolean"
         ? bruto.cronometrar
         : PREFERENCIAS_PADRAO.cronometrar,
+    // Filtra tema a tema em vez de aceitar ou rejeitar a lista inteira: um
+    // nome de matéria que saiu do app não deve levar junto os outros dois.
+    // Lista vazia não é escolha válida — não existe bateria de zero matérias.
+    temas: temasValidos(bruto.temas),
+    // A quantidade não é validada contra a lista de opções da tela: elas
+    // mudam, e o número gravado continua sendo um pedido legítimo. O que se
+    // exige é ser inteiro positivo e caber numa bateria.
+    quantidade:
+      typeof bruto.quantidade === "number" &&
+      Number.isInteger(bruto.quantidade) &&
+      bruto.quantidade > 0 &&
+      bruto.quantidade <= 200
+        ? bruto.quantidade
+        : PREFERENCIAS_PADRAO.quantidade,
   };
 }
 

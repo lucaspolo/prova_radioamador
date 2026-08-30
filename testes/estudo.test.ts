@@ -21,6 +21,7 @@ import {
   BANCO,
 } from "@/lib/questoes";
 import { CONFIG_FORMULARIO, urlDeReporte } from "@/lib/reportar";
+import { TEMAS } from "@/lib/constantes";
 import { resumoDeTexto, URL_PROJETO } from "@/lib/compartilhar";
 import {
   FATOR_ESCALA,
@@ -382,6 +383,48 @@ function h(...simulados: SimuladoSalvo[]): Historico {
   checar(
     "regime desconhecido cai no treino",
     validarPreferencias({ regime: "meio-termo" }).regime === "treino",
+  );
+  // Matéria e quantidade tinham ficado de fora, e a classe já era lembrada
+  // pela mesma razão: quem treina a prova completa a repete todo dia, e
+  // reencontrava "Legislação · 20 questões" a cada volta ao início.
+  checar(
+    "as três matérias são lembradas",
+    validarPreferencias({ temas: TEMAS }).temas.length === 3,
+  );
+  // Tema a tema, e não a lista inteira: um nome de matéria que saiu do app não
+  // deve levar junto os outros dois.
+  checar(
+    "matéria desconhecida sai sem levar as válidas",
+    validarPreferencias({ temas: [TEMAS[2], "Radiestesia"] }).temas.join() ===
+      TEMAS[2],
+  );
+  // Não existe bateria de zero matérias.
+  checar(
+    "lista vazia cai no padrão",
+    validarPreferencias({ temas: [] }).temas.length === 1 &&
+      validarPreferencias({ temas: "Legislação" }).temas.length === 1,
+  );
+  // A ordem é sempre a de TEMAS, para a interface não depender da ordem em que
+  // as matérias foram tocadas.
+  checar(
+    "as matérias voltam na ordem canônica",
+    validarPreferencias({ temas: [TEMAS[2], TEMAS[0]] }).temas.join() ===
+      [TEMAS[0], TEMAS[2]].join(),
+  );
+  checar(
+    "a quantidade é lembrada",
+    validarPreferencias({ quantidade: 40 }).quantidade === 40,
+  );
+  // Não se valida contra a lista de opções da tela — elas mudam, e o número
+  // gravado continua sendo um pedido legítimo. Exige-se inteiro positivo que
+  // caiba numa bateria.
+  checar(
+    "quantidade impossível cai no padrão",
+    validarPreferencias({ quantidade: 0 }).quantidade === 20 &&
+      validarPreferencias({ quantidade: -5 }).quantidade === 20 &&
+      validarPreferencias({ quantidade: 7.5 }).quantidade === 20 &&
+      validarPreferencias({ quantidade: 5000 }).quantidade === 20 &&
+      validarPreferencias({ quantidade: "20" }).quantidade === 20,
   );
   checar(
     "só false desliga o cronômetro",
