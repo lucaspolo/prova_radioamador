@@ -222,6 +222,35 @@ SCHEMA_VERIFICACAO: dict[str, Any] = {
 # Prompts
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# A regra de comprimento, comum aos cinco prompts
+# ---------------------------------------------------------------------------
+
+# Equilibrar a CONTAGEM de verdadeiras e falsas nao basta para tornar o gabarito
+# inadivinhavel. O banco gerado antes desta regra tinha 50,2% de verdadeiras --
+# impecavel em toda materia, todo nivel, todo arquivo de origem -- e mesmo assim
+# entregava a resposta pelo tamanho da frase.
+#
+# A causa esta no proprio modo de gerar: a verdadeira nasce parafraseando a norma
+# com todas as ressalvas dela ("...e permitida exclusivamente para: A, B ou C"),
+# e a falsa nasce trocando um valor numa frase seca ("Uma indutancia de 0,15 H
+# equivale a 15 mH."). Mediana de 123 caracteres contra 103. Quem respondesse "V"
+# a tudo que passasse de 136 caracteres acertava 60% do banco sem ler nada, e
+# isso aprovava em 65% a 93% das baterias, conforme a materia e a classe.
+#
+# Nao aparece revisando questao por questao: cada uma continua correta e bem
+# escrita. E' uma propriedade do conjunto, e so' o conjunto a denuncia --
+# `testes/vies.test.ts` mede e trava.
+REGRA_COMPRIMENTO = """\
+E o equilíbrio não é só de contagem: a afirmação falsa tem de ter o MESMO CORPO \
+da verdadeira. Escreva primeiro a afirmação como se fosse verdadeira, com todas \
+as condições, ressalvas e dados que ela pediria, e só então introduza o erro, \
+trocando um elemento e mantendo o resto. Nunca produza a falsa como uma frase \
+curta e seca ao lado de verdadeiras longas e qualificadas — o tamanho do \
+enunciado não pode dizer a resposta. No lote que você gerar, a falsa mais \
+comprida tem de ser mais comprida que a verdadeira mais curta."""
+
+
 PROMPT_SISTEMA = f"""\
 Você é um examinador da Anatel que elabora questões para o exame de certificação \
 de radioamador CLASSE B, no formato oficial "certo ou errado" (Verdadeiro/Falso).
@@ -246,6 +275,8 @@ antenas, modulações digitais.
 
 3. EQUILÍBRIO: aproximadamente METADE das questões deve ter resposta_correta=true \
 e metade false. Não faça todas verdadeiras.
+
+{REGRA_COMPRIMENTO}
 
 4. QUALIDADE DAS FALSAS: uma afirmação falsa deve ser PLAUSÍVEL — troque um valor \
 numérico por outro verossímil, inverta uma condição, troque "pode" por "deve", \
@@ -323,6 +354,8 @@ metade false. Nas falsas, apresente um resultado numérico errado mas plausível
 tipicamente o erro que um candidato desatento cometeria (inverter a fórmula, \
 somar resistores em paralelo, esquecer o fator de conversão).
 
+{REGRA_COMPRIMENTO}
+
 4. TEMA: use sempre exatamente "Conhecimentos de Eletrônica e Eletricidade".
 
 5. AUTOSSUFICIÊNCIA: enuncie todos os dados dentro da própria afirmação. \
@@ -365,6 +398,8 @@ metade false. Nas falsas, apresente o erro que um candidato bem preparado \
 cometeria — somar reatâncias como se fossem resistências, trocar o sinal do \
 ângulo de fase, confundir dBi com dBd, inverter a fórmula da ressonância.
 
+{REGRA_COMPRIMENTO}
+
 4. TEMA: use sempre exatamente "Conhecimentos de Eletrônica e Eletricidade".
 
 5. AUTOSSUFICIÊNCIA: enuncie todos os dados dentro da própria afirmação, \
@@ -390,7 +425,7 @@ ACRÉSCIMO OFICIAL DA CLASSE A SOBRE A CLASSE B:
 {topicos_ementa(BLOCO_ELETRONICA_A, com_cumulativo=False)}"""
 
 
-PROMPT_SISTEMA_TABELA = """\
+PROMPT_SISTEMA_TABELA = f"""\
 Você é um examinador da Anatel que elabora questões no formato oficial "certo ou \
 errado" (Verdadeiro/Falso) a partir de TABELAS normativas.
 
@@ -412,6 +447,8 @@ converta unidade e não complete o que a tabela não diz.
 
 4. EQUILÍBRIO: aproximadamente metade das questões com resposta_correta=true e \
 metade false.
+
+{REGRA_COMPRIMENTO}
 
 5. COMO ERRAR BEM: a questão falsa deve trocar o valor da linha pelo valor de \
 uma linha de CHAVE DIFERENTE — o prefixo de outro estado, a frequência de outra \
@@ -469,6 +506,8 @@ documentos oficiais. Se o tópico exigir um número desse tipo, prefira o concei
 metade false. As falsas devem ser plausíveis: inverta uma relação de causa, troque \
 dois conceitos parecidos (ganho x diretividade, refração x reflexão, simplex x \
 duplex), ou generalize indevidamente uma condição.
+
+{REGRA_COMPRIMENTO}
 
 4. TEMA: use sempre exatamente "Técnica e ética operacional".
 
