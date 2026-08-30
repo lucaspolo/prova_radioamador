@@ -127,12 +127,14 @@ export default function TelaIntervalo({
           revisão dos erros fica para o fim", e esse fim nunca chega. A
           confirmação diz as duas coisas: o que fica e o que não será feito. */}
       {!confirmandoSaida ? (
-        <button
-          onClick={() => setConfirmandoSaida(true)}
-          className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
-        >
-          Abandonar a bateria
-        </button>
+        <div className="text-center">
+          <button
+            onClick={() => setConfirmandoSaida(true)}
+            className="alvo-toque px-3 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+          >
+            Abandonar a bateria
+          </button>
+        </div>
       ) : (
         <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
           <p className="text-sm font-medium">

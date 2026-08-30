@@ -36,13 +36,13 @@ export default function AcoesResultado({ resumo }: { resumo: ResumoBateria }) {
     <div className="nao-imprimir flex flex-wrap items-center gap-3 text-sm">
       <button
         onClick={compartilhar}
-        className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+        className="alvo-toque rounded-lg border border-slate-300 px-4 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
       >
         Compartilhar resultado
       </button>
       <button
         onClick={() => window.print()}
-        className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+        className="alvo-toque rounded-lg border border-slate-300 px-4 font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
       >
         Imprimir revisão
       </button>

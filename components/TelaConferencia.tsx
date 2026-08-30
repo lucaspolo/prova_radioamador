@@ -449,7 +449,12 @@ export default function TelaConferencia() {
           <button
             onClick={() => arquivoRef.current?.click()}
             title="Recebe um arquivo baixado aqui ou em outro computador. Nada é apagado: o que existe só neste navegador continua, e o arquivo manda no que os dois têm."
-            className="text-xs text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+            /* Esta tela é a bancada de triagem de quem mantém o banco: usa-se
+               com mouse, e a grade densa de 914 linhas é o que a torna útil —
+               por isso os controles do cabeçalho ficam compactos. Só o
+               "Importar" tinha 16 px, abaixo do piso de 24 px da WCAG 2.5.8,
+               e sobe até ele sem mexer na altura da barra. */
+            className="alvo-toque -my-1 min-h-6 rounded px-1 text-xs text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
           >
             Importar
           </button>

@@ -112,7 +112,7 @@ function Aba({
       // Aba é navegação, não escolha de conteúdo: sublinhado, como em toda
       // barra de abas. A caixa preenchida a fazia disputar atenção com o
       // botão que de fato avança a tarefa.
-      className={`rounded-t-lg border-b-2 px-4 py-2 text-sm font-semibold transition ${
+      className={`alvo-toque rounded-t-lg border-b-2 px-4 text-sm font-semibold transition ${
         ativa
           ? "border-slate-900 dark:border-slate-100"
           : "border-transparent text-texto-2 hover:border-borda-controle"
@@ -170,7 +170,7 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Filtrar…"
               aria-label={`Filtrar ${tabela.titulo}`}
-              className="mb-3 w-full rounded-lg border-2 border-slate-300 bg-transparent px-3 py-2 text-sm dark:border-slate-700"
+              className="mb-3 min-h-11 w-full rounded-lg border-2 border-slate-300 bg-transparent px-3 text-sm dark:border-slate-700"
             />
           )}
 

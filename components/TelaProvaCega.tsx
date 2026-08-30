@@ -285,18 +285,22 @@ export default function TelaProvaCega({
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+      {/* Estas duas são ações POR QUESTÃO numa prova cronometrada, e eram as
+          menores da tela: 20 px de altura. Errar o toque aqui custa segundos
+          que a prova está contando — daí os 44 px, com o padding lateral
+          devolvido à margem para o texto não sair do lugar. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-2 text-sm">
         <button
           onClick={() => responder(null)}
           disabled={escolhida === null}
-          className="text-slate-500 underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400"
+          className="alvo-toque -mx-2 rounded-lg px-2 text-slate-500 underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400"
         >
           Limpar resposta
         </button>
         <button
           onClick={marcar}
           aria-pressed={marcadas.has(indice)}
-          className={`underline-offset-4 hover:underline ${
+          className={`alvo-toque -mx-2 rounded-lg px-2 text-left underline-offset-4 hover:underline ${
             marcadas.has(indice)
               ? "font-medium text-amber-700 dark:text-amber-400"
               : "text-slate-500 dark:text-slate-400"
@@ -332,7 +336,7 @@ export default function TelaProvaCega({
       {proximaVazia !== null && (
         <button
           onClick={() => ir(proximaVazia)}
-          className="w-full py-1 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+          className="alvo-toque w-full justify-center text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
         >
           Ir para a próxima em branco (questão {proximaVazia + 1})
         </button>
@@ -388,14 +392,16 @@ export default function TelaProvaCega({
           link ficava a 24 px do botão principal e apagava a prova inteira num
           toque. Sem nada respondido, sai direto. */}
       {!confirmandoSaida ? (
-        <button
-          onClick={() =>
-            respondidas > 0 ? setConfirmandoSaida(true) : onSair([])
-          }
-          className="mx-auto block px-3 py-2 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
-        >
-          Abandonar a prova
-        </button>
+        <div className="text-center">
+          <button
+            onClick={() =>
+              respondidas > 0 ? setConfirmandoSaida(true) : onSair([])
+            }
+            className="alvo-toque px-3 text-sm text-slate-500 underline-offset-4 hover:underline dark:text-slate-400"
+          >
+            Abandonar a prova
+          </button>
+        </div>
       ) : (
         <div className="rounded-xl border-2 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/40">
           <p className="text-sm font-medium">

@@ -117,7 +117,7 @@ export default function CriarDesafio({
         <button
           onClick={() => setAberto(false)}
           aria-expanded={true}
-          className="text-xs font-medium text-slate-500 underline dark:text-slate-400"
+          className="alvo-toque -my-2 -mr-2 rounded-lg px-2 text-xs font-medium text-slate-500 underline dark:text-slate-400"
         >
           recolher
         </button>
@@ -138,7 +138,7 @@ export default function CriarDesafio({
       {link === null ? (
         <button
           onClick={criar}
-          className="mt-3 rounded-lg border-2 border-slate-300 px-4 py-2 text-sm font-semibold transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+          className="alvo-toque mt-3 rounded-lg border-2 border-slate-300 px-4 text-sm font-semibold transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
         >
           Criar a bateria
         </button>
@@ -153,12 +153,12 @@ export default function CriarDesafio({
             value={link}
             aria-label="Link do desafio"
             onFocus={(e) => e.currentTarget.select()}
-            className="w-full rounded-lg border-2 border-slate-300 bg-transparent px-3 py-2 font-mono text-xs dark:border-slate-700"
+            className="min-h-11 w-full rounded-lg border-2 border-slate-300 bg-transparent px-3 font-mono text-xs dark:border-slate-700"
           />
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <button
               onClick={() => void compartilhar()}
-              className="rounded-lg border border-borda bg-superficie px-3 py-1.5 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
+              className="alvo-toque rounded-lg border border-borda bg-superficie px-3 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
             >
               Compartilhar link
             </button>
@@ -167,13 +167,13 @@ export default function CriarDesafio({
                 questões. */}
             <button
               onClick={() => desafio && onImprimir(desafio)}
-              className="rounded-lg border border-borda bg-superficie px-3 py-1.5 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
+              className="alvo-toque rounded-lg border border-borda bg-superficie px-3 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
             >
               Imprimir em branco
             </button>
             <button
               onClick={criar}
-              className="rounded-lg border border-borda bg-superficie px-3 py-1.5 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
+              className="alvo-toque rounded-lg border border-borda bg-superficie px-3 font-medium transition hover:border-slate-400 dark:hover:border-slate-500"
             >
               Outra semente
             </button>

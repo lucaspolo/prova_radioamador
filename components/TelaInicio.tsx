@@ -217,7 +217,7 @@ export default function TelaInicio({
                 setEscolhas(todasAsMaterias ? [ultimaSozinha] : TEMAS)
               }
               aria-pressed={todasAsMaterias}
-              className="mb-2 min-h-9 rounded-full border-2 border-slate-300 px-3 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+              className="alvo-toque mb-1 rounded-full border-2 border-slate-300 px-4 text-xs font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
             >
               {todasAsMaterias ? "só uma" : "todas as 3"}
             </button>
@@ -269,7 +269,7 @@ export default function TelaInicio({
                 onClick={() => setQuantidade(n)}
                 aria-pressed={quantidade === n}
                 disabled={n > total}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                className={`alvo-toque rounded-lg border px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
                   quantidade === n
                     ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
                     : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
@@ -325,7 +325,7 @@ export default function TelaInicio({
               <button
                 onClick={() => setAjusteManual(false)}
                 aria-expanded={true}
-                className="mb-2 text-xs font-medium text-slate-500 underline dark:text-slate-400"
+                className="alvo-toque -my-2 -mr-2 rounded-lg px-2 text-xs font-medium text-slate-500 underline dark:text-slate-400"
               >
                 recolher
               </button>

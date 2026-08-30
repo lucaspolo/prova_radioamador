@@ -97,7 +97,7 @@ export default function MaterialOffline() {
           <button
             onClick={() => void baixar()}
             disabled={estado.fase === "baixando"}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
+            className="alvo-toque rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-50 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
           >
             {estado.fase === "baixando"
               ? `${estado.feitos}/${ARQUIVOS.length}`

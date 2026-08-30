@@ -25,7 +25,10 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
     <>
       <button
         onClick={() => alternar(questao.id)}
-        className={`mt-2 text-xs underline-offset-2 hover:underline ${
+        /* -mx-2 devolve o padding lateral à margem: o texto continua alinhado
+           com o resto do cartão, mas o dedo tem os 44 px de altura e mais
+           8 px de folga de cada lado. */
+        className={`alvo-toque -mx-2 mt-1 rounded-lg px-2 text-left text-xs underline-offset-2 hover:underline ${
           marcada
             ? "font-medium text-amber-700 dark:text-amber-400"
             : "text-slate-500 dark:text-slate-400"
@@ -41,7 +44,7 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
           href={urlDeReporte(questao)}
           target="_blank"
           rel="noreferrer"
-          className="mt-1 block text-xs text-slate-500 underline underline-offset-2 dark:text-slate-400"
+          className="alvo-toque -mx-2 rounded-lg px-2 text-xs text-slate-500 underline underline-offset-2 dark:text-slate-400"
         >
           Reportar o erro — abre um formulário já preenchido, sem login
         </a>

@@ -141,6 +141,25 @@
   color: var(--texto-3);
 }
 
+/* A área de toque de 44 px, em um lugar só.
+   ---------------------------------------------------------------------------
+   Quem usa este app tem entre 40 e 70 anos, responde no celular e segura o
+   aparelho com uma mão só. Havia controles de 16 px de altura — "Marcar como
+   suspeita" em cada cartão do gabarito, "Limpar resposta" e "Marcar para
+   revisar" dentro de uma prova cronometrada —, que é metade do piso da WCAG
+   2.5.8 (24 px) e um terço do alvo confortável da 2.5.5 (44 px). Errar o toque
+   numa prova com cronômetro custa tempo; errar no gabarito marca a questão
+   errada como suspeita.
+
+   A utilidade dá a ÁREA sem engordar o DESENHO: o controle continua sendo o
+   mesmo texto de 12–14 px, e é o `min-height` que faz o dedo caber. Onde os
+   44 px empurrariam o ritmo da coluna, o ponto de uso compensa com `-my-*`. */
+@utility alvo-toque {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
 /* A elevação de verdade: cor no escuro, sombra no claro. */
 @utility elevado {
   background-color: var(--elevado);

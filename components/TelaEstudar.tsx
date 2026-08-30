@@ -75,7 +75,7 @@ export default function TelaEstudar() {
         </div>
         <Link
           href="/"
-          className="shrink-0 rounded-xl border-2 border-slate-300 px-3 py-2 text-sm font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+          className="alvo-toque shrink-0 rounded-xl border-2 border-slate-300 px-3 text-sm font-medium transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
         >
           Simulados
         </Link>
@@ -279,7 +279,7 @@ function Topico({ topico, classe }: { topico: TopicoEmenta; classe: Classe }) {
         {quantas > 0 ? (
           <Link
             href={linkDoAssunto(topico)}
-            className="inline-block rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
+            className="alvo-toque rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
           >
             Treinar
             <span className="ml-1.5 font-normal opacity-70">
@@ -346,7 +346,11 @@ function OndeEstudar({ secoes }: { secoes: Secao[] }) {
 
   return (
     <details className="mt-3">
-      <summary className="cursor-pointer text-xs font-medium text-slate-500 dark:text-slate-400">
+      {/* Padding em vez de `alvo-toque`: mudar o `display` de um <summary>
+          apaga o triângulo de abrir/fechar que o navegador desenha, e é ele
+          que diz que a linha abre. Os 44 px vêm do py-3.5 (16 de texto + 28),
+          e o -my-2 devolve o espaço à coluna. */}
+      <summary className="-my-2 cursor-pointer py-3.5 text-xs font-medium text-slate-500 dark:text-slate-400">
         Onde estudar — {secoes.length} trechos do material
       </summary>
       <div className="mt-2">{lista}</div>
@@ -411,7 +415,7 @@ function MaterialOficial() {
                 <a
                   href={caminho}
                   download
-                  className="rounded-lg border border-current/30 px-2.5 py-1 text-xs font-medium transition hover:bg-current/10"
+                  className="alvo-toque rounded-lg border border-current/30 px-2.5 py-1 text-xs font-medium transition hover:bg-current/10 sm:min-h-0"
                 >
                   Baixar
                 </a>

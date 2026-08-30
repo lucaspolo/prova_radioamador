@@ -601,7 +601,7 @@ export default function Home() {
               resultado seria porta de mão única — sair descartaria o gabarito
               recém-conquistado, pela mesma razão que esconde o menu. */}
           {etapa === "inicio" && (
-            <p className="mt-1.5 text-sm">
+            <p className="text-sm">
               {/* A frase inteira é o link. Antes, a explicação em volta dele
                   ("A ementa oficial e os PDFs da Anatel estão no…") gastava
                   três linhas a 360 px e ainda deixava o "›" órfão numa quarta —
@@ -609,7 +609,12 @@ export default function Home() {
                   primeira decisão da tela. */}
               <Link
                 href="/estudar"
-                className="font-medium text-slate-500 underline underline-offset-4 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                /* Padding em vez de `alvo-toque`: o link tem dois pedaços de
+                   texto com um espaço entre eles, e display:flex descarta nós
+                   de texto que só têm espaço em branco — virava "PDFs
+                   daAnatel". Aqui os 44 px vêm do py-3 (20 de linha + 24), e
+                   as margens negativas devolvem o espaço à coluna. */
+                className="-mx-2 -my-3 inline-block rounded-lg px-2 py-3 font-medium text-slate-500 underline underline-offset-4 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               >
                 Ementa oficial e PDFs da{" "}
                 {/* O "›" preso à última palavra: solto, ele caía sozinho numa
