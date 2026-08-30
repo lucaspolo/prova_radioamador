@@ -105,7 +105,7 @@ export default function TelaDesempenho({
       ) : (
         <section className="space-y-5 rounded-xl border border-borda bg-superficie p-5">
           <div className="flex items-baseline justify-between">
-            <h3 className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+            <h3 className="rotulo-secao">
               Por matéria
             </h3>
             <span className="text-sm text-slate-500 dark:text-slate-400">
@@ -177,7 +177,7 @@ export default function TelaDesempenho({
               não é prova cega, então o texto diz o que aconteceu, nunca"você
               passaria". */}
           <div>
-            <h4 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+            <h4 className="rotulo-secao mb-2">
               Últimas baterias · corte da Classe {classePreferida}
             </h4>
             <ul className="space-y-1 text-sm">

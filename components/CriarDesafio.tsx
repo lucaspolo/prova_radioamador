@@ -5,6 +5,7 @@ import type { Classe, Tema } from "@/lib/tipos";
 import { ROTULO_CURTO } from "@/lib/constantes";
 import { linkDoDesafio, type Desafio } from "@/lib/desafio";
 import { sementeLegivel } from "@/lib/semente";
+import Icone from "./Icone";
 
 /**
  * Gera o link que faz o radioclube inteiro responder à mesma bateria.
@@ -100,7 +101,10 @@ export default function CriarDesafio({
           </span>
         </span>
         <span aria-hidden="true" className="shrink-0 text-slate-400">
-          ▼
+          <Icone
+            nome="seta-baixo"
+            className={`h-4 w-4 transition-transform ${aberto ? "rotate-180" : ""}`}
+          />
         </span>
       </button>
     );

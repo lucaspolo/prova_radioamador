@@ -14,6 +14,7 @@ import {
 import { useCronometro } from "@/hooks/useCronometro";
 import { useGuardaDeSaida } from "@/hooks/useGuardaDeSaida";
 import FolhaRespostas from "./FolhaRespostas";
+import Icone from "./Icone";
 
 interface Props {
   questoes: Questao[];
@@ -241,7 +242,8 @@ export default function TelaProvaCega({
           <span>{ROTULO_CURTO[questao.tema]}</span>
           {marcadas.has(indice) && (
             <span className="text-amber-700 dark:text-amber-400">
-              ⚑ marcada
+              <Icone nome="bandeira" className="mr-1 h-3 w-3 align-[-1px]" />
+              marcada
             </span>
           )}
         </div>
@@ -300,9 +302,10 @@ export default function TelaProvaCega({
               : "text-slate-500 dark:text-slate-400"
           }`}
         >
+          <Icone nome="bandeira" className="mr-1 h-3.5 w-3.5 align-[-2px]" />
           {marcadas.has(indice)
-            ? "⚑ Marcada para revisar — toque para desfazer"
-            : "⚑ Marcar para revisar"}
+            ? "Marcada para revisar — toque para desfazer"
+            : "Marcar para revisar"}
         </button>
       </div>
 
@@ -313,14 +316,16 @@ export default function TelaProvaCega({
           disabled={indice === 0}
           className="rounded-xl border-2 border-slate-300 py-3 font-semibold transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-slate-500"
         >
-          ‹ Anterior
+          <Icone nome="seta-esquerda" className="mr-1 h-4 w-4 align-[-3px]" />
+          Anterior
         </button>
         <button
           onClick={() => ir(indice + 1)}
           disabled={indice + 1 >= questoes.length}
           className="rounded-xl border-2 border-slate-300 py-3 font-semibold transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-slate-500"
         >
-          Próxima ›
+          Próxima
+          <Icone nome="seta-direita" className="ml-1 h-4 w-4 align-[-3px]" />
         </button>
       </div>
 

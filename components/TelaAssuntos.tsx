@@ -105,7 +105,7 @@ export default function TelaAssuntos({
 
       {[...porGrupo.entries()].map(([grupo, doGrupo]) => (
         <section key={grupo} id={idDoGrupo(grupo)} className="scroll-mt-4">
-          <h3 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          <h3 className="rotulo-secao mb-2">
             {grupo}
             <span className="ml-2 font-normal normal-case tabular-nums">
               {doGrupo.length} {doGrupo.length === 1 ? "assunto" : "assuntos"}

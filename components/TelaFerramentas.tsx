@@ -10,6 +10,7 @@ import AtalhosDaProva from "./AtalhosDaProva";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
 import Relampago from "./Relampago";
+import Icone from "./Icone";
 
 /**
  * Consulta rápida offline: as tabelas que o radioamador usa a vida toda e as
@@ -153,7 +154,10 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
           </span>
         </span>
         <span aria-hidden="true" className="shrink-0 text-slate-400">
-          {aberta ? "▲" : "▼"}
+          <Icone
+            nome="seta-baixo"
+            className={`h-4 w-4 transition-transform ${aberta ? "rotate-180" : ""}`}
+          />
         </span>
       </button>
 

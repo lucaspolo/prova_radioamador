@@ -145,7 +145,7 @@ function SeletorClasse({
 }) {
   return (
     <section>
-      <h2 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+      <h2 className="rotulo-secao mb-2">
         Classe
       </h2>
       <div className="flex gap-2">
@@ -202,7 +202,7 @@ function ListaDeBlocos({
     <>
       {[...porTema.entries()].map(([tema, doTema]) => (
         <section key={tema}>
-          <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          <h2 className="rotulo-secao mb-3">
             {ROTULO_CURTO[tema]}
           </h2>
           <div className="space-y-5">
@@ -371,7 +371,7 @@ function MaterialOficial() {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <h2 className="rotulo-secao">
           Material oficial
         </h2>
         <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">

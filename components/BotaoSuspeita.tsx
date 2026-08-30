@@ -3,6 +3,7 @@
 import { useSuspeitas } from "@/hooks/useSuspeitas";
 import { urlDeReporte } from "@/lib/reportar";
 import type { Questao } from "@/lib/tipos";
+import Icone from "./Icone";
 
 /**
  * Marca uma questão como suspeita de erro.
@@ -30,9 +31,10 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
             : "text-slate-500 dark:text-slate-400"
         }`}
       >
+        <Icone nome="bandeira" className="mr-1 h-3.5 w-3.5 align-[-2px]" />
         {marcada
-          ? "⚑ Marcada como suspeita — toque para desfazer"
-          : "⚑ Achou algo errado? Marcar como suspeita"}
+          ? "Marcada como suspeita — toque para desfazer"
+          : "Achou algo errado? Marcar como suspeita"}
       </button>
       {marcada && (
         <a

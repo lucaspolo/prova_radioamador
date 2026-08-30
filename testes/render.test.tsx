@@ -1249,6 +1249,19 @@ const PROPS_INICIO = {
   // A marca do ícone instalado passou a existir na interface: era o melhor
   // desenho do produto e não aparecia em pixel nenhum dela.
   checar("o cabeçalho traz a antena", home.includes('cx="12"') && home.includes("#f59e0b"));
+  // Glifo não é ícone: cada plataforma desenha o seu, o peso não acompanha o
+  // texto e alguns viram emoji colorido no celular — a bandeira do "marcar
+  // para revisar" chegava a competir com o vermelho de erro.
+  checar(
+    "nenhum glifo Unicode sobrou na interface",
+    !/[☰⚑▼▲‹⚠]/.test(home),
+  );
+  // O rótulo de seção era a mesma ideia escrita de oito jeitos.
+  checar(
+    "os rótulos de seção usam um degrau só",
+    (home.match(/rotulo-secao/g) ?? []).length >= 3 &&
+      !home.includes("tracking-wide text-slate-500 uppercase"),
+  );
   // Um preenchimento sólido por tela: o que avança a tarefa. Antes, classe,
   // quantidade, regime, aba e filtro usavam o mesmo preto do "Iniciar", e o
   // olho não separava estado de comando.

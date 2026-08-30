@@ -494,7 +494,7 @@ export default function TelaInicio({
 /** Cabeçalho de campo: o mesmo rótulo curto em toda a configuração. */
 function Rotulo({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+    <h2 className="rotulo-secao mb-2">
       {children}
     </h2>
   );

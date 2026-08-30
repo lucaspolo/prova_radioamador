@@ -5,6 +5,7 @@ import { COR_TEMA, ROTULO_CURTO } from "@/lib/constantes";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import BotaoSuspeita from "./BotaoSuspeita";
 import TrechoOrigem from "./TrechoOrigem";
+import Icone from "./Icone";
 
 /**
  * A lista de questões de uma bateria já corrigida, com explicação, fonte e
@@ -38,7 +39,8 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
                   veredito: é ela que distingue o acerto do chute. */}
                 {r.marcada && (
                   <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                    ⚑ marcada
+                    <Icone nome="bandeira" className="mr-1 h-3 w-3 align-[-1px]" />
+                    marcada
                   </span>
                 )}
                 <span

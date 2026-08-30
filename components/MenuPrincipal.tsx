@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Preferencias from "./Preferencias";
+import Icone from "./Icone";
 
 /** As telas que o menu alcança. */
 export type TelaDoMenu = "inicio" | "desempenho" | "ferramentas";
@@ -101,9 +102,7 @@ export default function MenuPrincipal({
         // ao título, que quebrava em duas linhas por causa disso.
         className="flex shrink-0 items-center gap-1.5 rounded-xl border-2 border-slate-300 px-2.5 py-2 text-sm font-medium transition hover:border-slate-400 sm:gap-2 sm:px-3 dark:border-slate-700 dark:hover:border-slate-500"
       >
-        <span aria-hidden className="text-lg leading-none">
-          ☰
-        </span>
+        <Icone nome="menu" className="h-5 w-5" />
         Menu
       </button>
 

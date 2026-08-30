@@ -41,7 +41,7 @@ export default function CartaoRetomar({
 
   return (
     <section className="rounded-2xl border-2 border-slate-900 p-4 dark:border-slate-100">
-      <h2 className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+      <h2 className="rotulo-secao">
         Bateria em andamento
       </h2>
       <p className="mt-1 font-semibold">
