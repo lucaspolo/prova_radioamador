@@ -11,10 +11,19 @@ import {
   type Preferencias as Prefs,
 } from "@/lib/preferencias";
 
-const TEMAS: { valor: PreferenciaTema; rotulo: string }[] = [
-  { valor: "claro", rotulo: "Claro" },
-  { valor: "escuro", rotulo: "Escuro" },
-  { valor: "automatico", rotulo: "Automático" },
+/**
+ * `\u00ad` é um hífen condicional: invisível quando a palavra cabe, vira
+ * "Automá-tico" em duas linhas quando não cabe. Numa tela de 320 px com a
+ * fonte em 1,15 a célula tem 78 px e a palavra pede 94 — e é justamente a
+ * palavra que a pessoa precisa ler para escolher. `hyphens: auto` dependeria
+ * do dicionário do navegador (o Chrome sem ele não quebrava nada); o hífen
+ * condicional funciona em todos. Encurtar para "Auto" resolveria a largura
+ * escondendo o que o botão faz.
+ */
+const TEMAS: { valor: PreferenciaTema; rotulo: string; nome: string }[] = [
+  { valor: "claro", rotulo: "Claro", nome: "Claro" },
+  { valor: "escuro", rotulo: "Escuro", nome: "Escuro" },
+  { valor: "automatico", rotulo: "Autom\u00adático", nome: "Automático" },
 ];
 
 const ESCALAS: { valor: Escala; rotulo: string }[] = [
@@ -63,23 +72,47 @@ export default function Preferencias() {
     // Empilhado, e não em linha: o painel do menu tem ~20rem e este é o
     // controle de tamanho de fonte — desenhá-lo com o menor tipo do app e
     // alvos de toque miúdos seria contradizer o que ele faz.
+    //
+    // Cada grupo é uma barra de três células de largura total, com o rótulo
+    // ACIMA. Em linha, os três botões não cabiam: numa tela de 320 px o painel
+    // ganhava rolagem horizontal e "Automático" chegava cortado em
+    // "Automátic" — a palavra que a pessoa precisa ler para escolher. Com
+    // fonte grande sobravam 70 px de estouro. A barra também comunica escolha
+    // única melhor do que três pílulas soltas.
     <div className="flex flex-col gap-3 text-sm">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-slate-500 dark:text-slate-400">Tema</span>
-        <div className="flex gap-1">
+      <div>
+        <span id="rotulo-tema" className="rotulo-secao">
+          Tema
+        </span>
+        <div
+          role="group"
+          aria-labelledby="rotulo-tema"
+          className="mt-1 grid grid-cols-3 gap-1"
+        >
           {TEMAS.map((t) => (
             <Opcao
               key={t.valor}
               ativa={carregado && prefs.tema === t.valor}
               onClick={() => trocar({ tema: t.valor })}
               rotulo={t.rotulo}
+              // "Automático" sozinho não diz automático de quê: o rótulo do
+              // grupo é um <span>, e leitor de tela nenhum o liga ao botão sem
+              // o `aria-labelledby` acima — que só nomeia o GRUPO. E o nome
+              // vem sem o hífen condicional, que o leitor soletraria.
+              descricao={`Tema ${t.nome.toLowerCase()}`}
             />
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-slate-500 dark:text-slate-400">Texto</span>
-        <div className="flex gap-1">
+      <div>
+        <span id="rotulo-texto" className="rotulo-secao">
+          Texto
+        </span>
+        <div
+          role="group"
+          aria-labelledby="rotulo-texto"
+          className="mt-1 grid grid-cols-3 gap-1"
+        >
           {ESCALAS.map((e) => (
             <Opcao
               key={e.valor}
@@ -116,7 +149,9 @@ function Opcao({
       onClick={onClick}
       aria-pressed={ativa}
       aria-label={descricao}
-      className={`alvo-toque min-w-11 justify-center rounded-lg border px-3 font-medium transition ${
+      // As três células crescem juntas quando um rótulo quebra em duas linhas,
+      // então a barra não desalinha.
+      className={`alvo-toque w-full min-w-0 justify-center rounded-lg border px-2 py-1 text-center leading-tight font-medium transition ${
         ativa
           ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
           : "border-slate-300 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300"

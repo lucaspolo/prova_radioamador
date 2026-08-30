@@ -52,11 +52,14 @@ export default function MenuPrincipal({
 
   useEffect(() => {
     if (!aberto) return;
-    // O primeiro item, seja ele link ou botão — e descoberto pelo DOM, não por
-    // uma ref passada ao item que hoje é o primeiro: trocar a ordem da lista é
-    // mexida rotineira, e amarrar o foco a um item específico faz o menu abrir
-    // sem foco nenhum na primeira reordenação, calado.
-    painel.current?.querySelector<HTMLElement>("a, button")?.focus();
+    // O marco, e não o primeiro item: assim o leitor de tela anuncia
+    // "navegação, Menu principal, lista com 4 itens" ANTES do conteúdo. Antes
+    // o foco caía no primeiro link e a pessoa ouvia 25 palavras de descrição
+    // sem saber que um menu havia aberto. O Tab seguinte entra na lista.
+    (
+      painel.current?.querySelector<HTMLElement>("nav") ??
+      painel.current?.querySelector<HTMLElement>("a, button")
+    )?.focus();
 
     // `pointerdown` e não `click`: assim o controle que se tocou fora do menu
     // ainda recebe o próprio clique. A referência é a caixa INTEIRA, gatilho
@@ -112,16 +115,21 @@ export default function MenuPrincipal({
           id="menu-principal"
           tabIndex={-1}
           // Fundo opaco é obrigatório: o painel cobre o resumo de desempenho e
-          // a escolha de classe. A largura em `rem` acompanha a escala de
-          // fonte, e o `min` com `vw` impede que estoure num telefone estreito
-          // quando o texto está no tamanho grande.
+          // a escolha de classe.
+          //
+          // No celular ele ocupa a coluna inteira. Com 20rem numa tela de
+          // 390 px o painel começava em x=54 e deixava à esquerda uma faixa de
+          // 54 px de texto picado — "Quest", "forma", "CLA" — e metade do
+          // título coberta. Aquela faixa não pré-visualizava nada: eram
+          // sílabas. Alinhado com a margem da página, o que ficou de fora está
+          // inteiro embaixo, que é onde a escala de fonte se enxerga.
           // `70vh` cortava justamente o que só existe aqui: em 1280×800 a
           // linha"Texto" virava uma fatia de 10 px, e em 320×568 com fonte
           // grande o painel mostrava dois itens e meio. Agora a altura segue a
           // tela de verdade (`dvh`, que no celular desconta a barra do
           // navegador) e quem rola é a lista de destinos — tema e tamanho de
           // texto ficam presos no rodapé do painel, sempre à vista.
-          className="absolute top-full right-0 z-40 mt-2 flex max-h-[calc(100dvh-7rem)] w-[min(20rem,calc(100vw-2rem))] flex-col overscroll-contain rounded-xl border border-borda elevado p-4"
+          className="absolute top-full right-0 z-40 mt-2 flex max-h-[calc(100dvh-7rem)] w-[calc(100vw-2rem)] flex-col overscroll-contain rounded-xl border border-borda elevado p-4 sm:w-80"
         >
           <PainelMenu
             atual={atual}
@@ -165,42 +173,51 @@ export function PainelMenu({
 }) {
   return (
     <>
-      <div className="min-h-0 space-y-3 overflow-y-auto">
-        {/* Primeiro item, e é o único que é rota e não etapa: `/estudar` tem
+      {/* `<nav>` com `<ul>`: os quatro destinos eram irmãos soltos dentro do
+          <header>, sem marco e sem lista — a árvore de acessibilidade não
+          tinha como dizer que aquilo era um menu, nem quantos itens tinha. */}
+      <nav
+        aria-label="Menu principal"
+        tabIndex={-1}
+        className="min-h-0 overflow-y-auto"
+      >
+        <ul className="space-y-3">
+          {/* Primeiro item, e é o único que é rota e não etapa: `/estudar` tem
             endereço próprio para poder ser lido devagar e mandado para o
             colega. Vem no topo porque é a ordem do estudo — ler o que a prova
             cobra antes de responder —, e porque é o único destino do menu que
             ninguém adivinha existir. Nunca aparece como atual: lá o menu não
             existe, a página tem a própria volta para cá. Sair daqui não custa
             nada, já que o menu só existe fora de bateria e fora de resultado. */}
-        <ItemMenu
-          ativo={false}
-          href="/estudar"
-          titulo="Material de estudo"
-          detalhe="A ementa oficial da prova, o trecho do PDF que explica cada item e os documentos da Anatel para baixar."
-        />
-        {/* O caminho de volta. Sem ele, sair de Desempenho ou da Consulta
+          <ItemMenu
+            ativo={false}
+            href="/estudar"
+            titulo="Material de estudo"
+            detalhe="Ementa oficial, trechos do PDF e documentos da Anatel"
+          />
+          {/* O caminho de volta. Sem ele, sair de Desempenho ou da Consulta
             rápida exigia rolar duas telas longas até o"Voltar ao início" do
             rodapé — e o menu, que é a navegação do app, só levava para longe. */}
-        <ItemMenu
-          ativo={atual === "inicio"}
-          titulo="Simulado"
-          detalhe="Escolher a classe e a matéria e começar uma bateria."
-          onClick={onInicio}
-        />
-        <ItemMenu
-          ativo={atual === "desempenho"}
-          titulo="Desempenho"
-          detalhe="Acertos por matéria contra a linha de corte, evolução e backup do histórico."
-          onClick={onDesempenho}
-        />
-        <ItemMenu
-          ativo={atual === "ferramentas"}
-          titulo="Consulta rápida"
-          detalhe="Alfabeto fonético, código Q, plano de bandas, prefixos e as calculadoras da ementa. Funciona sem rede."
-          onClick={onFerramentas}
-        />
-      </div>
+          <ItemMenu
+            ativo={atual === "inicio"}
+            titulo="Simulado"
+            detalhe="Classe, matéria e a bateria de hoje"
+            onClick={onInicio}
+          />
+          <ItemMenu
+            ativo={atual === "desempenho"}
+            titulo="Desempenho"
+            detalhe="Acertos por matéria, evolução e backup"
+            onClick={onDesempenho}
+          />
+          <ItemMenu
+            ativo={atual === "ferramentas"}
+            titulo="Consulta rápida"
+            detalhe="Fonético, código Q, bandas, prefixos, calculadoras"
+            onClick={onFerramentas}
+          />
+        </ul>
+      </nav>
 
       {/* Fora do que rola: são a razão de o menu existir para quem já sabe
           onde ficam as telas, e eram os primeiros a sumir. */}
@@ -242,22 +259,28 @@ function ItemMenu({
     </>
   );
 
+  // O <li> vem do próprio item para os quatro pontos de uso não terem de
+  // lembrar dele: a lista só conta como lista se todo item estiver dentro de um.
   if (href) {
     return (
-      <Link href={href} className={estilo}>
-        {conteudo}
-      </Link>
+      <li>
+        <Link href={href} className={estilo}>
+          {conteudo}
+        </Link>
+      </li>
     );
   }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-current={ativo ? "page" : undefined}
-      className={estilo}
-    >
-      {conteudo}
-    </button>
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-current={ativo ? "page" : undefined}
+        className={estilo}
+      >
+        {conteudo}
+      </button>
+    </li>
   );
 }
