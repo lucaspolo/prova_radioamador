@@ -1279,11 +1279,43 @@ const PROPS_INICIO = {
     "o material de estudo é o primeiro item",
     painel.indexOf("Material de estudo") < painel.indexOf("Simulado"),
   );
+  // "Automático" carrega um hífen condicional (`\u00ad`), invisível quando a
+  // palavra cabe: numa célula de 78 px com a fonte grande ela pede 94, e
+  // truncar em "Automátic" era o defeito de origem. O leitor de tela recebe o
+  // nome sem ele, pelo `aria-label`.
   checar(
     "o menu traz o tema",
-    ["Claro", "Escuro", "Automático"].every((s) => painel.includes(s)),
+    ["Claro", "Escuro"].every((s) => painel.includes(s)) &&
+      painel.replace(/\u00ad/g, "").includes("Automático"),
+  );
+  checar(
+    "o nome do tema chega inteiro ao leitor de tela",
+    painel.includes('aria-label="Tema automático"'),
   );
   checar("o menu traz o tamanho de texto", painel.includes("A−") && painel.includes("A+"));
+  // Os quatro destinos eram irmãos soltos dentro do <header>: sem marco e sem
+  // lista, a árvore de acessibilidade não tinha como dizer que aquilo era um
+  // menu, nem quantos itens tinha.
+  checar(
+    "os destinos são uma lista dentro de um marco",
+    painel.includes('aria-label="Menu principal"') &&
+      painel.includes("<ul") &&
+      (painel.match(/<li>/g) ?? []).length === 4,
+  );
+  // Tema e Texto eram rótulos soltos: "Automático, botão alternável" não diz
+  // automático de quê.
+  checar(
+    "os grupos de preferência têm nome",
+    painel.includes('aria-labelledby="rotulo-tema"') &&
+      painel.includes('aria-labelledby="rotulo-texto"'),
+  );
+  // As descrições eram texto de landing page: 40 palavras para achar
+  // "Desempenho", e 416 px dos 601 do painel só em cartões.
+  checar(
+    "cada destino se explica em uma linha",
+    !painel.includes("A ementa oficial da prova, o trecho do PDF") &&
+      painel.includes("Ementa oficial, trechos do PDF e documentos da Anatel"),
+  );
   checar("o menu não inicia bateria nenhuma", !painel.includes("Iniciar"));
 
   const emFerramentas = renderToStaticMarkup(
