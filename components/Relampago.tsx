@@ -9,6 +9,7 @@ import {
   type Pergunta,
 } from "@/lib/drill";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
+import Fonte from "./Fonte";
 
 /**
  * Drill relâmpago das tabelas.
@@ -238,11 +239,10 @@ export default function Relampago() {
               )}
             </div>
             <div className="mt-2 border-t border-current/15 pt-2 text-sm text-slate-600 dark:text-slate-400">
-              <span className="font-medium">Fonte:</span> {carta.fonte.arquivo}
-              <span className="opacity-70">
-                {" "}
-                · {carta.fonte.referencia}, página {carta.fonte.paginas[0]}
-              </span>
+              <Fonte
+                arquivo={carta.fonte.arquivo}
+                detalhe={`${carta.fonte.referencia}, página ${carta.fonte.paginas[0]}`}
+              />
               <div>
                 <BotaoConsultarMaterial
                   arquivoOrigem={carta.fonte.arquivo}

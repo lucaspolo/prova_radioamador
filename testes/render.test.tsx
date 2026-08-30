@@ -30,6 +30,8 @@ import {
   type SimuladoSalvo,
 } from "@/lib/historico";
 import { ROTULO_CURTO, TEMAS } from "@/lib/constantes";
+import { ROTULO_ARQUIVO } from "@/lib/secoes";
+import Fonte from "@/components/Fonte";
 import { topicos } from "@/lib/ementa";
 import type { Resposta } from "@/lib/tipos";
 
@@ -1745,6 +1747,69 @@ const PROPS_INICIO = {
     <ResumoDesempenho historico={h} carregado={false} onAbrir={() => {}} />,
   );
   checar("sem storage lido, nenhum número", !antes.includes("%"));
+}
+
+
+// --- De onde saiu o que está na tela --------------------------------------
+// Quatro telas imprimiam o nome do arquivo cru — "Fonte: 2026-06-30
+// CARTILHA-RADIOAMADOR-v9 2026-06.pdf · página 49", "SEI_ANATEL - 15307586 -
+// Ato_orginal.pdf" — enquanto `ROTULO_ARQUIVO` já existia e a lista de
+// material o usava na mesma sessão. E essa linha não fica no app: vai na
+// revisão impressa e no que se compartilha no grupo.
+{
+  const CRUS = /\.pdf|SEI_ANATEL|CARTILHA-RADIOAMADOR|Ato_orginal/;
+
+  // A garantia de raiz: todo arquivo que o banco cita tem rótulo. Sem isto, um
+  // PDF novo volta a aparecer cru pelo `?? arquivo` do fallback.
+  const semRotulo = [...new Set(BANCO.map((q) => q.arquivo_origem))].filter(
+    (a) => !ROTULO_ARQUIVO[a],
+  );
+  checar(
+    "todo arquivo do banco tem nome legível",
+    semRotulo.length === 0,
+    semRotulo.join(", "),
+  );
+
+  const doc = BANCO.find((q) => q.origem === "documento")!;
+  const daEmenta = BANCO.find((q) => q.origem === "ementa");
+  const linha = renderToStaticMarkup(
+    <Fonte arquivo={doc.arquivo_origem} detalhe={`página ${doc.pagina}`} />,
+  );
+  checar("a fonte usa o rótulo curado", linha.includes(ROTULO_ARQUIVO[doc.arquivo_origem]));
+  checar("e não o nome do arquivo", !CRUS.test(linha.replace(/title="[^"]*"/, "")));
+  // O nome do arquivo continua acessível para quem for conferir contra o PDF
+  // baixado — só sai da leitura.
+  checar("o nome do arquivo fica no title", linha.includes(`title="${doc.arquivo_origem}"`));
+  checar("o recorte dentro do documento continua", linha.includes(`página ${doc.pagina}`));
+
+  // Questão de ementa não nasce de uma frase do PDF: a página explica o tema,
+  // mas não traz o enunciado.
+  if (daEmenta) {
+    const ementa = renderToStaticMarkup(
+      <Fonte arquivo={daEmenta.arquivo_origem} origem="ementa" />,
+    );
+    checar(
+      "a questão de ementa não se diz fonte",
+      ementa.includes("Estude o tema em:") && !ementa.includes("Fonte:"),
+    );
+  }
+
+  // E nas quatro telas que a mostram.
+  const erradas: Resposta[] = [
+    { questao: doc, respondeu: !doc.resposta_correta, acertou: false },
+  ];
+  const gabarito = renderToStaticMarkup(
+    <TelaResultado respostas={erradas} onReiniciar={() => {}} classe="B" />,
+  );
+  checar(
+    "o gabarito não imprime o nome do arquivo",
+    !CRUS.test(gabarito.replace(/title="[^"]*"/g, "")),
+  );
+  const ferramentas = renderToStaticMarkup(<TelaFerramentas onVoltar={() => {}} />);
+  checar(
+    "a consulta rápida não imprime o nome do arquivo",
+    !CRUS.test(ferramentas.replace(/title="[^"]*"/g, "")),
+  );
 }
 
 

@@ -6,6 +6,7 @@ import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import BotaoSuspeita from "./BotaoSuspeita";
 import TrechoOrigem from "./TrechoOrigem";
 import Icone from "./Icone";
+import Fonte from "./Fonte";
 
 /**
  * A lista de questões de uma bateria já corrigida, com explicação, fonte e
@@ -78,10 +79,11 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
               {r.questao.explicacao_curta}
             </p>
             <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-              {r.questao.origem === "documento"
-                ? "Fonte: "
-                : "Estude o tema em: "}
-              {r.questao.arquivo_origem} · página {r.questao.pagina}
+              <Fonte
+                arquivo={r.questao.arquivo_origem}
+                detalhe={`página ${r.questao.pagina}`}
+                origem={r.questao.origem}
+              />
             </p>
             {/* No papel, botão não clica: a folha impressa fica com a
                 afirmação, o gabarito, a explicação e a fonte. */}

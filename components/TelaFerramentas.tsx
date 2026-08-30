@@ -11,6 +11,7 @@ import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import Calculadoras from "./Calculadoras";
 import Relampago from "./Relampago";
 import Icone from "./Icone";
+import Fonte from "./Fonte";
 
 /**
  * Consulta rápida offline: as tabelas que o radioamador usa a vida toda e as
@@ -220,11 +221,10 @@ function Tabela({ tabela }: { tabela: TabelaReferencia }) {
           )}
 
           <div className="mt-3 border-t border-borda pt-3 text-xs text-slate-500 dark:text-slate-400">
-            <span className="font-medium">Fonte:</span> {tabela.fonte.arquivo}
-            <span className="opacity-70">
-              {" "}
-              · {tabela.fonte.referencia}, {rotuloPaginas}
-            </span>
+            <Fonte
+              arquivo={tabela.fonte.arquivo}
+              detalhe={`${tabela.fonte.referencia}, ${rotuloPaginas}`}
+            />
             <div>
               <BotaoConsultarMaterial
                 arquivoOrigem={tabela.fonte.arquivo}
