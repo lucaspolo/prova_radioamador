@@ -23,8 +23,13 @@ import { ATALHOS_DA_PROVA } from "@/lib/atalhos";
 import { BARALHOS } from "@/lib/drill";
 import { sortearDesafio, sortearSimulado, BANCO } from "@/lib/questoes";
 import { codigoDaBateria } from "@/lib/semente";
-import { VERSAO_HISTORICO, montarRegistro, type Historico } from "@/lib/historico";
-import { TEMAS } from "@/lib/constantes";
+import {
+  VERSAO_HISTORICO,
+  montarRegistro,
+  type Historico,
+  type SimuladoSalvo,
+} from "@/lib/historico";
+import { ROTULO_CURTO, TEMAS } from "@/lib/constantes";
 import { topicos } from "@/lib/ementa";
 import type { Resposta } from "@/lib/tipos";
 
@@ -122,7 +127,13 @@ const PROPS_INICIO = {
   // O toggle de inéditas só existe com histórico: sem bateria feita, tudo é
   // inédito e o botão seria redundante.
   checar("sem histórico, não oferece o modo inéditas", !html.includes("inéditas"));
-  checar("com histórico, oferece priorizar inéditas", html2.includes("Priorizar inéditas"));
+  // E só depois que a cobertura avança: para quem viu 20 de 350, "330 que você
+  // nunca viu" é uma obviedade ocupando um cartão inteiro, e o controle não
+  // muda nada — quase toda questão sorteada já vai ser inédita.
+  checar(
+    "com uma bateria só, ainda não oferece o modo inéditas",
+    !html2.includes("Priorizar inéditas"),
+  );
   // Os dois regimes ficam visíveis ao mesmo tempo, com treino marcado: um
   // alternador de um botão só escondia a descrição da opção não escolhida.
   checar(
@@ -1195,9 +1206,14 @@ const PROPS_INICIO = {
   const resumoFraco = renderToStaticMarkup(
     <ResumoDesempenho historico={h} carregado onAbrir={() => {}} />,
   );
+  // A linha passou a trazer as TRÊS matérias com o resultado recente de cada
+  // uma: o alerta é a matéria que está abaixo do corte agora, não a que ficou
+  // abaixo em algum momento da média da vida toda.
   checar(
     "com uma matéria fraca, o resumo a nomeia",
-    resumoFraco.includes("30%") && resumoFraco.includes("Eletrônica abaixo do corte"),
+    resumoFraco.includes("30%") &&
+      resumoFraco.includes("Eletrônica") &&
+      resumoFraco.includes("abaixo do corte"),
   );
 
   const resumoBom = renderToStaticMarkup(
@@ -1208,7 +1224,6 @@ const PROPS_INICIO = {
     resumoBom.includes("90%") && !resumoBom.includes("abaixo do corte"),
   );
 
-  // Nomear três matérias estoura a linha num telefone: a partir de duas, conta.
   const duasFracas: H = {
     versao: VERSAO_HISTORICO,
     simulados: [
@@ -1225,9 +1240,11 @@ const PROPS_INICIO = {
   const resumoDuas = renderToStaticMarkup(
     <ResumoDesempenho historico={duasFracas} carregado onAbrir={() => {}} />,
   );
+  // Cada matéria carrega o próprio alerta, porque cada uma é um exame
+  // separado: contar ("2 matérias abaixo do corte") escondia justamente quais.
   checar(
-    "com duas matérias fracas, o resumo conta em vez de listar",
-    resumoDuas.includes("2 matérias abaixo do corte"),
+    "cada matéria fraca carrega o próprio alerta",
+    (resumoDuas.match(/abaixo do corte/g) ?? []).length === 2,
   );
 }
 
@@ -1681,6 +1698,53 @@ const PROPS_INICIO = {
   );
   checar("o assunto oferece o próximo assunto", assunto.includes("Escolher outro assunto"));
   checar("e não se oferece a si mesmo de novo", !assunto.includes(">Estudar por assunto<"));
+}
+
+
+// --- A home diz o que fazer hoje ------------------------------------------
+// A linha de resumo dizia o que aconteceu ("12 simulados · 57%"), e nenhum dos
+// dois números apoiava a decisão seguinte, que é escolher a matéria: o 57% não
+// existe no exame — a aprovação é matéria a matéria — e o alerta era a média
+// da vida toda.
+{
+  const bat = (tema: (typeof TEMAS)[number], acertos: number, quando: string): SimuladoSalvo => ({
+    id: `r${tema}${acertos}${quando}`,
+    data: quando,
+    escolha: tema,
+    total: 10,
+    acertos,
+    itens: Array.from({ length: 10 }, (_, i) => ({
+      questaoId: `${tema}-${i}`,
+      tema,
+      acertou: i < acertos,
+      respondeu: true,
+    })),
+  });
+  const hoje = new Date().toISOString();
+  const h: Historico = {
+    versao: VERSAO_HISTORICO,
+    simulados: [bat(TEMAS[0], 9, hoje), bat(TEMAS[1], 4, hoje)],
+  };
+  const linha = renderToStaticMarkup(
+    <ResumoDesempenho historico={h} carregado onAbrir={() => {}} />,
+  );
+  checar(
+    "a linha traz as três matérias, e não a média geral",
+    TEMAS.every((t) => linha.includes(ROTULO_CURTO[t])) && !linha.includes("simulados ·"),
+  );
+  checar("cada matéria vem com o resultado dela", linha.includes("90%") && linha.includes("40%"));
+  // A matéria ainda sem bateria aparece com travessão em vez de sumir: "ainda
+  // não fiz Eletrônica" é a informação mais acionável para quem está começando.
+  checar("a matéria não feita aparece mesmo assim", linha.includes("—"));
+  // A cor sozinha não diz nada, e aqui ela já significa "matéria".
+  checar("o alerta do corte vem escrito, não só em cor", linha.includes("abaixo do corte"));
+
+  // Antes de ler o storage não pode haver número nenhum: o HTML da build e o
+  // primeiro render do cliente têm de ser idênticos.
+  const antes = renderToStaticMarkup(
+    <ResumoDesempenho historico={h} carregado={false} onAbrir={() => {}} />,
+  );
+  checar("sem storage lido, nenhum número", !antes.includes("%"));
 }
 
 

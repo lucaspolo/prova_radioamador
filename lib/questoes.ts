@@ -5,6 +5,7 @@ import type { Historico } from "./historico";
 import {
   amostrarPonderado,
   desempenhoPorQuestao,
+  DIAS_PARA_VENCER,
   embaralharSimples,
   peso,
   type Desempenho,
@@ -168,6 +169,28 @@ export function questoesParaRevisao(
     (a, b) => peso(desempenho.get(b.id)) - peso(desempenho.get(a.id)),
   );
   return limite === undefined ? ordenadas : ordenadas.slice(0, limite);
+}
+
+/**
+ * Os erros em aberto que já passaram do prazo de revisão.
+ *
+ * O peso do sorteio (`lib/prioridade.ts`) já dá um empurrão ao erro sem rever
+ * há três dias ou mais — é onde a curva do esquecimento começa a cobrar —, mas
+ * a interface mostrava só o total: "Revisar erros 91". Quem vê 91 não sabe se
+ * a revisão de hoje é urgente ou se pode esperar, nem que a bateria já vai
+ * priorizar os esquecidos. É o "vencidas hoje" que um Anki mostra, dito com o
+ * critério que este app já usa.
+ */
+export function errosVencidos(
+  historico: Historico,
+  classe: Classe = CLASSE_PADRAO,
+  agora: Date = new Date(),
+): number {
+  const desempenho = desempenhoPorQuestao(historico, agora);
+  return acervo(classe).filter((q) => {
+    const d = desempenho.get(q.id);
+    return d?.errouNaUltima === true && d.diasAtras >= DIAS_PARA_VENCER;
+  }).length;
 }
 
 /** Quantas questões estão disponíveis numa matéria, para a classe. */

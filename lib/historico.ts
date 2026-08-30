@@ -285,3 +285,104 @@ export function corteDoPainel(
         classe: classePreferida,
       };
 }
+
+/**
+ * O desempenho recente de cada matéria, e não o acumulado da vida toda.
+ *
+ * A linha de resumo da home mostrava "12 simulados · 57%" — um percentual que
+ * não existe no exame, onde a aprovação é matéria a matéria — e um alerta
+ * calculado sobre o histórico inteiro. Uma matéria com 63% acumulado podia
+ * estar em 50% na última bateria, e o alerta não aparecia; outra corrigida há
+ * duas semanas continuava marcada. A decisão que a linha apoia é qual matéria
+ * treinar HOJE, e para isso o que vale é o estado atual.
+ *
+ * `baterias` conta baterias DAQUELA matéria, não do histórico: quem fez dez de
+ * Legislação e uma de Eletrônica tem uma janela recente em cada uma.
+ */
+export interface EstatisticaRecente {
+  tema: Tema;
+  /** Quantas baterias entraram na conta (0 = matéria ainda não feita). */
+  baterias: number;
+  respondidas: number;
+  acertos: number;
+  percentual: number;
+}
+
+export function estatisticasRecentesPorTema(
+  historico: Historico,
+  baterias = 3,
+): EstatisticaRecente[] {
+  return TEMAS.map((tema) => {
+    let usadas = 0;
+    let respondidas = 0;
+    let acertos = 0;
+    // `simulados` vem do mais recente para o mais antigo.
+    for (const s of historico.simulados) {
+      if (usadas >= baterias) break;
+      const doTema = s.itens.filter((i) => i.tema === tema);
+      if (doTema.length === 0) continue;
+      usadas += 1;
+      respondidas += doTema.length;
+      acertos += doTema.filter((i) => i.acertou).length;
+    }
+    return {
+      tema,
+      baterias: usadas,
+      respondidas,
+      acertos,
+      percentual: respondidas > 0 ? Math.round((acertos / respondidas) * 100) : 0,
+    };
+  });
+}
+
+export interface Frequencia {
+  /** Dias corridos desde a última bateria; null quando não há histórico. */
+  diasDesdeUltima: number | null;
+  /** Dias distintos de estudo terminando hoje ou ontem, sem buraco. */
+  diasSeguidos: number;
+}
+
+/**
+ * Há quanto tempo se estuda, e há quanto tempo não se estuda.
+ *
+ * O app não tinha noção nenhuma de retorno: o histórico guarda a data de cada
+ * bateria (`SimuladoSalvo.data`) e nada na interface a usava fora do tooltip
+ * do gráfico, que no celular não existe. Quem some por uma semana volta com as
+ * lacunas conhecidas esquecendo — é a mesma curva que o peso do sorteio já
+ * considera, e a home não dizia.
+ *
+ * A sequência aceita terminar ONTEM: cortá-la à meia-noite transformaria o
+ * número num cobrador, e o app é de estudo adulto, não de jogo diário.
+ */
+export function frequencia(
+  historico: Historico,
+  agora: Date = new Date(),
+): Frequencia {
+  const dia = (iso: string) => {
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime())
+      ? null
+      : Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  };
+  const hoje = Date.UTC(agora.getFullYear(), agora.getMonth(), agora.getDate());
+  const dias = [
+    ...new Set(
+      historico.simulados
+        .map((s) => dia(s.data))
+        .filter((d): d is number => d !== null),
+    ),
+  ].sort((a, b) => b - a);
+  if (dias.length === 0) return { diasDesdeUltima: null, diasSeguidos: 0 };
+
+  const MS = 86_400_000;
+  // Data no futuro (relógio do aparelho errado) conta como hoje.
+  const diasDesdeUltima = Math.max(0, Math.round((hoje - dias[0]) / MS));
+  if (diasDesdeUltima > 1) return { diasDesdeUltima, diasSeguidos: 0 };
+
+  let seguidos = 1;
+  for (let i = 1; i < dias.length; i++) {
+    if (Math.round((dias[i - 1] - dias[i]) / MS) !== 1) break;
+    seguidos += 1;
+  }
+  return { diasDesdeUltima, diasSeguidos: seguidos };
+}

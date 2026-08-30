@@ -20,6 +20,16 @@ export interface Desempenho {
 const MS_POR_DIA = 86_400_000;
 
 /**
+ * Dias sem rever um erro em aberto a partir dos quais ele conta como vencido.
+ *
+ * É onde a curva do esquecimento começa a cobrar, e o número já governava o
+ * empurrão no peso do sorteio. Virou constante quando a tela inicial passou a
+ * dizer quantos erros estão vencidos: o critério que a interface anuncia tem
+ * de ser o mesmo que o sorteio aplica, senão a promessa não se cumpre.
+ */
+export const DIAS_PARA_VENCER = 3;
+
+/**
  * Percorre o histórico uma vez e resume o desempenho por questão.
  *
  * `historico.simulados` vem do mais recente para o mais antigo, então o índice
@@ -83,7 +93,7 @@ export function peso(desempenho: Desempenho | undefined): number {
     // O erro ESQUECIDO vem antes do erro de hoje: três dias sem rever uma
     // lacuna conhecida é quando a curva do esquecimento começa a cobrar.
     // Somado, e não multiplicado — a escala continua suave.
-    if (diasAtras >= 3) p += 2;
+    if (diasAtras >= DIAS_PARA_VENCER) p += 2;
   } else {
     // Acertou por último. Quanto mais acertos consecutivos, menos necessária.
     const taxaErro = erros / vistas;
