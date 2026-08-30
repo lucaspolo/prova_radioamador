@@ -505,6 +505,28 @@ normativa disto (com o porquê de cada campo).
 envelhece aqui derruba a suíte, porque quem consome um dataset lê a
 documentação e acredita nela.
 
+### Viés do gabarito
+
+Num dataset de verdadeiro/falso só existem duas respostas, então qualquer
+regularidade do gabarito vira estratégia de quem responde. Duas coisas foram
+medidas:
+
+| | Situação |
+| --- | --- |
+| **Contagem** | 50,2% de verdadeiras. O equilíbrio se mantém em cada matéria, nível, origem e PDF (nenhum recorte foge de 48,9–52,3%), e nenhum trecho tem três ou mais questões de resposta única. |
+| **Comprimento** | **Defeito conhecido.** As verdadeiras são mais longas: mediana de 123 caracteres contra 103. Responder "verdadeiro" a toda afirmação com mais de 136 caracteres acerta ~60% do banco sem ler o conteúdo. |
+
+O comprimento tem causa no modo de gerar: a verdadeira parafraseia a norma com
+todas as ressalvas dela, a falsa troca um valor numa frase curta. Os prompts de
+`scripts/processar_pdfs.py` já exigem paridade de tamanho, mas o banco publicado
+foi gerado antes dessa regra — corrigi-lo exige reescrever as afirmações, e o
+`id` de cada questão é o hash da própria afirmação, então a reescrita aposenta o
+histórico de acertos guardado no navegador de quem já estuda.
+
+`testes/vies.test.ts` mede as duas coisas: trava o equilíbrio de contagem como
+requisito e o comprimento como catraca — o banco não pode piorar, e o teste
+imprime a distância que falta até o alvo.
+
 ### Antes de usar
 
 As questões são geradas por LLM e revisadas por amostragem — **em divergência, o
