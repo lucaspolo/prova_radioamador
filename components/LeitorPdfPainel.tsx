@@ -210,7 +210,10 @@ export default function LeitorPdfPainel({
         </p>
       )}
 
-      <div ref={rolagem} className="flex-1 overflow-auto bg-slate-200 p-4 dark:bg-slate-950">
+      <div
+        ref={rolagem}
+        className="flex-1 overflow-auto bg-slate-200 p-4 dark:bg-slate-950"
+      >
         <Document
           file={caminho}
           onLoadSuccess={async (pdf) => {

@@ -50,8 +50,8 @@ export default function TelaImpressao({
                 poder quebrar, estourava a tela em 111 px a 390 px — a página
                 inteira passava a rolar de lado. */}
             É a mesma bateria do link{" "}
-            <span className="font-mono break-all">{link}</span>:
-            quem faltou responde pelo celular e cai exatamente nestas questões.
+            <span className="font-mono break-all">{link}</span>: quem faltou
+            responde pelo celular e cai exatamente nestas questões.
           </p>
           <div className="mt-3 flex flex-wrap gap-3">
             <button

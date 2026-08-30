@@ -40,7 +40,7 @@ export default function ResumoDesempenho({
   return (
     <button
       onClick={onAbrir}
-      className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-300 px-4 py-3 text-left text-sm transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+      className="flex w-full items-center justify-between gap-3 rounded-xl border border-borda bg-superficie px-4 py-3 text-left text-sm transition hover:border-slate-400 dark:hover:border-slate-500"
     >
       <span className="min-w-0">
         {geral === null ? (
@@ -52,9 +52,8 @@ export default function ResumoDesempenho({
           <>Nenhum simulado ainda · importar um backup</>
         ) : (
           <>
-            {geral.simulados}{" "}
-            {geral.simulados === 1 ? "simulado" : "simulados"} ·{" "}
-            {geral.percentual}%
+            {geral.simulados} {geral.simulados === 1 ? "simulado" : "simulados"}{" "}
+            · {geral.percentual}%
             {atencao.length > 0 && (
               // A cor sozinha não diz nada: o alerta vem escrito.
               <span className="text-amber-700 dark:text-amber-300">

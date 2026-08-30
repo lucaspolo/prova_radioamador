@@ -45,8 +45,8 @@ export default function TelaDesafio({
             " Cada matéria é um exame separado, com seu cronômetro e seu mínimo."}
         </p>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          Corre em <span className="font-medium">modo prova</span>: sem
-          gabarito até o fim, com o cronômetro no ritmo oficial da Classe{" "}
+          Corre em <span className="font-medium">modo prova</span>: sem gabarito
+          até o fim, com o cronômetro no ritmo oficial da Classe{" "}
           {desafio.classe}. Sem isso, comparar os resultados não diria nada.
         </p>
       </div>

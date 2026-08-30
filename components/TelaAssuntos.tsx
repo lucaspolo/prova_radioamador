@@ -33,7 +33,11 @@ function idDoGrupo(grupo: string): string {
   );
 }
 
-export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) {
+export default function TelaAssuntos({
+  historico,
+  onEstudar,
+  onVoltar,
+}: Props) {
   const [classe, setClasse] = useState<Classe>(CLASSE_PADRAO);
   const titulo = useRef<HTMLHeadingElement>(null);
 
@@ -73,7 +77,10 @@ export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) 
           ementa de Eletrônica — a matéria que mais reprova — começava a 7,4
           telas de rolagem. Chips e não campo de busca: digitar no celular custa
           mais que tocar num de cinco. */}
-      <nav aria-label="Ir para um grupo de assuntos" className="flex flex-wrap gap-2">
+      <nav
+        aria-label="Ir para um grupo de assuntos"
+        className="flex flex-wrap gap-2"
+      >
         {[...porGrupo.entries()].map(([grupo, doGrupo]) => (
           // Botão que rola, e não link de âncora: um `<a href="#…">` faz o
           // roteador tratar a URL como navegação e remontar a página — a tela
@@ -101,8 +108,7 @@ export default function TelaAssuntos({ historico, onEstudar, onVoltar }: Props) 
           <h3 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
             {grupo}
             <span className="ml-2 font-normal normal-case tabular-nums">
-              {doGrupo.length}{" "}
-              {doGrupo.length === 1 ? "assunto" : "assuntos"}
+              {doGrupo.length} {doGrupo.length === 1 ? "assunto" : "assuntos"}
             </span>
           </h3>
           <div className="grid gap-2 sm:grid-cols-2">

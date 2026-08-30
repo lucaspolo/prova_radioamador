@@ -29,7 +29,7 @@ interface Props {
  * perdendo o `aria-pressed` que eles já usam. O padrão certo aqui é o de
  * navegação por disclosure — um botão com `aria-expanded` e um contêiner.
  *
- * O gatilho leva a palavra "Menu" ao lado do glifo. Um hambúrguer sem rótulo
+ * O gatilho leva a palavra"Menu" ao lado do glifo. Um hambúrguer sem rótulo
  * é bem menos descoberto, e a consulta rápida — que era um cartão descrito na
  * tela inicial — passou a morar aqui dentro.
  */
@@ -117,12 +117,12 @@ export default function MenuPrincipal({
           // fonte, e o `min` com `vw` impede que estoure num telefone estreito
           // quando o texto está no tamanho grande.
           // `70vh` cortava justamente o que só existe aqui: em 1280×800 a
-          // linha "Texto" virava uma fatia de 10 px, e em 320×568 com fonte
+          // linha"Texto" virava uma fatia de 10 px, e em 320×568 com fonte
           // grande o painel mostrava dois itens e meio. Agora a altura segue a
           // tela de verdade (`dvh`, que no celular desconta a barra do
           // navegador) e quem rola é a lista de destinos — tema e tamanho de
           // texto ficam presos no rodapé do painel, sempre à vista.
-          className="absolute top-full right-0 z-40 mt-2 flex max-h-[calc(100dvh-7rem)] w-[min(20rem,calc(100vw-2rem))] flex-col overscroll-contain rounded-xl border border-slate-300 bg-[var(--background)] p-4 shadow-lg dark:border-slate-700"
+          className="absolute top-full right-0 z-40 mt-2 flex max-h-[calc(100dvh-7rem)] w-[min(20rem,calc(100vw-2rem))] flex-col overscroll-contain rounded-xl border border-borda elevado p-4"
         >
           <PainelMenu
             atual={atual}
@@ -181,7 +181,7 @@ export function PainelMenu({
           detalhe="A ementa oficial da prova, o trecho do PDF que explica cada item e os documentos da Anatel para baixar."
         />
         {/* O caminho de volta. Sem ele, sair de Desempenho ou da Consulta
-            rápida exigia rolar duas telas longas até o "Voltar ao início" do
+            rápida exigia rolar duas telas longas até o"Voltar ao início" do
             rodapé — e o menu, que é a navegação do app, só levava para longe. */}
         <ItemMenu
           ativo={atual === "inicio"}
@@ -205,7 +205,7 @@ export function PainelMenu({
 
       {/* Fora do que rola: são a razão de o menu existir para quem já sabe
           onde ficam as telas, e eram os primeiros a sumir. */}
-      <div className="mt-4 shrink-0 border-t border-slate-200 pt-3 dark:border-slate-800">
+      <div className="mt-4 shrink-0 border-t border-borda pt-3">
         <Preferencias />
       </div>
     </>
@@ -231,7 +231,7 @@ function ItemMenu({
   const estilo = `block w-full rounded-xl border-2 px-4 py-3 text-left transition ${
     ativo
       ? "border-slate-900 dark:border-slate-100"
-      : "border-slate-300 hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
+      : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
   }`;
 
   const conteudo = (

@@ -65,7 +65,9 @@ export default function TelaIntervalo({
             : "border-rose-500 bg-rose-50 dark:bg-rose-950/40"
         }`}
       >
-        <div className={`text-xs font-semibold uppercase ${COR_TEMA[tema].texto}`}>
+        <div
+          className={`text-xs font-semibold uppercase ${COR_TEMA[tema].texto}`}
+        >
           {ROTULO_CURTO[tema]} — concluída
         </div>
         <div className="mt-3 text-5xl font-bold">
@@ -91,10 +93,7 @@ export default function TelaIntervalo({
             ? `${acertos - minimo} de folga sobre o mínimo de ${minimo} de ${respostas.length}.`
             : `${minimo - acertos} ${minimo - acertos === 1 ? "acerto faltou" : "acertos faltaram"} para o mínimo de ${minimo} de ${respostas.length}.`}
         </p>
-        <AvisoEmBranco
-          naoRespondidas={naoRespondidas}
-          motivoFim={motivoFim}
-        />
+        <AvisoEmBranco naoRespondidas={naoRespondidas} motivoFim={motivoFim} />
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {respostas.length === formato.questoes
             ? `Critério oficial da Classe ${classe}.`
@@ -103,7 +102,7 @@ export default function TelaIntervalo({
         </p>
       </div>
 
-      <div className="rounded-xl border border-slate-300 p-5 text-center dark:border-slate-700">
+      <div className="rounded-xl border border-borda bg-superficie p-5 text-center">
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Próxima matéria:{" "}
           <strong className={COR_TEMA[proximoTema].texto}>

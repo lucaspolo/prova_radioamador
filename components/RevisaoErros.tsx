@@ -25,7 +25,7 @@ export default function RevisaoErros({ itens }: { itens: Resposta[] }) {
         return (
           <div
             key={r.questao.id}
-            className="rounded-xl border border-slate-300 p-4 dark:border-slate-700"
+            className="rounded-xl border border-borda bg-superficie p-4"
           >
             <div className="mb-2 flex items-center justify-between gap-2">
               <span

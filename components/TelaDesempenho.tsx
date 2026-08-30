@@ -91,7 +91,7 @@ export default function TelaDesempenho({
           dados entram no primeiro efeito. */}
       {!carregado ? null : geral.simulados === 0 ? (
         <section className="space-y-4">
-          <div className="rounded-xl border border-dashed border-slate-300 p-5 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <div className="rounded-xl border border-dashed border-borda p-5 text-center text-sm text-slate-500 dark:text-slate-400">
             Seu desempenho por matéria aparece aqui depois do primeiro simulado.
           </div>
           {/* Quem chega num aparelho novo precisa do importar ANTES do primeiro
@@ -103,7 +103,7 @@ export default function TelaDesempenho({
           />
         </section>
       ) : (
-        <section className="space-y-5 rounded-xl border border-slate-300 p-5 dark:border-slate-700">
+        <section className="space-y-5 rounded-xl border border-borda bg-superficie p-5">
           <div className="flex items-baseline justify-between">
             <h3 className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
               Por matéria
@@ -165,16 +165,16 @@ export default function TelaDesempenho({
             <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
               Abaixo da linha de corte:{" "}
               <strong>
-                {atencao.map((e) => ROTULO_CURTO[e.tema]).join(", ")}
+                {atencao.map((e) => ROTULO_CURTO[e.tema]).join(",")}
               </strong>
               . É onde o estudo rende mais agora.
             </p>
           )}
 
-          {/* "Passaria hoje?", na forma honesta: fatos da janela recente por
+          {/*"Passaria hoje?", na forma honesta: fatos da janela recente por
               matéria contra o corte da classe — a prova exige o mínimo nas
               TRÊS, e é a mais fraca que decide. Treino com gabarito imediato
-              não é prova cega, então o texto diz o que aconteceu, nunca "você
+              não é prova cega, então o texto diz o que aconteceu, nunca"você
               passaria". */}
           <div>
             <h4 className="mb-2 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
@@ -218,7 +218,7 @@ export default function TelaDesempenho({
           </div>
 
           {/* O sorteio ponderado não garante visitar o banco inteiro; este
-              número transforma "será que já vi tudo?" em plano — o modo "só
+              número transforma"será que já vi tudo?" em plano — o modo"só
               inéditas" da tela inicial fecha o resto. A classe é a preferida
               (a mesma da tela inicial), lida no efeito como todo storage. */}
           <div>
@@ -243,7 +243,7 @@ export default function TelaDesempenho({
           <Evolucao historico={historico} />
           <Suspeitas suspeitas={suspeitas} />
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-200 pt-3 dark:border-slate-800">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-borda pt-3">
             <ExportarImportar
               historico={historico}
               onImportar={onImportar}

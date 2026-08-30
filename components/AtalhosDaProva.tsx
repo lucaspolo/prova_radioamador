@@ -12,12 +12,12 @@ import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
  */
 export default function AtalhosDaProva() {
   return (
-    <section className="rounded-xl border border-slate-300 p-4 dark:border-slate-700">
+    <section className="rounded-xl border border-borda bg-superficie p-4">
       <h3 className="font-semibold">A prova em si</h3>
       <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-        Não há questão sobre o procedimento do exame — a ementa cobra o
-        serviço, não o processo de se inscrever nele. Mas está tudo no material
-        oficial: cada atalho abre a página que responde.
+        Não há questão sobre o procedimento do exame — a ementa cobra o serviço,
+        não o processo de se inscrever nele. Mas está tudo no material oficial:
+        cada atalho abre a página que responde.
       </p>
 
       <ul className="mt-3 divide-y divide-slate-200 dark:divide-slate-800">

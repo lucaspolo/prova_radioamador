@@ -181,11 +181,12 @@ export default function TelaResultadoProva({
       </section>
 
       {desafio && (
-        <div className="rounded-xl border border-slate-300 p-4 text-sm dark:border-slate-700">
+        <div className="rounded-xl border border-borda bg-superficie p-4 text-sm">
           <div>
             Desafio{" "}
             <span className="font-mono font-bold">{desafio.semente}</span> ·
-            bateria <span className="font-mono font-bold">{desafio.codigo}</span>
+            bateria{" "}
+            <span className="font-mono font-bold">{desafio.codigo}</span>
           </div>
           <p className="mt-1 text-slate-500 dark:text-slate-400">
             Compare com quem abriu o mesmo link. Código de bateria diferente

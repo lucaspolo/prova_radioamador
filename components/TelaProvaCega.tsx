@@ -193,7 +193,8 @@ export default function TelaProvaCega({
             navegação livre torna fácil de perder — o cartão, por `aria-live`,
             anuncia só a afirmação. */}
         <h2 ref={titulo} tabIndex={-1} className="sr-only">
-          Questão {indice + 1} de {questoes.length} — {ROTULO_CURTO[questao.tema]}
+          Questão {indice + 1} de {questoes.length} —{" "}
+          {ROTULO_CURTO[questao.tema]}
           {escolhida === null
             ? ", em branco"
             : escolhida
@@ -234,7 +235,9 @@ export default function TelaProvaCega({
         className={`rounded-2xl border-2 p-6 ${cor.borda} ${cor.fundo}`}
         aria-live="polite"
       >
-        <div className={`mb-4 flex items-center justify-between text-xs font-semibold uppercase ${cor.texto}`}>
+        <div
+          className={`mb-4 flex items-center justify-between text-xs font-semibold uppercase ${cor.texto}`}
+        >
           <span>{ROTULO_CURTO[questao.tema]}</span>
           {marcadas.has(indice) && (
             <span className="text-amber-700 dark:text-amber-400">
