@@ -101,7 +101,7 @@ function TextoDoTrecho({
   return (
     <div className="mt-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <span className="rotulo-secao">
           Trecho de origem ·{" "}
           {trecho.fim > trecho.pagina
             ? `páginas ${trecho.pagina}–${trecho.fim}`

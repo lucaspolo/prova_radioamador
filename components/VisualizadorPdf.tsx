@@ -7,6 +7,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "@/lib/pdf-worker";
 import type { Origem } from "@/lib/tipos";
+import Icone from "./Icone";
 
 interface Props {
   caminho: string;
@@ -145,14 +146,14 @@ export default function VisualizadorPdf({
             desabilitado={pagina <= 1}
             rotulo="Página anterior"
           >
-            ‹
+            <Icone nome="seta-esquerda" className="h-5 w-5" />
           </Controle>
           <Controle
             onClick={() => irPara(pagina + 1)}
             desabilitado={pagina >= totalPaginas}
             rotulo="Próxima página"
           >
-            ›
+            <Icone nome="seta-direita" className="h-5 w-5" />
           </Controle>
           <Controle
             onClick={() => setZoom((z) => Math.max(z - 0.25, ZOOM_MIN))}

@@ -97,7 +97,7 @@ export default function TelaResultadoProva({
             : "border-rose-500 bg-rose-50 dark:bg-rose-950/40"
         }`}
       >
-        <div className="text-xs font-semibold tracking-wide uppercase opacity-70">
+        <div className="rotulo-secao">
           {provaCompleta ? "Prova completa" : `${materias.length} matérias`} —
           Classe {classe}
         </div>
@@ -120,7 +120,7 @@ export default function TelaResultadoProva({
       {gravacaoRecusada && <AvisoGravacaoRecusada />}
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <h2 className="rotulo-secao mb-3">
           Resultado por matéria
         </h2>
         <div

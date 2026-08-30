@@ -2,6 +2,7 @@
 
 import { PERCENTUAL_CORTE, ROTULO_CURTO } from "@/lib/constantes";
 import { estatisticasPorTema, resumo, type Historico } from "@/lib/historico";
+import Icone from "./Icone";
 
 interface Props {
   historico: Historico;
@@ -58,7 +59,7 @@ export default function ResumoDesempenho({
               // A cor sozinha não diz nada: o alerta vem escrito.
               <span className="text-amber-700 dark:text-amber-300">
                 {" · "}
-                <span aria-hidden>⚠ </span>
+                <Icone nome="alerta" className="mr-1 h-3.5 w-3.5 align-[-2px]" />
                 {atencao.length === 1
                   ? `${ROTULO_CURTO[atencao[0].tema]} abaixo do corte`
                   : `${atencao.length} matérias abaixo do corte`}
@@ -68,7 +69,7 @@ export default function ResumoDesempenho({
         )}
       </span>
       <span aria-hidden className="shrink-0 text-slate-400">
-        ›
+        <Icone nome="seta-direita" className="h-4 w-4" />
       </span>
     </button>
   );

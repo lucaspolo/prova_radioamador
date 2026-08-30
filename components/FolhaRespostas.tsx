@@ -1,6 +1,7 @@
 "use client";
 
 import type { Escolhas } from "@/lib/bateria";
+import Icone from "./Icone";
 
 interface Props {
   escolhas: Escolhas;
@@ -37,7 +38,10 @@ export default function FolhaRespostas({
           em branco
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="text-amber-700 dark:text-amber-400">⚑</span>
+          <Icone
+            nome="bandeira"
+            className="h-3 w-3 text-amber-700 dark:text-amber-400"
+          />
           marcada
         </span>
       </div>
@@ -76,7 +80,7 @@ export default function FolhaRespostas({
                   aria-hidden="true"
                   className="absolute -top-1 -right-1 text-amber-700 dark:text-amber-400"
                 >
-                  ⚑
+                  <Icone nome="bandeira" className="h-3 w-3" />
                 </span>
               )}
             </button>

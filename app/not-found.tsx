@@ -16,7 +16,7 @@ export default function NaoEncontrada() {
       id="conteudo"
       className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-4 py-16"
     >
-      <p className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+      <p className="rotulo-secao">
         Erro 404
       </p>
       <h1 className="mt-2 text-2xl font-bold tracking-tight">

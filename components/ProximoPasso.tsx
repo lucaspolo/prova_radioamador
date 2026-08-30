@@ -34,7 +34,7 @@ export default function ProximoPasso({
 
   return (
     <section className="nao-imprimir">
-      <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+      <h2 className="rotulo-secao mb-3">
         E agora?
       </h2>
       {children}

@@ -20,6 +20,7 @@ import TelaDesafio from "@/components/TelaDesafio";
 import TelaImpressao from "@/components/TelaImpressao";
 import CartaoRetomar from "@/components/CartaoRetomar";
 import Antena from "@/components/Antena";
+import Icone from "@/components/Icone";
 import { useHistorico } from "@/hooks/useHistorico";
 import { foiSaidaDaGuarda } from "@/hooks/useGuardaDeSaida";
 import {
@@ -613,7 +614,13 @@ export default function Home() {
                 Ementa oficial e PDFs da{" "}
                 {/* O "›" preso à última palavra: solto, ele caía sozinho numa
                     linha só para ele a 320 px. */}
-                <span className="whitespace-nowrap">Anatel ›</span>
+                <span className="whitespace-nowrap">
+                  Anatel
+                  <Icone
+                    nome="seta-direita"
+                    className="ml-0.5 h-3.5 w-3.5 align-[-2px]"
+                  />
+                </span>
               </Link>
             </p>
           )}

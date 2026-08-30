@@ -4,6 +4,7 @@ import { localizarPassagem } from "@/lib/trechos";
 import type { Revisao, Veredito } from "@/lib/conferencia";
 import type { Triagem } from "@/lib/triagem";
 import type { Questao, Trecho } from "@/lib/tipos";
+import Icone from "./Icone";
 
 interface Props {
   questao: Questao;
@@ -88,7 +89,7 @@ export default function ItemConferencia({
                 : "border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
             }`}
           >
-            {v === "P" ? "⚑" : v}
+            {v === "P" ? <Icone nome="bandeira" className="h-3.5 w-3.5" /> : v}
           </button>
         ))}
 
@@ -198,7 +199,7 @@ export default function ItemConferencia({
             </p>
           ) : passagem ? (
             <div>
-              <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+              <p className="rotulo-secao">
                 Texto original
               </p>
               <pre className="mt-1 max-h-48 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-2 text-[12px] leading-relaxed whitespace-pre-wrap dark:border-slate-800 dark:bg-slate-950">

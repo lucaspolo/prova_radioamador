@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSuspeitas } from "@/hooks/useSuspeitas";
 import { BANCO } from "@/lib/questoes";
 import { urlDeReporte } from "@/lib/reportar";
+import Icone from "./Icone";
 
 /**
  * As questões que o usuário marcou como suspeitas durante o estudo.
@@ -28,7 +29,10 @@ export default function Suspeitas({
         onClick={() => setAberto((a) => !a)}
         className="flex w-full items-center justify-between text-sm font-medium text-amber-700 dark:text-amber-300"
       >
-        <span>⚑ Questões marcadas como suspeitas ({suspeitas.ids.length})</span>
+        <span>
+          <Icone nome="bandeira" className="mr-1 h-3.5 w-3.5 align-[-2px]" />
+          Questões marcadas como suspeitas ({suspeitas.ids.length})
+        </span>
         <span aria-hidden>{aberto ? "▴" : "▾"}</span>
       </button>
       {aberto && (

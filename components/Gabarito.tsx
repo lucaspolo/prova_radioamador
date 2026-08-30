@@ -28,7 +28,7 @@ export default function Gabarito({
     if (erradas.length === 0) return null;
     return (
       <section>
-        <h2 className="mb-3 text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <h2 className="rotulo-secao mb-3">
           {tituloErros} ({erradas.length})
         </h2>
         <RevisaoErros itens={erradas} />
@@ -41,7 +41,7 @@ export default function Gabarito({
   return (
     <section>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <h2 className="rotulo-secao">
           Gabarito
         </h2>
         <div className="flex flex-wrap gap-1.5 text-xs">

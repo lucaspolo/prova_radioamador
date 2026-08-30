@@ -21,7 +21,7 @@ export default function TelaDesafio({
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border-2 border-slate-900 p-6 dark:border-slate-100">
-        <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <div className="rotulo-secao">
           Desafio recebido
         </div>
         <h2 className="mt-1 text-2xl font-bold">
