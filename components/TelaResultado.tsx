@@ -24,6 +24,14 @@ interface Props {
    * assunto, quanto da seção você já domina.
    */
   modo?: "prova" | "revisao" | "assunto";
+  /**
+   * Volta à lista de assuntos (só no modo assunto).
+   *
+   * Terminar um assunto largava o candidato na home: quem queria fazer três
+   * seguidos reabria a lista de dez telas três vezes e rolava de novo até
+   * onde estava.
+   */
+  onOutroAssunto?: () => void;
   /** Bateria feita no modo cego: o gabarito abre completo. */
   cega?: boolean;
   motivoFim?: MotivoFim;
@@ -63,6 +71,7 @@ export default function TelaResultado({
   onEstudarAssunto,
   restantesRevisao = 0,
   onContinuarRevisao,
+  onOutroAssunto,
 }: Props) {
   const formato = FORMATO[classe];
   const corte = percentualAprovacao(classe);
@@ -144,7 +153,18 @@ export default function TelaResultado({
         onClick: onRefazer,
       });
     }
-    if (onEstudarAssunto) {
+    // No modo assunto, o passo natural é o assunto seguinte — e ele vem
+    // primeiro, à frente do "Refazer": quem esgotou uma seção do material
+    // quer a próxima, não a mesma de novo.
+    if (modo === "assunto" && onOutroAssunto) {
+      passosEstudo.unshift({
+        rotulo: "Escolher outro assunto",
+        detalhe:
+          "Volta à lista de seções, com este assunto já contando no seu desempenho.",
+        onClick: onOutroAssunto,
+      });
+    }
+    if (onEstudarAssunto && modo !== "assunto") {
       passosEstudo.push({
         rotulo: "Estudar por assunto",
         detalhe:
@@ -192,7 +212,7 @@ export default function TelaResultado({
 
         <button
           onClick={onReiniciar}
-          className="nao-imprimir w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
+          className="nao-imprimir w-full rounded-xl border-2 border-slate-300 px-6 py-4 font-semibold transition hover:border-slate-400 dark:border-slate-700 dark:hover:border-slate-500"
         >
           Voltar ao início
         </button>
@@ -286,7 +306,11 @@ export default function TelaResultado({
         onClick={onReiniciar}
         className="nao-imprimir w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
       >
-        Novo simulado
+        {/* Dizia "Novo simulado" e voltava à home com tudo por escolher —
+            quem esperava repetir a configuração reconfigurava do zero. Repetir
+            já existe, com esse nome, no "E agora?" logo acima ("Refazer"); a
+            saída daqui é a home, e agora o rótulo diz isso. */}
+        Voltar ao início
       </button>
     </div>
   );
