@@ -65,7 +65,7 @@ export default function CartaoRetomar({
       <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
         <button
           onClick={onRetomar}
-          className="rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+          className="rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
         >
           Continuar de onde parou
         </button>

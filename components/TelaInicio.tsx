@@ -167,7 +167,7 @@ export default function TelaInicio({
                 aria-pressed={classe === c}
                 className={`min-w-0 flex-1 rounded-xl border-2 px-1.5 py-2.5 transition sm:px-3 sm:py-3 ${
                   classe === c
-                    ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+                    ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
                     : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
                 }`}
               >
@@ -271,7 +271,7 @@ export default function TelaInicio({
                 disabled={n > total}
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
                   quantidade === n
-                    ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+                    ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
                     : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
                 }`}
               >
@@ -432,7 +432,7 @@ export default function TelaInicio({
           onClick={() =>
             onIniciar(escolhas, limite, classe, cronometrar, cego, soIneditas)
           }
-          className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+          className="w-full rounded-xl bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
         >
           Iniciar {cego ? "modo prova" : "modo treino"} · {limite} questões
           {escolhas.length > 1 && ` × ${escolhas.length} matérias`}
@@ -522,7 +522,7 @@ function BotaoRegime({
       aria-pressed={ativo}
       className={`rounded-xl border-2 p-4 text-left transition ${
         ativo
-          ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+          ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
           : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
       }`}
     >
@@ -575,9 +575,11 @@ function BotaoTema({
       onClick={onClick}
       aria-pressed={ativo}
       className={`rounded-xl border-2 p-4 text-left transition ${classes} ${
-        ativo
-          ? "ring-2 ring-slate-900 ring-offset-2 ring-offset-[var(--background)] dark:ring-slate-100"
-          : "hover:bg-current/5"
+        // Sem `ring`: o anel repetia a forma do anel de foco do teclado, e a
+        // matéria escolhida virava um alvo de tiro — borda colorida, vão
+        // branco e anel preto. A seleção agora é o fundo do próprio tema mais
+        // a caixa marcada, que é o que diz "dá para marcar mais de uma".
+        ativo ? "border-current" : "hover:bg-current/5"
       }`}
     >
       {/* A caixa de seleção é o que diz "pode marcar mais de uma": os cartões
