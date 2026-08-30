@@ -145,9 +145,7 @@ function SeletorClasse({
 }) {
   return (
     <section>
-      <h2 className="rotulo-secao mb-2">
-        Classe
-      </h2>
+      <h2 className="rotulo-secao mb-2">Classe</h2>
       <div className="flex gap-2">
         {CLASSES.map((c) => (
           <button
@@ -202,9 +200,7 @@ function ListaDeBlocos({
     <>
       {[...porTema.entries()].map(([tema, doTema]) => (
         <section key={tema}>
-          <h2 className="rotulo-secao mb-3">
-            {ROTULO_CURTO[tema]}
-          </h2>
+          <h2 className="rotulo-secao mb-3">{ROTULO_CURTO[tema]}</h2>
           <div className="space-y-5">
             {doTema.map((bloco) => (
               <Bloco
@@ -236,9 +232,10 @@ function Bloco({
           empurraria os títulos dos tópicos para <h4> só nos blocos que o
           mostram — a hierarquia mudaria de matéria para matéria. */}
       {mostrarTitulo && (
-        <p className="mb-2 text-xs font-medium tracking-wide text-slate-400 dark:text-slate-500">
-          {bloco.titulo}
-        </p>
+        // slate-400/500 media 2,51:1 no claro e 3,95:1 no escuro — os dois
+        // abaixo dos 4,5:1 de AA. `rotulo-secao` é o degrau que o resto do app
+        // já usa para esta mesma ideia, e passa nos dois temas.
+        <p className="rotulo-secao mb-2">{bloco.titulo}</p>
       )}
 
       {bloco.cumulativo && (
@@ -375,9 +372,7 @@ function MaterialOficial() {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="rotulo-secao">
-          Material oficial
-        </h2>
+        <h2 className="rotulo-secao">Material oficial</h2>
         <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
           Os documentos publicados pela Anatel, como saíram dela. Todo o app —
           questões, tabelas e a ementa abaixo — sai destes {arquivos.length}{" "}

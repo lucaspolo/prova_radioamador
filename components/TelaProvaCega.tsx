@@ -254,6 +254,11 @@ export default function TelaProvaCega({
 
       {/* Resposta — os botões ficam marcados, não somem: dá para ver o que foi
           respondido ao voltar numa questão. */}
+      {/* `disabled:opacity-40` deixava o "Anterior" da questão 1 a 2,53:1 — a
+          WCAG isenta controle desabilitado do critério de contraste, mas um
+          botão que não dá para ver não informa nem que existe, e é ele que diz
+          "você está no começo". A 60% chega a ~4,6:1 e continua lendo como
+          apagado ao lado do irmão ativo. */}
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => responder(true)}
@@ -293,7 +298,7 @@ export default function TelaProvaCega({
         <button
           onClick={() => responder(null)}
           disabled={escolhida === null}
-          className="alvo-toque -mx-2 rounded-lg px-2 text-slate-500 underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400"
+          className="alvo-toque -mx-2 rounded-lg px-2 text-slate-500 underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-400"
         >
           Limpar resposta
         </button>
@@ -318,7 +323,7 @@ export default function TelaProvaCega({
         <button
           onClick={() => ir(indice - 1)}
           disabled={indice === 0}
-          className="rounded-xl border-2 border-slate-300 py-3 font-semibold transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-slate-500"
+          className="rounded-xl border-2 border-slate-300 py-3 font-semibold transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:hover:border-slate-500"
         >
           <Icone nome="seta-esquerda" className="mr-1 h-4 w-4 align-[-3px]" />
           Anterior
@@ -326,7 +331,7 @@ export default function TelaProvaCega({
         <button
           onClick={() => ir(indice + 1)}
           disabled={indice + 1 >= questoes.length}
-          className="rounded-xl border-2 border-slate-300 py-3 font-semibold transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-slate-500"
+          className="rounded-xl border-2 border-slate-300 py-3 font-semibold transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:hover:border-slate-500"
         >
           Próxima
           <Icone nome="seta-direita" className="ml-1 h-4 w-4 align-[-3px]" />

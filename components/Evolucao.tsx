@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  COR_TEMA,
-  PERCENTUAL_CORTE,
-  ROTULO_CURTO,
-  TEMAS,
-} from "@/lib/constantes";
+import { COR_TEMA, ROTULO_CURTO, TEMAS } from "@/lib/constantes";
 import type { Historico } from "@/lib/historico";
 import type { Tema } from "@/lib/tipos";
 
@@ -42,7 +37,14 @@ function seriePorTema(historico: Historico, tema: Tema): Ponto[] {
  * rótulo em texto de cada linha (nunca só na cor), e a escala 0–100 fixa faz as
  * três serem comparáveis entre si e com a linha de corte tracejada.
  */
-export default function Evolucao({ historico }: { historico: Historico }) {
+export default function Evolucao({
+  historico,
+  corte,
+}: {
+  historico: Historico;
+  /** O mesmo corte marcado nas barras acima — os dois gráficos leem a mesma linha. */
+  corte: number;
+}) {
   const series = TEMAS.map((tema) => ({
     tema,
     pontos: seriePorTema(historico, tema),
@@ -60,8 +62,7 @@ export default function Evolucao({ historico }: { historico: Historico }) {
   return (
     <div>
       <div className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-        Evolução — últimas baterias de cada matéria (linha tracejada ={" "}
-        {PERCENTUAL_CORTE}%)
+        Evolução — últimas baterias de cada matéria (linha tracejada = {corte}%)
       </div>
       <div className="space-y-3">
         {series.map(({ tema, pontos }) => (
@@ -81,11 +82,15 @@ export default function Evolucao({ historico }: { historico: Historico }) {
               <line
                 x1={X0}
                 x2={X1}
-                y1={y(PERCENTUAL_CORTE)}
-                y2={y(PERCENTUAL_CORTE)}
+                y1={y(corte)}
+                y2={y(corte)}
                 strokeDasharray="3 3"
                 vectorEffect="non-scaling-stroke"
-                className="stroke-slate-400 dark:stroke-slate-600"
+                /* Era slate-400/600: 2,63:1 no claro e 2,27:1 no escuro, abaixo
+                   dos 3:1 da WCAG 1.4.11 para elemento gráfico — no tema
+                   escuro o tracejado praticamente sumia, e é ele que diz se a
+                   linha da matéria está por cima ou por baixo do corte. */
+                className="stroke-slate-600 dark:stroke-slate-300"
                 strokeWidth="1"
               />
               <polyline

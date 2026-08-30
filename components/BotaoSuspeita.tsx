@@ -31,7 +31,7 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
         className={`alvo-toque -mx-2 mt-1 rounded-lg px-2 text-left text-xs underline-offset-2 hover:underline ${
           marcada
             ? "font-medium text-amber-700 dark:text-amber-400"
-            : "text-slate-500 dark:text-slate-400"
+            : "text-slate-600 dark:text-slate-400"
         }`}
       >
         <Icone nome="bandeira" className="mr-1 h-3.5 w-3.5 align-[-2px]" />
@@ -44,7 +44,7 @@ export default function BotaoSuspeita({ questao }: { questao: Questao }) {
           href={urlDeReporte(questao)}
           target="_blank"
           rel="noreferrer"
-          className="alvo-toque -mx-2 rounded-lg px-2 text-xs text-slate-500 underline underline-offset-2 dark:text-slate-400"
+          className="alvo-toque -mx-2 rounded-lg px-2 text-xs text-slate-600 underline underline-offset-2 dark:text-slate-400"
         >
           Reportar o erro — abre um formulário já preenchido, sem login
         </a>

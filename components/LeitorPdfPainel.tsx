@@ -283,7 +283,7 @@ function Controle({
       disabled={desabilitado}
       aria-label={rotulo}
       title={rotulo}
-      className="h-7 w-7 rounded-lg border border-slate-300 text-sm leading-none hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-700 dark:hover:bg-slate-800"
+      className="h-7 w-7 rounded-lg border border-slate-300 text-sm leading-none hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:hover:bg-slate-800"
     >
       {children}
     </button>

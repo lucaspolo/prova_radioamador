@@ -247,6 +247,13 @@ const PROPS_INICIO = {
     "aponta o trecho do material que cobre o item",
     html.includes("Cartilha do Radioamador"),
   );
+  // O rótulo dos blocos de Eletrônica usava slate-400/500: 2,51:1 no claro e
+  // 3,95:1 no escuro, os dois abaixo dos 4,5:1 de AA. É o mesmo degrau de
+  // rótulo do resto do app, e agora usa a classe dele.
+  checar(
+    "os rótulos de bloco passam em AA nos dois temas",
+    !html.includes("text-slate-400 dark:text-slate-500"),
+  );
   checar(
     "leva à bateria do assunto",
     html.includes("assunto=tec-antenas") && /Treinar/.test(html),
@@ -1095,6 +1102,30 @@ const PROPS_INICIO = {
     !comDados.includes("você passaria") && !comDados.includes("Passaria"),
   );
   checar("mostra a cobertura do banco", comDados.includes("Cobertura do banco"));
+  // A marca de corte é a informação central desta tela — "passei nesta
+  // matéria?" —, e era um fio de 1px a 60% de opacidade DENTRO da trilha, que
+  // media 2,1 a 3,2:1 sobre as barras (a WCAG 1.4.11 pede 3:1 para elemento
+  // gráfico). Cor cheia, 2px e saindo da trilha em cima e embaixo.
+  checar(
+    "a marca de corte é opaca e tem 2 px",
+    comDados.includes("w-0.5") &&
+      comDados.includes("bg-slate-900 dark:bg-white") &&
+      !comDados.includes("bg-slate-900/60"),
+  );
+  // Com a marca legível, a legenda para de precisar de três linhas dizendo
+  // qual traço é qual.
+  checar(
+    "a legenda do corte cabe em uma frase",
+    comDados.includes("A marca vertical é o corte da Classe B: 11 de 20 (55%).") &&
+      !comDados.includes("A e C aprovam com"),
+  );
+  // O tracejado do sparkline media 2,63:1 no claro e 2,27:1 no escuro — no
+  // tema escuro ele praticamente sumia, e é ele que diz se a linha da matéria
+  // está por cima ou por baixo do corte.
+  checar(
+    "o tracejado do corte tem contraste nos dois temas",
+    !comDados.includes("stroke-slate-400 dark:stroke-slate-600"),
+  );
 
   // Acima do corte, sem alerta.
   const forte = sortearSimulado("Legislação de Telecomunicações", 20);
@@ -1409,6 +1440,15 @@ const PROPS_INICIO = {
   checar(
     "a área de toque existe e vale 44 px",
     /@utility alvo-toque \{[^}]*min-height: 2\.75rem/.test(css),
+  );
+  // O tom de rótulo era o slate-500: 4,86:1 sobre o branco da superfície, ou
+  // seja 0,36 de margem sobre o mínimo de AA — margem que evaporava assim que
+  // o rótulo caía num cartão tinto (4,33:1 sobre o rose-50 do feedback e o
+  // emerald-50 do veredito). Agora é o mesmo tom do apoio, como já era no
+  // tema escuro.
+  checar(
+    "o tom de rótulo tem margem sobre AA em qualquer superfície",
+    /--texto-3: #475569/.test(css) && !/--texto-3: #64748b/.test(css),
   );
 
   /** A classe do primeiro controle cujo texto contém o rótulo. */

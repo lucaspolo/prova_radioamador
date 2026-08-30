@@ -417,7 +417,7 @@ export default function TelaConferencia() {
               onClick={() => setFiltro(f.chave)}
               className={`rounded-lg px-2 py-1 text-xs ${
                 filtro === f.chave
-                  ? "bg-sky-600 text-white"
+                  ? "bg-sky-700 text-white"
                   : "border border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
               }`}
             >
@@ -472,7 +472,7 @@ export default function TelaConferencia() {
           <button
             onClick={baixar}
             title="Baixa os achados para virarem conserto, e junto a revisão inteira — é este arquivo que se leva para continuar em outro computador."
-            className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700"
+            className="rounded-lg bg-sky-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-800"
           >
             Baixar revisão
           </button>

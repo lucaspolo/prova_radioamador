@@ -269,7 +269,7 @@ export default function TelaInicio({
                 onClick={() => setQuantidade(n)}
                 aria-pressed={quantidade === n}
                 disabled={n > total}
-                className={`alvo-toque rounded-lg border px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                className={`alvo-toque rounded-lg border px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
                   quantidade === n
                     ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
                     : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
@@ -446,7 +446,7 @@ export default function TelaInicio({
         <button
           onClick={() => onRevisar(classe)}
           disabled={errosAbertos === 0}
-          className="rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-slate-500"
+          className="group rounded-xl border-2 border-slate-300 px-4 py-3 text-left transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:hover:border-slate-500"
         >
           <div className="font-semibold">
             Revisar erros
@@ -456,7 +456,11 @@ export default function TelaInicio({
               </span>
             )}
           </div>
-          <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          {/* Desabilitado, esta linha é a ÚNICA coisa que o botão tem a dizer
+              — é ela que explica por que ele está apagado. Sob a opacidade do
+              estado, o cinza de apoio caía para 2,26:1; sem ele, sobe para os
+              mesmos 4,63:1 do título. */}
+          <div className="mt-0.5 text-sm text-slate-500 group-disabled:text-[color:var(--foreground)] dark:text-slate-400">
             {errosAbertos === 0
               ? "Nenhum erro em aberto — errou, aparece aqui."
               : errosAbertos > LOTE_REVISAO
@@ -493,11 +497,7 @@ export default function TelaInicio({
 
 /** Cabeçalho de campo: o mesmo rótulo curto em toda a configuração. */
 function Rotulo({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="rotulo-secao mb-2">
-      {children}
-    </h2>
-  );
+  return <h2 className="rotulo-secao mb-2">{children}</h2>;
 }
 
 /**
@@ -612,7 +612,10 @@ function BotaoTema({
         </span>
         {titulo}
       </div>
-      <div className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+      {/* slate-600 e não -500: sobre o fundo tinto da matéria escolhida
+          (`bg-sky-50` e companhia) o -500 media 4,47:1 — passava sobre o fundo
+          da página e reprovava dentro do cartão selecionado. */}
+      <div className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
         {detalhe}
       </div>
     </button>

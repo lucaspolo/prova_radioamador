@@ -142,7 +142,13 @@ export interface EstiloTema {
   fundo: string;
   borda: string;
   barra: string;
-  /** Stroke de SVG, para o sparkline de evolução. */
+  /**
+   * Stroke de SVG, para o sparkline de evolução.
+   *
+   * Tem par para o escuro porque a linha é elemento gráfico e precisa dos 3:1
+   * da WCAG 1.4.11 contra o fundo do cartão: no escuro, `stroke-violet-600`
+   * media 2,91:1 e a série de Técnica ficava mais apagada que as outras duas.
+   */
   linha: string;
 }
 
@@ -152,14 +158,14 @@ export const COR_TEMA: Record<Tema, EstiloTema> = {
     fundo: "bg-sky-50 dark:bg-sky-950/40",
     borda: "border-sky-300 dark:border-sky-800",
     barra: "bg-sky-600",
-    linha: "stroke-sky-600",
+    linha: "stroke-sky-600 dark:stroke-sky-400",
   },
   "Técnica e ética operacional": {
     texto: "text-violet-700 dark:text-violet-300",
     fundo: "bg-violet-50 dark:bg-violet-950/40",
     borda: "border-violet-300 dark:border-violet-800",
     barra: "bg-violet-600",
-    linha: "stroke-violet-600",
+    linha: "stroke-violet-600 dark:stroke-violet-400",
   },
   // Teal, e não âmbar: o âmbar já era a cor de "atenção" (abaixo do corte) e
   // de "marcada para revisar". Na tela de desempenho, a barra da matéria e o
@@ -170,7 +176,7 @@ export const COR_TEMA: Record<Tema, EstiloTema> = {
     fundo: "bg-teal-50 dark:bg-teal-950/40",
     borda: "border-teal-300 dark:border-teal-800",
     barra: "bg-teal-600",
-    linha: "stroke-teal-600",
+    linha: "stroke-teal-600 dark:stroke-teal-400",
   },
 };
 
