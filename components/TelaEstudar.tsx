@@ -126,7 +126,7 @@ export default function TelaEstudar() {
           </p>
           <Link
             href="/"
-            className="mt-4 block w-full rounded-xl bg-slate-900 px-6 py-4 text-center font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+            className="mt-4 block w-full rounded-xl bg-slate-900 px-6 py-4 text-center font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
           >
             Começar uma bateria
           </Link>
@@ -156,7 +156,7 @@ function SeletorClasse({
             aria-pressed={classe === c}
             className={`flex-1 rounded-xl border-2 px-3 py-3 transition ${
               classe === c
-                ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+                ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
                 : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
             }`}
           >
@@ -279,7 +279,7 @@ function Topico({ topico, classe }: { topico: TopicoEmenta; classe: Classe }) {
         {quantas > 0 ? (
           <Link
             href={linkDoAssunto(topico)}
-            className="inline-block rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+            className="inline-block rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
           >
             Treinar
             <span className="ml-1.5 font-normal opacity-70">

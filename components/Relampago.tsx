@@ -118,7 +118,7 @@ export default function Relampago() {
         </div>
         <button
           onClick={comecar}
-          className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+          className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
         >
           Começar
         </button>
@@ -146,7 +146,7 @@ export default function Relampago() {
           <button
             onClick={comecar}
             autoFocus
-            className="rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+            className="rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
           >
             De novo
           </button>
@@ -256,7 +256,7 @@ export default function Relampago() {
           <button
             onClick={avancar}
             autoFocus
-            className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+            className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
           >
             {indice + 1 >= rodada.length ? "Ver placar" : "Próxima"}
             <span className="ml-2 text-xs font-normal opacity-60">Enter</span>
@@ -282,7 +282,7 @@ function Chip({
       aria-pressed={ativo}
       className={`rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition ${
         ativo
-          ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+          ? "border-slate-900 bg-rebaixado font-semibold dark:border-slate-100"
           : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
       }`}
     >

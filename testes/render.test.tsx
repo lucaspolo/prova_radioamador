@@ -1249,6 +1249,13 @@ const PROPS_INICIO = {
   // A marca do ícone instalado passou a existir na interface: era o melhor
   // desenho do produto e não aparecia em pixel nenhum dela.
   checar("o cabeçalho traz a antena", home.includes('cx="12"') && home.includes("#f59e0b"));
+  // Um preenchimento sólido por tela: o que avança a tarefa. Antes, classe,
+  // quantidade, regime, aba e filtro usavam o mesmo preto do "Iniciar", e o
+  // olho não separava estado de comando.
+  checar(
+    "só a ação principal é bloco cheio",
+    (home.match(/bg-slate-900/g) ?? []).length === 1,
+  );
   checar("a home traz o resumo de desempenho", home.includes("Seu desempenho"));
   checar(
     "o painel de desempenho saiu da home",

@@ -39,7 +39,7 @@ export default function AvisoAtualizacao() {
       </span>
       <button
         onClick={aplicarAtualizacao}
-        className="rounded-lg bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        className="rounded-lg bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
       >
         Recarregar agora
       </button>

@@ -87,7 +87,7 @@ export default function TelaFerramentas({
 
       <button
         onClick={onVoltar}
-        className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        className="w-full rounded-xl bg-slate-900 px-6 py-4 font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
       >
         Voltar ao início
       </button>
@@ -108,10 +108,13 @@ function Aba({
     <button
       onClick={onClick}
       aria-pressed={ativa}
-      className={`rounded-lg border-2 px-4 py-2 text-sm font-semibold transition ${
+      // Aba é navegação, não escolha de conteúdo: sublinhado, como em toda
+      // barra de abas. A caixa preenchida a fazia disputar atenção com o
+      // botão que de fato avança a tarefa.
+      className={`rounded-t-lg border-b-2 px-4 py-2 text-sm font-semibold transition ${
         ativa
-          ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-          : "border-borda-controle hover:border-slate-500 dark:hover:border-slate-400"
+          ? "border-slate-900 dark:border-slate-100"
+          : "border-transparent text-texto-2 hover:border-borda-controle"
       }`}
     >
       {children}
