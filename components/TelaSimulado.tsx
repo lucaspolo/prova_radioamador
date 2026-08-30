@@ -9,6 +9,7 @@ import { useCronometro } from "@/hooks/useCronometro";
 import { useGuardaDeSaida } from "@/hooks/useGuardaDeSaida";
 import BotaoConsultarMaterial from "./BotaoConsultarMaterial";
 import BotaoSuspeita from "./BotaoSuspeita";
+import Fonte from "./Fonte";
 import TrechoOrigem from "./TrechoOrigem";
 
 interface Props {
@@ -276,13 +277,11 @@ export default function TelaSimulado({
                   capítulo que trata do tema, e não a origem da afirmação.
                   Chamá-la de "Fonte" faria o leitor procurar no PDF uma frase
                   que não está lá, e duvidar do banco inteiro. */}
-              <span className="font-medium">
-                {questao.origem === "documento"
-                  ? "Fonte:"
-                  : "Estude o tema em:"}
-              </span>{" "}
-              {questao.arquivo_origem}
-              <span> · página {questao.pagina}</span>
+              <Fonte
+                arquivo={questao.arquivo_origem}
+                detalhe={`página ${questao.pagina}`}
+                origem={questao.origem}
+              />
               <div>
                 <BotaoConsultarMaterial
                   arquivoOrigem={questao.arquivo_origem}
