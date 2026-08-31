@@ -336,9 +336,9 @@ entre camada de texto e OCR — não de uma lista de nomes, para que um PDF novo
 sem camada de texto suba sozinho para o começo da fila.
 
 A passagem citada é aproximada: sai da mesma função que grifa a origem no app
-(`localizarPassagem`), por sobreposição de termos. Acha o lugar em 466 das 480
+(`localizarPassagem`), por sobreposição de termos. Acha o lugar em 481 das 506
 questões de documento; nas outras o relatório diz que não achou, em vez de
-chutar. As 434 questões da ementa não têm texto de origem nenhum — nasceram de
+chutar. As 432 questões da ementa não têm texto de origem nenhum — nasceram de
 um tópico, não de um trecho —, e ali a página é só o capítulo onde estudar o
 assunto. O relatório marca cada uma. Esses números envelhecem com o banco: a
 contagem da rodada é a que o próprio `npm run conferencia` imprime ao final.
@@ -447,7 +447,7 @@ CORS no caminho.
 | Arquivo | URL | Tamanho |
 | --- | --- | --- |
 | Banco de questões | <https://prova-radioamador.vercel.app/banco_questoes.json> | ~535 KB |
-| Trechos de origem | <https://prova-radioamador.vercel.app/trechos.json> | ~258 KB |
+| Trechos de origem | <https://prova-radioamador.vercel.app/trechos.json> | ~313 KB |
 
 ```bash
 curl -s https://prova-radioamador.vercel.app/banco_questoes.json |
@@ -491,15 +491,15 @@ normativa disto (com o porquê de cada campo).
 
 | Recorte | Quantidade |
 | --- | --- |
-| Afirmações | 914 |
-| De trecho literal (`origem: "documento"`) | 480 |
-| Da ementa (`origem: "ementa"`) | 434 |
-| Exclusivas da Classe A (`nivel: "A"`) | 82 |
-| Legislação de Telecomunicações | 350 |
-| Conhecimentos de Eletrônica e Eletricidade | 308 |
-| Técnica e ética operacional | 256 |
-| Trechos em `trechos.json` | 55 |
-| PDFs de origem | 6 |
+| Afirmações | 938 |
+| De trecho literal (`origem: "documento"`) | 506 |
+| Da ementa (`origem: "ementa"`) | 432 |
+| Exclusivas da Classe A (`nivel: "A"`) | 81 |
+| Legislação de Telecomunicações | 348 |
+| Conhecimentos de Eletrônica e Eletricidade | 314 |
+| Técnica e ética operacional | 276 |
+| Trechos em `trechos.json` | 67 |
+| PDFs de origem | 9 |
 
 `testes/dataset.test.ts` confere esta tabela contra o próprio banco: número que
 envelhece aqui derruba a suíte, porque quem consome um dataset lê a
@@ -513,15 +513,20 @@ medidas:
 
 | | Situação |
 | --- | --- |
-| **Contagem** | 50,2% de verdadeiras. O equilíbrio se mantém em cada matéria, nível, origem e PDF (nenhum recorte foge de 48,9–52,3%), e nenhum trecho tem três ou mais questões de resposta única. |
-| **Comprimento** | **Defeito conhecido.** As verdadeiras são mais longas: mediana de 123 caracteres contra 103. Responder "verdadeiro" a toda afirmação com mais de 136 caracteres acerta ~60% do banco sem ler o conteúdo. |
+| **Contagem** | 52,6% de verdadeiras. O equilíbrio se mantém em cada matéria, nível, origem e PDF, e nenhum trecho tem três ou mais questões de resposta única. |
+| **Comprimento** | Não diz a resposta. A área sob a curva ROC do comprimento é 0,472, contra 0,500 de um banco em que o tamanho não informa nada. As falsas são ligeiramente mais longas (mediana de 189 caracteres contra 178). |
 
-O comprimento tem causa no modo de gerar: a verdadeira parafraseia a norma com
-todas as ressalvas dela, a falsa troca um valor numa frase curta. Os prompts de
-`scripts/processar_pdfs.py` já exigem paridade de tamanho, mas o banco publicado
-foi gerado antes dessa regra — corrigi-lo exige reescrever as afirmações, e o
-`id` de cada questão é o hash da própria afirmação, então a reescrita aposenta o
-histórico de acertos guardado no navegador de quem já estuda.
+O comprimento já foi um defeito: numa versão anterior deste banco as verdadeiras
+tinham mediana de 123 caracteres contra 103, e responder "verdadeiro" a toda
+afirmação com mais de 136 caracteres acertava ~60% das questões sem ler o
+conteúdo. A causa estava no modo de gerar — a verdadeira parafraseava a norma com
+todas as ressalvas dela, a falsa trocava um valor numa frase curta. Os prompts de
+`scripts/processar_pdfs.py` passaram a exigir que a falsa tenha o mesmo corpo da
+verdadeira, e o banco foi regerado sob essa regra.
+
+Corrigir custou o histórico: o `id` de cada questão é o hash da própria
+afirmação, então reescrever as afirmações aposentou os acertos guardados no
+navegador de quem já estudava. As estatísticas por matéria continuam valendo.
 
 `testes/vies.test.ts` mede as duas coisas: trava o equilíbrio de contagem como
 requisito e o comprimento como catraca — o banco não pode piorar, e o teste
