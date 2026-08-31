@@ -1,145 +1,95 @@
 {
- "cobertura": {
-  "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf": {
-   "revisadas": 431,
-   "total": 658,
-   "em": "2026-08-10"
+  "cobertura": {
+    "2026-06-30 CARTILHA-RADIOAMADOR-v9 2026-06.pdf": {
+      "revisadas": 0,
+      "total": 647,
+      "em": "2026-08-30"
+    },
+    "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf": {
+      "revisadas": 0,
+      "total": 16,
+      "em": "2026-08-30"
+    },
+    "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf": {
+      "revisadas": 0,
+      "total": 16,
+      "em": "2026-08-30"
+    },
+    "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf": {
+      "revisadas": 0,
+      "total": 118,
+      "em": "2026-08-30"
+    },
+    "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf": {
+      "revisadas": 0,
+      "total": 32,
+      "em": "2026-08-30"
+    },
+    "Anatel - Resolução Anatel nº 779, de 28 de abril de 2025.pdf": {
+      "revisadas": 0,
+      "total": 13,
+      "em": "2026-08-30"
+    },
+    "Anatel - Resolução nº 715, de 23 de outubro de 2019.pdf": {
+      "revisadas": 0,
+      "total": 10,
+      "em": "2026-08-30"
+    },
+    "Lei nº 9.472, de 16 de julho de 1997 (LGT).pdf": {
+      "revisadas": 0,
+      "total": 11,
+      "em": "2026-08-30"
+    },
+    "SEI_ANATEL - 15307586 - Ato_orginal.pdf": {
+      "revisadas": 0,
+      "total": 75,
+      "em": "2026-08-30"
+    }
   },
-  "ATO_3445_20260311_INDICATIVOS_ESPECIAIS_RAFAEL_VTC.pdf": {
-   "revisadas": 16,
-   "total": 16,
-   "em": "2026-08-09"
+  "achados": {
+    "aee78599044102ff": {
+      "decisao": "descartado",
+      "motivo": "O revisor está certo sobre o fato e errado sobre a consequência. Os itens 6.10 a 6.13 com \"(Redação dada pelo Boletim de Serviço Eletrônico publicado em 6/2/2024)\" estão mesmo tachados nas pp.5-6, conferido nas imagens. Mas logo abaixo, na p.6, vem o bloco vigente 6.10/6.11/6.12, que é o mesmo conteúdo sem o item de estações IDG e renumerado. A regra do salto em frequência e espalhamento espectral abaixo de 440 MHz sobrevive como 6.11, palavra por palavra: gabarito V continua certo. Conferi o que o bloco tachado poderia ter contaminado — não há nenhuma questão sobre estações IDG no banco, e as de criptografia e NSS repetem texto que também está no bloco vigente."
+    },
+    "dcd659c9b686e4b3": {
+      "decisao": "corrigido",
+      "onde": "correcoes.json (acao manter) + processar_pdfs.py",
+      "motivo": "O passe --verificar descartou esta questão ao regerar o banco em 2026-08-09, alegando que QRA é o nome da estação e não o indicativo — a convenção da UIT. A fonte que a prova cobra diz o contrário: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete. Conferido nas duas páginas. Era a única questão que ensinava o significado de QRA. Reposta pela ação \"manter\", nova em correcoes.json: ela não altera a questão, só impede o verificador de derrubá-la. A questão protegida continua indo ao modelo dentro do lote — tirá-la mudaria a composição dos lotes, cuja chave de cache é o conteúdo, e todo lote seguinte voltaria ao modelo com vereditos novos para questões que ninguém mexeu. Foi exatamente assim que ela caiu. Em 2026-08-10 apareceu confirmação independente, e da própria convenção que o verificador invocou: a tabela \"Código Internacional Q ITU-R\" (PY2BIL, v1.0, 2024) dá para QRA a pergunta \"Qual o nome da estação (indicativo)?\" e a resposta \"O meu indicativo é ____ (ou Nome do operador)\". O descarte não se sustenta nem pela fonte de estudo nem pela UIT."
+    },
+    "e096d6e1525d884a": {
+      "decisao": "descartado",
+      "motivo": "Revisor marcou V; o gabarito F está certo. QRZ pergunta \"quem está me chamando?\"; quem pede mudança de frequência é QSY. A tabela de Código Q da Cartilha (seção 6.3, p.36) não lista nenhum dos dois — esta questão vem da ementa, não daquela tabela, e é por isso que a tela não tinha texto de origem para mostrar ao lado. O único QSY do corpus está na p.34, \"Se precisar, combine um QSY para outra frequência\", e confirma o sentido. Nada a consertar."
+    },
+    "23e7dc1471db1097": {
+      "decisao": "descartado",
+      "motivo": "O revisor marcou F alegando que a primeira letra do agrupamento é \"Z\" e suspeitou de mistura entre os itens I e II. Conferido na imagem da p.1 do Ato 3445, ampliada: o texto do chunk é fiel, e são regras diferentes, não uma mistura. O item 12.10.6-I trata das estações localizadas na Região Antártica sem qualificar nacionalidade e dá para as classes \"A\" e \"B\" o prefixo \"PY\", o número \"0\" e um agrupamento de duas ou três letras com a primeira obrigatoriamente \"A\" — exatamente a afirmação. O \"Z\" que o revisor viu está no 12.10.7, que é a exceção para radioamadores estrangeiros (PY0 + três letras começando em \"Z\"). O gabarito V está certo. O que induziu ao erro foi o campo passagem, que começa recortado no 12.10.6-II e emenda no 12.10.7, escondendo justamente o inciso I que responde à pergunta; a passagem é aproximação por sobreposição de termos, não prova. Fica o registro de que a afirmação não diz \"estrangeiros\" nem \"brasileiros\" e apoia-se na regra geral: se um próximo revisor tropeçar nela de novo, o caminho é remover e repor à mão com a nacionalidade explícita, não mexer no gabarito. || Reancorado em 2026-08-30: a regeração com gpt-5.6-luna aposentou o id ee9152bdd5e65601, e esta questão repete a mesma afirmação (classes \"A\" e \"B\" na Região Antártica: prefixo PY, número 0, agrupamento iniciado por \"A\"). A conferência contra a imagem da p.1 do Ato 3445 continua valendo."
+    }
   },
-  "Anatel - Ato nº 926, 01022024_2M_220_UHF.pdf": {
-   "revisadas": 16,
-   "total": 16,
-   "em": "2026-08-08"
-  },
-  "Anatel - Ato nº 926, de 1 de fevereiro de 2024.pdf": {
-   "revisadas": 117,
-   "total": 117,
-   "em": "2026-08-09"
-  },
-  "Anatel - R. Anatel nº 777_20250428_RA_RCIDADAO.pdf": {
-   "revisadas": 32,
-   "total": 32,
-   "em": "2026-08-09"
-  },
-  "SEI_ANATEL - 15307586 - Ato_orginal.pdf": {
-   "revisadas": 75,
-   "total": 75,
-   "em": "2026-08-09"
-  }
- },
- "achados": {
-  "ee9152bdd5e65601": {
-   "decisao": "descartado",
-   "motivo": "O revisor marcou F alegando que a primeira letra do agrupamento é \"Z\" e suspeitou de mistura entre os itens I e II. Conferido na imagem da p.1 do Ato 3445, ampliada: o texto do chunk é fiel, e são regras diferentes, não uma mistura. O item 12.10.6-I trata das estações localizadas na Região Antártica sem qualificar nacionalidade e dá para as classes \"A\" e \"B\" o prefixo \"PY\", o número \"0\" e um agrupamento de duas ou três letras com a primeira obrigatoriamente \"A\" — exatamente a afirmação. O \"Z\" que o revisor viu está no 12.10.7, que é a exceção para radioamadores estrangeiros (PY0 + três letras começando em \"Z\"). O gabarito V está certo. O que induziu ao erro foi o campo passagem, que começa recortado no 12.10.6-II e emenda no 12.10.7, escondendo justamente o inciso I que responde à pergunta; a passagem é aproximação por sobreposição de termos, não prova. Fica o registro de que a afirmação não diz \"estrangeiros\" nem \"brasileiros\" e apoia-se na regra geral: se um próximo revisor tropeçar nela de novo, o caminho é remover e repor à mão com a nacionalidade explícita, não mexer no gabarito."
-  },
-  "d446ba98a0d78c2f": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 4 milímetros (76 - 81,5 GHz) em três subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 77,5 - 78 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 67d9237e6b4d1404."
-  },
-  "e61b7d61c6ee873e": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 2 milímetros (134 - 141 GHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 136 - 141 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 31da4be612ee0e17."
-  },
-  "ea22286ee13a7afd": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 1 milímetro (241 - 250 GHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 248 - 250 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 37818b6227e6a136."
-  },
-  "f3a0162419ff7be0": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 1,2 centímetro (24 - 24,25 GHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 24 - 24,05 GHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: 02208ae5e5943fc8."
-  },
-  "0a40b1a27aeb8faa": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 160 metros (1.800 - 2.000 kHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 1.800 - 1.850 kHz como se fosse a faixa inteira. Conferido na imagem da p.3, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: ea924a1ae73a6823. Não foi apontada pelo revisor: saiu da varredura das nove faixas multi-subfaixa da Tabela I, feita depois que as quatro faixas milimétricas mostraram que o defeito era da forma da pergunta, não da faixa."
-  },
-  "4587b151bb890c43": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 80 metros (3.500 - 4.000 kHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 3.500 - 3.800 kHz como se fosse a faixa inteira. Conferido na imagem da p.3, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: cf37fe846cb46a88. Não foi apontada pelo revisor: saiu da varredura das nove faixas multi-subfaixa da Tabela I, feita depois que as quatro faixas milimétricas mostraram que o defeito era da forma da pergunta, não da faixa."
-  },
-  "af0785df845bcdbe": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo. A Tabela I reparte a Faixa de 33 centímetros (902 - 907,5 e 915 - 928 MHz) em duas subfaixas (a célula do nome da faixa faz rowspan, e a transcrição achatou isso), e a afirmação vendia a subfaixa 915 - 928 MHz como se fosse a faixa inteira. Conferido na imagem da p.4, ampliada. Removida em correcoes.json e reposta em questoes_manuais.json com \"no intervalo de radiofrequência\", a forma que o próprio gerador usa para 15 m, 40 m e 12 m. Nova questão: cec314f45c782d4f. Não foi apontada pelo revisor: saiu da varredura das nove faixas multi-subfaixa da Tabela I, feita depois que as quatro faixas milimétricas mostraram que o defeito era da forma da pergunta, não da faixa."
-  },
-  "a6a7cff14ce4b132": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json",
-   "motivo": "Revisor certo. A explicação citava só 144,2 MHz como a outra frequência de chamada de 2 m e omitia 146,520 MHz, que ele lembrou de cabeça. A causa é fronteira de chunk: a Tabela XV começa no trecho 475a2bdfde0a1ced, que termina na p.12 em 144,500 MHz, e a linha \"Frequência de chamada FM: 146,520 MHz\" cai no trecho 5bd95437b4852b06, a partir da p.13 — o gerador respondeu com o pedaço da tabela que enxergava. O gabarito F sempre esteve certo; só a explicação era incompleta, e explicacao_curta pode ser editada por correcoes.json (o que o id proíbe é editar a afirmação). A correção de página que já existia para este id foi preservada. Varri as outras 17 questões de frequência de chamada: só esta estava truncada."
-  },
-  "aee78599044102ff": {
-   "decisao": "descartado",
-   "motivo": "O revisor está certo sobre o fato e errado sobre a consequência. Os itens 6.10 a 6.13 com \"(Redação dada pelo Boletim de Serviço Eletrônico publicado em 6/2/2024)\" estão mesmo tachados nas pp.5-6, conferido nas imagens. Mas logo abaixo, na p.6, vem o bloco vigente 6.10/6.11/6.12, que é o mesmo conteúdo sem o item de estações IDG e renumerado. A regra do salto em frequência e espalhamento espectral abaixo de 440 MHz sobrevive como 6.11, palavra por palavra: gabarito V continua certo. Conferi o que o bloco tachado poderia ter contaminado — não há nenhuma questão sobre estações IDG no banco, e as de criptografia e NSS repetem texto que também está no bloco vigente."
-  },
-  "d84034af97ecf9e2": {
-   "decisao": "descartado",
-   "motivo": "O revisor citou 12.10.6-II (Região Antártica, primeira letra \"A\") e 12.10.7/12.10.8 (estrangeiros, primeira letra \"Z\"), mas a afirmação é sobre ilhas oceânicas, que têm artigo próprio: 12.10.5-II dá para a classe \"C\" o prefixo \"PU\", o número \"0\" e três letras \"sendo a primeira letra aquela identificadora da ilha, arquipélago oceânico, penedo ou atol em questão\" — exatamente a afirmação. Gabarito V certo. É o segundo achado seguido perdido no mesmo bloco de artigos: como em [[ee9152bdd5e65601]], o campo passagem mostrou o artigo vizinho em vez do que responde à pergunta. Ilhas = 12.10.5, Antártica = 12.10.6, estrangeiros = 12.10.7/8."
-  },
-  "13488007ec9dd7e0": {
-   "decisao": "descartado",
-   "motivo": "Não é erro: o revisor sugeriu complementar a explicação com os dois últimos itens do checklist da p.11 da Cartilha (potência e modo de emissão; identificação e periodicidade). A afirmação só pergunta sobre COER, licenciamento e faixa autorizada, e a explicação responde isso corretamente — puxar os outros dois itens responderia o que não foi perguntado. Os temas sugeridos já têm cobertura vizinha em 8821db55a32924e4, da mesma página. Se a intenção for cobrar cada item do checklist separadamente, isso é questão nova em questoes_manuais.json, não conserto desta."
-  },
-  "dcd659c9b686e4b3": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json (acao manter) + processar_pdfs.py",
-   "motivo": "O passe --verificar descartou esta questão ao regerar o banco em 2026-08-09, alegando que QRA é o nome da estação e não o indicativo — a convenção da UIT. A fonte que a prova cobra diz o contrário: a tabela de Código Q da Cartilha traz \"QRA — Indicativo\" na seção 6.3, p.36, e a p.34 repete. Conferido nas duas páginas. Era a única questão que ensinava o significado de QRA. Reposta pela ação \"manter\", nova em correcoes.json: ela não altera a questão, só impede o verificador de derrubá-la. A questão protegida continua indo ao modelo dentro do lote — tirá-la mudaria a composição dos lotes, cuja chave de cache é o conteúdo, e todo lote seguinte voltaria ao modelo com vereditos novos para questões que ninguém mexeu. Foi exatamente assim que ela caiu. Em 2026-08-10 apareceu confirmação independente, e da própria convenção que o verificador invocou: a tabela \"Código Internacional Q ITU-R\" (PY2BIL, v1.0, 2024) dá para QRA a pergunta \"Qual o nome da estação (indicativo)?\" e a resposta \"O meu indicativo é ____ (ou Nome do operador)\". O descarte não se sustenta nem pela fonte de estudo nem pela UIT."
-  },
-  "e096d6e1525d884a": {
-   "decisao": "descartado",
-   "motivo": "Revisor marcou V; o gabarito F está certo. QRZ pergunta \"quem está me chamando?\"; quem pede mudança de frequência é QSY. A tabela de Código Q da Cartilha (seção 6.3, p.36) não lista nenhum dos dois — esta questão vem da ementa, não daquela tabela, e é por isso que a tela não tinha texto de origem para mostrar ao lado. O único QSY do corpus está na p.34, \"Se precisar, combine um QSY para outra frequência\", e confirma o sentido. Nada a consertar."
-  },
-  "0340cc5cd71759a8": {
-   "decisao": "descartado",
-   "motivo": "Revisor marcou V; o gabarito F está certo. 10 Vpp em 50 Ω dá Vrms = 5/√2 = 3,536 V, logo P = 12,5/50 = 250 mW — mas essa é a potência durante o bit \"1\", e com 50% de \"1\" a média é 125 mW. Os 250 mW da afirmação são o valor do símbolo vendido como média. Vale registrar que dois enganos diferentes caem nos mesmos 250 mW: esquecer o fator de 50%, ou esquecer a conversão para RMS (Vpico²/R = 25/50 = 500 mW, metade disso = 250 mW). A conta inteira já está em explicacao_curta. Nada a consertar."
-  },
-  "41476a0054655f54": {
-   "decisao": "descartado",
-   "motivo": "Gabarito V está certo: em MSK o índice de modulação é h = 0,5, então Δf = h × Rb = 0,5 × 2000 = 1 kHz. O próprio revisor chegou a esse resultado — a justificativa recua e se recalcula três vezes e termina em \"corrigindo a análise rápida: a afirmação é Verdadeira\" —, mas o veredito gravado continuou F. Não é defeito da questão: é o veredito que não acompanhou a nota. Nada a consertar."
-  },
-  "abd63b08f8586c1c": {
-   "decisao": "descartado",
-   "motivo": "Revisor marcou V; o gabarito F está certo. O critério do detector de envelope é Tc ≪ RC ≪ Tb. Com fc = 100 kHz, Tc = 10 µs; com Rb = 1 kbit/s, Tb = 1 ms = 1000 µs. O RC = 2 ms = 2000 µs proposto viola o limite de cima — é o dobro do período de bit, e o envelope não conseguiria acompanhar a transição entre símbolos. A afirmação erra ao dizer que RC é \"muito menor que o período de bit\" quando é maior que ele. Nada a consertar."
-  },
-  "fa03e4d8a015b2bb": {
-   "decisao": "corrigido",
-   "onde": "correcoes.json + questoes_manuais.json",
-   "motivo": "Revisor certo, e a primeira triagem desta rodada errou: dei o achado por descartado lendo a justificativa como citação que confirmava o gabarito, quando ela era a prova do contrário. O revisor colou o marcador da ASK junto com o da FSK, e é isso que decide a questão. Os três marcadores da seção 11.2 (p.64) têm a mesma forma, e em todos a frase final descreve a modulação do título: ASK termina em \"Simples e de baixo custo, usada em telemetria básica, sensores remotos e sistemas OOK\", PSK em \"Eficiente em banda estreita e ruído, usada por exemplo em PSK31/PSK63\". Pelo mesmo paralelo, o \"Amplamente usada no radioamadorismo atual, robusta contra ruído, usada em RTTY (Radio Teletype), APRS (AX.25), Packet Radio e modos HF como MFSK16\" é da FSK, não da AFSK citada no meio do marcador — e o conteúdo confirma, porque MFSK16 é FSK multi-tom e não AFSK binária. A afirmação transferia essa lista para a AFSK. Conferido na imagem da p.64, ampliada: a transcrição está fiel, o defeito é da pergunta. Removida em correcoes.json e reposta em duas questões: a definição da AFSK, literal na página (nova b4e7a87161223533), e a lista de aplicações atribuída à FSK, que vale sob as duas leituras porque a AFSK é uma variação da FSK (nova e1836097d147fb32). Varri o banco atrás de outras questões da mesma frase — AFSK, RTTY, MFSK, AX.25, Packet Radio: era a única."
-  }
- },
- "pendencias": [
-  {
-   "o_que": "As 7 questões repostas têm origem \"ementa\" e nenhum texto de origem.",
-   "detalhe": "carregar_questoes_manuais() força _complementar = True, e a linha 1681 traduz isso em origem: \"ementa\". Confirmado no banco: as sete estão com trecho_id null. Elas vêm de um trecho real (Tabela I, pp.3-4 do Ato 926), então a tela de conferência diz que não há texto de origem quando há. arquivo_origem e pagina foram preenchidos à mão para que o revisor ainda chegue à página certa. O risco imediato saiu: na rodada de 2026-08-10 as sete foram revisadas e todas confirmadas como V, contra a Tabela I, sem que a falta do trecho atrapalhasse.",
-   "para_destravar": "Decidir se vale permitir que uma questão manual declare _trecho/origem \"documento\". Nada urgente — a decisão é de arquitetura, e a conferência manual já foi feita."
-  },
-  {
-   "o_que": "Cada exportação reemite os achados já triados.",
-   "detalhe": "O JSON baixado traz todo item com nota ou divergência, e o veredito fica no localStorage entre rodadas — então um achado decidido volta em todas as exportações seguintes. Na rodada de 2026-08-10 foram 4 de 9 itens já resolvidos (13488007ec9dd7e0, aee78599044102ff, a6a7cff14ce4b132, d84034af97ecf9e2). Custa um cruzamento contra a chave achados deste arquivo, mas cresce a cada rodada.",
-   "para_destravar": "Resolvido em 2026-08-10 pelo terceiro caminho ampliado: lib/triagem.ts lê este arquivo, a tela marca o que já foi decidido e o botão \"dar por vistas\" tira do contador e da exportação, que passa a listar os retidos em \"vistas\". Fica registrado por ser o histórico da decisão."
-  },
-  {
-   "o_que": "Três materiais de apoio entraram como fonte de questões manuais, não como PDFs do gerador.",
-   "detalhe": "Em 2026-08-10 chegaram Código RST e Alfabeto Fonético (PY2BIL, v1.0 2024), Código Q ITU-R (PY2BIL, v1.0 2024) e Código de Conduta DX (trad. CT1ETL, GRAESP 2020). Dez questões saíram deles por questoes_manuais.json, cobrindo QSX, QAP, as escalas do RST e cinco regras do Código de Conduta DX — assuntos que a Cartilha não traz ou traz em quatro marcadores. Não foram adicionados a public/pdfs/ nem ao gerador: os três são obra de terceiros sob Creative Commons BY-NC-SA, e publicá-los no site é redistribuição, o que é decisão do dono do repositório e não do agente. Consequência prática: essas dez nascem com origem \"ementa\" e sem texto de origem, como as sete da Tabela I.",
-   "para_destravar": "Decidido em 2026-08-10: os PDFs não entram. Continuam fora de public/pdfs/ e do gerador, e as questões tiradas deles seguem manuais — a conferência delas é contra o PDF original, fora da tela. Fica registrado para ninguém repropor a cada material novo que chegar."
-  },
-  {
-   "o_que": "Algarismos fonéticos ficam fora do banco, por decisão de 2026-08-10.",
-   "detalhe": "Nenhuma questão cobre soletração de algarismos, e a lacuna é deliberada. Chegou-se a redigir seis questões sobre o código de algarismos do Apêndice 14 do Regulamento de Rádio da UIT (Nadazero, Unaone, Bissotwo…, mais Decimal e Stop, com a ressalva do item 3 que permite a estações de um mesmo país usarem outra tabela reconhecida pela administração). O texto foi conferido na fonte primária, o RR REV.WRC-23 da UIT, e está correto — mas foi descartado antes de entrar no banco: o dono do repositório apontou que isso não aparece em nenhum material da Anatel. A tabela 6.2 da Cartilha traz só as letras, de A a Z, e o material de apoio que circula usa \"Zero, One, Two\". Questão fiel à norma a montante e ausente do material de estudo cobra o que a prova não pede.",
-   "para_destravar": "Só reabrir se surgir material da Anatel que traga a tabela de algarismos — aí a fonte passa a ser esse material, e não o Apêndice 14. A regra geral que isso firma: o banco segue o que a Anatel publica, e norma internacional só entra pelo que o material brasileiro reproduz."
-  },
-  {
-   "o_que": "A tabela do Código RST tem lixo nas linhas 6 a 9 da coluna R.",
-   "detalhe": "No PDF Código RST e Alfabeto Fonético, a tabela tem nove linhas porque S e T precisam de nove, mas a legibilidade (R) só tem cinco níveis. As células R6 a R9 ficaram com \"Six\", \"Seven\", \"Eight\" e \"Nine\" — sobra não traduzida do gabarito da tabela, e não conteúdo. Quem gerar questão dali sem olhar vai ensinar que R vai até 9, o que contradiz o próprio banco (d9734f60710806a2 marca como falsa a afirmação de que R vai de 1 a 9).",
-   "para_destravar": "Nada a fazer enquanto o PDF não for fonte do gerador. Se virar, o passe de extração precisa ignorar essas quatro células, ou elas viram questão errada — é o mesmo tipo de defeito da Tabela I, em que a forma da tabela enganou a leitura."
-  }
- ]
+  "pendencias": [
+    {
+      "o_que": "As 7 questões repostas têm origem \"ementa\" e nenhum texto de origem.",
+      "detalhe": "carregar_questoes_manuais() força _complementar = True, e a linha 1681 traduz isso em origem: \"ementa\". Confirmado no banco: as sete estão com trecho_id null. Elas vêm de um trecho real (Tabela I, pp.3-4 do Ato 926), então a tela de conferência diz que não há texto de origem quando há. arquivo_origem e pagina foram preenchidos à mão para que o revisor ainda chegue à página certa. O risco imediato saiu: na rodada de 2026-08-10 as sete foram revisadas e todas confirmadas como V, contra a Tabela I, sem que a falta do trecho atrapalhasse.",
+      "para_destravar": "Decidir se vale permitir que uma questão manual declare _trecho/origem \"documento\". Nada urgente — a decisão é de arquitetura, e a conferência manual já foi feita."
+    },
+    {
+      "o_que": "Cada exportação reemite os achados já triados.",
+      "detalhe": "O JSON baixado traz todo item com nota ou divergência, e o veredito fica no localStorage entre rodadas — então um achado decidido volta em todas as exportações seguintes. Na rodada de 2026-08-10 foram 4 de 9 itens já resolvidos (13488007ec9dd7e0, aee78599044102ff, a6a7cff14ce4b132, d84034af97ecf9e2). Custa um cruzamento contra a chave achados deste arquivo, mas cresce a cada rodada.",
+      "para_destravar": "Resolvido em 2026-08-10 pelo terceiro caminho ampliado: lib/triagem.ts lê este arquivo, a tela marca o que já foi decidido e o botão \"dar por vistas\" tira do contador e da exportação, que passa a listar os retidos em \"vistas\". Fica registrado por ser o histórico da decisão."
+    },
+    {
+      "o_que": "Três materiais de apoio entraram como fonte de questões manuais, não como PDFs do gerador.",
+      "detalhe": "Em 2026-08-10 chegaram Código RST e Alfabeto Fonético (PY2BIL, v1.0 2024), Código Q ITU-R (PY2BIL, v1.0 2024) e Código de Conduta DX (trad. CT1ETL, GRAESP 2020). Dez questões saíram deles por questoes_manuais.json, cobrindo QSX, QAP, as escalas do RST e cinco regras do Código de Conduta DX — assuntos que a Cartilha não traz ou traz em quatro marcadores. Não foram adicionados a public/pdfs/ nem ao gerador: os três são obra de terceiros sob Creative Commons BY-NC-SA, e publicá-los no site é redistribuição, o que é decisão do dono do repositório e não do agente. Consequência prática: essas dez nascem com origem \"ementa\" e sem texto de origem, como as sete da Tabela I.",
+      "para_destravar": "Decidido em 2026-08-10: os PDFs não entram. Continuam fora de public/pdfs/ e do gerador, e as questões tiradas deles seguem manuais — a conferência delas é contra o PDF original, fora da tela. Fica registrado para ninguém repropor a cada material novo que chegar."
+    },
+    {
+      "o_que": "Algarismos fonéticos ficam fora do banco, por decisão de 2026-08-10.",
+      "detalhe": "Nenhuma questão cobre soletração de algarismos, e a lacuna é deliberada. Chegou-se a redigir seis questões sobre o código de algarismos do Apêndice 14 do Regulamento de Rádio da UIT (Nadazero, Unaone, Bissotwo…, mais Decimal e Stop, com a ressalva do item 3 que permite a estações de um mesmo país usarem outra tabela reconhecida pela administração). O texto foi conferido na fonte primária, o RR REV.WRC-23 da UIT, e está correto — mas foi descartado antes de entrar no banco: o dono do repositório apontou que isso não aparece em nenhum material da Anatel. A tabela 6.2 da Cartilha traz só as letras, de A a Z, e o material de apoio que circula usa \"Zero, One, Two\". Questão fiel à norma a montante e ausente do material de estudo cobra o que a prova não pede.",
+      "para_destravar": "Só reabrir se surgir material da Anatel que traga a tabela de algarismos — aí a fonte passa a ser esse material, e não o Apêndice 14. A regra geral que isso firma: o banco segue o que a Anatel publica, e norma internacional só entra pelo que o material brasileiro reproduz."
+    },
+    {
+      "o_que": "A tabela do Código RST tem lixo nas linhas 6 a 9 da coluna R.",
+      "detalhe": "No PDF Código RST e Alfabeto Fonético, a tabela tem nove linhas porque S e T precisam de nove, mas a legibilidade (R) só tem cinco níveis. As células R6 a R9 ficaram com \"Six\", \"Seven\", \"Eight\" e \"Nine\" — sobra não traduzida do gabarito da tabela, e não conteúdo. Quem gerar questão dali sem olhar vai ensinar que R vai até 9, o que contradiz o próprio banco (d9734f60710806a2 marca como falsa a afirmação de que R vai de 1 a 9).",
+      "para_destravar": "Nada a fazer enquanto o PDF não for fonte do gerador. Se virar, o passe de extração precisa ignorar essas quatro células, ou elas viram questão errada — é o mesmo tipo de defeito da Tabela I, em que a forma da tabela enganou a leitura."
+    }
+  ]
 }
