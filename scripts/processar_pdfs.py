@@ -35,6 +35,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unicodedata
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -898,10 +899,14 @@ class Chunk:
     arquivo_origem: str
     pagina: int
     texto: str
-    # Ultima pagina coberta pelo chunk. Chunks atravessam paginas, e a
-    # auditoria refina a pagina de cada questao para a da passagem especifica;
-    # este limite permite validar que o refinamento fica dentro do chunk.
+    # Ultima pagina coberta pelo chunk. Chunks atravessam paginas, e
+    # `refinar_pagina` leva a pagina de cada questao para a da passagem
+    # especifica; este limite delimita onde esse refinamento pode cair.
     pagina_fim: int = 0
+    # Texto de cada pagina coberta, para `refinar_pagina`. Fora da chave de
+    # cache de proposito: e' o mesmo texto do chunk, so' que reparticionado, e
+    # inclui-lo invalidaria todo o cache sem nenhuma resposta ter mudado.
+    paginas: dict[int, str] = field(default_factory=dict)
 
     @property
     def chave_cache(self) -> str:
@@ -942,13 +947,227 @@ class Uso:
 USO = Uso()
 
 
+# Preco por milhao de tokens (entrada, saida), em dolares. So' para estimar o
+# custo da execucao enquanto ela roda -- modelo fora desta tabela simplesmente
+# nao mostra custo, que e' melhor que mostrar um numero inventado. Conferidos
+# em developers.openai.com/api/docs/pricing em 2026-08-30; se a tabela
+# envelhecer, o pior que acontece e' a estimativa sair errada, nunca a geracao.
+PRECOS: dict[str, tuple[float, float]] = {
+    "gpt-5.6-luna": (0.20, 1.20),
+    "gpt-5.6-sol": (4.00, 20.00),
+    "gpt-5.6-terra": (2.00, 12.00),
+    "gpt-5.5": (5.00, 30.00),
+    "gpt-5.4-mini": (0.75, 4.50),
+    "gpt-5.4": (2.50, 15.00),
+    "gpt-5.1": (1.25, 10.00),
+    "gpt-5": (1.25, 10.00),
+    "gpt-4.1": (2.00, 8.00),
+    "gpt-4o": (2.50, 10.00),
+}
+
+
+def custo_estimado(modelo: str, entrada: int, saida: int) -> float | None:
+    """Dolares gastos ate' agora, ou None se o modelo nao esta' tabelado."""
+    # Prefixo mais longo primeiro: "gpt-5.4-mini" nao pode casar com "gpt-5.4".
+    for nome in sorted(PRECOS, key=len, reverse=True):
+        if modelo.startswith(nome):
+            p_in, p_out = PRECOS[nome]
+            return entrada / 1e6 * p_in + saida / 1e6 * p_out
+    return None
+
+
+def dinheiro(valor: float) -> str:
+    """US$ com virgula decimal, que e' como o resto da saida fala."""
+    return f"US$ {valor:.2f}".replace(".", ",")
+
+
+def duracao(segundos: float) -> str:
+    """Duracao curta e legivel: 42s, 3m10s, 1h04m."""
+    s = int(segundos)
+    if s < 60:
+        return f"{s}s"
+    if s < 3600:
+        return f"{s // 60}m{s % 60:02d}s"
+    return f"{s // 3600}h{(s % 3600) // 60:02d}m"
+
+
+@dataclass
+class EmVoo:
+    """Chamadas de API abertas neste instante.
+
+    A execucao inteira sao ~180 chamadas em paralelo, e a maneira antiga de
+    perceber que uma travou era o silencio: nenhuma linha nova por minutos, sem
+    dizer se faltava uma chamada ou trinta. Aqui a barra mostra quantas estao
+    abertas e ha' quanto tempo espera a mais velha -- uma que passe do timeout
+    de 180s aparece antes de o `as_completed` desistir dela.
+    """
+
+    abertas: dict[int, float] = field(default_factory=dict)
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+    _proximo: int = 0
+
+    def abrir(self) -> int:
+        with self._lock:
+            self._proximo += 1
+            self.abertas[self._proximo] = time.monotonic()
+            return self._proximo
+
+    def fechar(self, ficha: int) -> None:
+        with self._lock:
+            self.abertas.pop(ficha, None)
+
+    def estado(self) -> tuple[int, float]:
+        """Quantas estao abertas e ha' quanto tempo espera a mais velha."""
+        with self._lock:
+            if not self.abertas:
+                return 0, 0.0
+            return len(self.abertas), time.monotonic() - min(self.abertas.values())
+
+
+VOO = EmVoo()
+
+
+class Progresso:
+    """Barra de progresso por fase, com previsao e custo.
+
+    A execucao completa leva minutos e gasta dinheiro, e ate' aqui so' dizia
+    `[12/49]` na fase geral -- as outras cinco fases nao contavam nada, entao
+    metade do tempo a saida nao dizia se faltava um minuto ou quinze.
+
+    Duas saidas, escolhidas pelo terminal:
+
+    - Interativa: uma linha viva no rodape', redesenhada a cada segundo por uma
+      thread propria, com barra, percentual, previsao, custo e chamadas em voo.
+      O relogio anda mesmo quando nada termina, que e' justamente quando se
+      quer saber se travou.
+    - Redirecionada para arquivo (`> geracao.log`): sem linha viva, porque
+      `\r` num arquivo vira lixo. Em vez dela, uma linha de resumo a cada 30s,
+      para o log guardar o ritmo sem inchar.
+    """
+
+    INTERVALO_LOG = 30.0
+
+    def __init__(self, modelo: str, interativo: bool) -> None:
+        self.modelo = modelo
+        self.interativo = interativo
+        self.fase = ""
+        self.feito = 0
+        self.total = 0
+        self.t0 = time.monotonic()
+        self.t0_fase = self.t0
+        self._ultimo_log = self.t0
+        self._viva = False
+        self._lock = threading.RLock()
+        self._parar = threading.Event()
+        self._relogio: threading.Thread | None = None
+
+    # -- ciclo de vida ------------------------------------------------------
+
+    def comecar(self) -> None:
+        if not self.interativo:
+            return
+        self._relogio = threading.Thread(target=self._tique, daemon=True)
+        self._relogio.start()
+
+    def encerrar(self) -> None:
+        self._parar.set()
+        with self._lock:
+            self._apagar()
+
+    def _tique(self) -> None:
+        while not self._parar.wait(1.0):
+            with self._lock:
+                if self.total:
+                    self._desenhar()
+
+    # -- uso ----------------------------------------------------------------
+
+    def iniciar_fase(self, nome: str, total: int) -> None:
+        with self._lock:
+            self.fase = nome
+            self.feito = 0
+            self.total = total
+            self.t0_fase = time.monotonic()
+            self._ultimo_log = self.t0_fase
+
+    def passo(self, n: int = 1) -> None:
+        with self._lock:
+            self.feito += n
+            agora = time.monotonic()
+            if self.interativo:
+                self._desenhar()
+            elif agora - self._ultimo_log >= self.INTERVALO_LOG or self.feito >= self.total:
+                self._ultimo_log = agora
+                print("  ~ " + self._texto(), flush=True)
+
+    def encerrar_fase(self) -> None:
+        with self._lock:
+            if self.total:
+                if self.interativo:
+                    self._apagar()
+                print(
+                    f"  = {self.fase}: {self.feito}/{self.total} em "
+                    f"{duracao(time.monotonic() - self.t0_fase)}"
+                    f"{self._sufixo_custo()}",
+                    flush=True,
+                )
+            self.total = 0
+            self.fase = ""
+
+    # -- desenho ------------------------------------------------------------
+
+    def _sufixo_custo(self) -> str:
+        c = custo_estimado(self.modelo, USO.entrada, USO.saida)
+        return f" · {dinheiro(c)}" if c is not None else ""
+
+    def _texto(self) -> str:
+        fracao = self.feito / self.total if self.total else 0.0
+        decorrido = time.monotonic() - self.t0_fase
+        # Previsao pela media da propria fase. Antes da primeira conclusao nao
+        # ha' media nenhuma, e chutar um numero seria pior que nao dizer nada.
+        if self.feito:
+            resta = f"resta ~{duracao(decorrido / self.feito * (self.total - self.feito))}"
+        else:
+            resta = "resta ~?"
+        voando, mais_velha = VOO.estado()
+        em_voo = f" · {voando} em voo" if voando else ""
+        if voando and mais_velha > 30:
+            em_voo += f" (há {duracao(mais_velha)})"
+        return (
+            f"{self.fase} {self.feito}/{self.total} ({100 * fracao:.0f}%) · "
+            f"{duracao(decorrido)} · {resta}{self._sufixo_custo()}{em_voo}"
+        )
+
+    def _desenhar(self) -> None:
+        largura = 24
+        cheio = int(largura * (self.feito / self.total)) if self.total else 0
+        barra = "█" * cheio + "░" * (largura - cheio)
+        sys.stdout.write(f"\r\033[2K  {barra}  {self._texto()}")
+        sys.stdout.flush()
+        self._viva = True
+
+    def _apagar(self) -> None:
+        if self._viva:
+            sys.stdout.write("\r\033[2K")
+            sys.stdout.flush()
+            self._viva = False
+
+
+PROGRESSO = Progresso("", False)
+
+
 # ---------------------------------------------------------------------------
 # Utilidades
 # ---------------------------------------------------------------------------
 
 
 def log(msg: str) -> None:
-    print(msg, flush=True)
+    """Imprime uma linha sem atropelar a barra de progresso."""
+    with PROGRESSO._lock:
+        PROGRESSO._apagar()
+        print(msg, flush=True)
+        if PROGRESSO.total and PROGRESSO.interativo:
+            PROGRESSO._desenhar()
 
 
 def normalizar(texto: str) -> str:
@@ -1019,6 +1238,10 @@ def chamar_llm(
 
     ultimo_erro: Exception | None = None
     for tentativa in range(MAX_TENTATIVAS):
+        # A ficha e' aberta por tentativa, nao por chamada: numa repeticao
+        # depois de um 429 o que interessa e' ha' quanto tempo esta' esperando
+        # ESTA tentativa, nao a primeira.
+        ficha = VOO.abrir()
         try:
             resp = cliente.chat.completions.create(**kwargs)
             if resp.usage:
@@ -1038,6 +1261,8 @@ def chamar_llm(
             # Erro de schema/modelo: repetir nao ajuda.
             log(f"    ! Requisição rejeitada pela API: {e}")
             raise
+        finally:
+            VOO.fechar(ficha)
 
     raise RuntimeError(f"Falhou após {MAX_TENTATIVAS} tentativas: {ultimo_erro}")
 
@@ -1112,23 +1337,36 @@ def aplicar_erratas(
     respondeu, a errata e' uma camada separada por cima. Assim `--forcar`
     tambem sai corrigido, e da' para ver o que foi corrigido de quem.
 
-    Errata que nao encontra o texto que promete corrigir e' erro fatal. O caso
+    Errata que nao encontra nem o texto errado nem o certo e' erro fatal. O caso
     ruim e' o silencioso: o prompt de OCR muda, a transcricao sai diferente, a
     errata deixa de casar e o banco volta a ser gerado com o texto errado sem
     nenhum aviso.
+
+    Ja' a errata que nao encontra o erro porque a pagina saiu certa e' o
+    resultado desejado, nao uma falha. Cada errata conserta o erro de UM modelo
+    de visao, e trocar de modelo troca os erros: o "W" do item 12.12.4, que o
+    gpt-4o lia "Y", o gpt-5.6 le' certo. Tratar isso como erro fatal deixaria a
+    errata mais antiga proibindo a troca de modelo -- foi o que derrubou o Ato
+    3445 inteiro, e com ele as 16 questoes que so' ele tem.
     """
     for e in erratas.get(arquivo, []):
         if e["pagina"] != pagina:
             continue
-        ocorrencias = texto.count(e["de"])
-        if ocorrencias != 1:
-            raise ValueError(
-                f"errata de {arquivo} p.{pagina} esperava 1 ocorrência de "
-                f"{e['de']!r} e achou {ocorrencias}. A transcrição mudou; "
-                f"confira a página na imagem e refaça a errata."
+        if texto.count(e["de"]) == 1:
+            texto = texto.replace(e["de"], e["para"])
+            log(f"    página {pagina}: errata aplicada ({e['de']!r} -> {e['para']!r})")
+        elif texto.count(e["de"]) == 0 and texto.count(e["para"]) == 1:
+            log(
+                f"    página {pagina}: errata dispensada, a transcrição já traz "
+                f"{e['para']!r}"
             )
-        texto = texto.replace(e["de"], e["para"])
-        log(f"    página {pagina}: errata aplicada ({e['de']!r} -> {e['para']!r})")
+        else:
+            raise ValueError(
+                f"errata de {arquivo} p.{pagina} não achou {e['de']!r} "
+                f"({texto.count(e['de'])}×) nem, no lugar dele, {e['para']!r} "
+                f"({texto.count(e['para'])}×). A transcrição mudou de outro "
+                f"jeito; confira a página na imagem e refaça a errata."
+            )
     return texto
 
 
@@ -1302,9 +1540,13 @@ def montar_chunks(arquivo: str, blocos: list[Bloco]) -> list[Chunk]:
             return
         texto = "\n\n".join(b.texto for b in atual).strip()
         if len(texto) >= MIN_CHARS_CHUNK_UTIL and not parece_ruido(texto):
+            por_pagina: dict[int, str] = {}
+            for b in atual:
+                por_pagina[b.pagina] = por_pagina.get(b.pagina, "") + "\n" + b.texto
             chunks.append(
                 Chunk(arquivo_origem=arquivo, pagina=atual[0].pagina,
-                      texto=texto, pagina_fim=atual[-1].pagina)
+                      texto=texto, pagina_fim=atual[-1].pagina,
+                      paginas=por_pagina)
             )
         # Mantem o final do chunk como sobreposicao, para nao cortar uma regra
         # exatamente na fronteira e perde-la. So entra o paragrafo que couber
@@ -1331,7 +1573,8 @@ def montar_chunks(arquivo: str, blocos: list[Bloco]) -> list[Chunk]:
                 if len(fatia) >= MIN_CHARS_CHUNK_UTIL and not parece_ruido(fatia):
                     chunks.append(
                         Chunk(arquivo_origem=arquivo, pagina=par.pagina,
-                              texto=fatia, pagina_fim=par.pagina)
+                              texto=fatia, pagina_fim=par.pagina,
+                              paginas={par.pagina: fatia})
                     )
             continue
 
@@ -1412,7 +1655,10 @@ def gerar_do_chunk(
 
     for q in questoes:
         q["arquivo_origem"] = chunk.arquivo_origem
-        q["pagina"] = chunk.pagina
+        q["pagina"] = refinar_pagina(
+            q.get("afirmacao", ""), q.get("explicacao_curta", ""),
+            chunk.paginas, chunk.pagina,
+        )
         # Liga a questao ao trecho literal que a gerou, para que o app possa
         # mostrar o texto de origem sem obrigar o usuario a caçar a frase
         # dentro do PDF.
@@ -1442,21 +1688,22 @@ def gerar_complementar(
     pagina: int,
     classe: str,
     forcar: bool,
+    paginas_texto: dict[int, str] | None = None,
 ) -> list[dict[str, Any]]:
     """Gera questoes de um topico da ementa, sem partir de um trecho de PDF."""
-    chave = hashlib.sha1(
-        f"{prefixo}|{versao_prompt(prompt_sistema)}|{modelo}|{topico}"
-        f"|{quantidade}".encode("utf-8")
-    ).hexdigest()
 
-    if not forcar and (cacheado := ler_cache(chave)) is not None:
-        USO.registrar_cache()
-        questoes = cacheado["questoes"]
-    else:
+    def lote(sufixo: str, reforco: str) -> list[dict[str, Any]]:
+        chave = hashlib.sha1(
+            f"{prefixo}|{versao_prompt(prompt_sistema)}|{modelo}|{topico}"
+            f"|{quantidade}{sufixo}".encode("utf-8")
+        ).hexdigest()
+        if not forcar and (cacheado := ler_cache(chave)) is not None:
+            USO.registrar_cache()
+            return cacheado["questoes"]
         prompt = (
             f"TÓPICO: {topico}\n\n"
             f"Gere exatamente {quantidade} questões Verdadeiro/Falso sobre este "
-            f"tópico, no nível da Classe {classe}. {instrucao}"
+            f"tópico, no nível da Classe {classe}. {instrucao}{reforco}"
         )
         bruto = chamar_llm(
             cliente,
@@ -1468,17 +1715,58 @@ def gerar_complementar(
             schema=SCHEMA_QUESTOES,
         )
         try:
-            questoes = json.loads(bruto).get("questoes", [])
+            novas = json.loads(bruto).get("questoes", [])
         except json.JSONDecodeError:
             log(f"    ! Resposta não-JSON para o tópico: {topico}")
             return []
-        gravar_cache(chave, {"questoes": questoes})
+        gravar_cache(chave, {"questoes": novas})
+        return novas
+
+    def desvio(lote_: list[dict[str, Any]]) -> float:
+        """Distancia do lote ao meio a meio; 0,5 quando o lote esta' vazio."""
+        if not lote_:
+            return 0.5
+        return abs(
+            sum(1 for q in lote_ if q.get("resposta_correta")) / len(lote_) - 0.5
+        )
+
+    questoes = lote("", "")
+    # Um topico e' uma chamada so', e um lote inteiro torto vira um bloco de
+    # gabarito adivinhavel dentro da bateria — foi assim que "Propagação: ondas
+    # terrestres e espaciais" saiu 9 V para 1 F. `testes/vies.test.ts` reprova
+    # acima de 0,2 de desvio; aqui a chance de refazer o lote e' dada uma vez,
+    # com o desequilibrio dito na cara, e fica o melhor dos dois.
+    if len(questoes) >= 8 and desvio(questoes) > 0.2:
+        verdadeiras = sum(1 for q in questoes if q.get("resposta_correta"))
+        log(f"    ~ {topico[:44]}: {verdadeiras}V/{len(questoes) - verdadeiras}F, "
+            f"refazendo o lote")
+        segunda = lote(
+            "|reequilibrio",
+            "\n\nATENÇÃO: metade das afirmações tem de ser verdadeira e metade "
+            "falsa. Antes de responder, conte quantas você marcou como "
+            "verdadeiras e ajuste até que as duas metades fiquem iguais.",
+        )
+        if desvio(segunda) < desvio(questoes):
+            questoes = segunda
 
     for q in questoes:
         # O passe e exclusivo de um tema; corrige eventual desvio do modelo.
         q["tema"] = tema
         q["arquivo_origem"] = ARQUIVO_COMPLEMENTAR
-        q["pagina"] = pagina
+        # A pagina do topico e' um ancora escolhida a mao, boa para o topico e
+        # nem sempre para a questao: uma pergunta de associacao de resistores
+        # nascida no topico "Lei de Ohm" (p.54) esta' na p.55. So' a vizinhanca
+        # imediata entra na disputa — mais que isso deixaria de ser refino da
+        # ancora e viraria uma busca no documento inteiro.
+        q["pagina"] = refinar_pagina(
+            q.get("afirmacao", ""),
+            q.get("explicacao_curta", ""),
+            {
+                n: t for n, t in (paginas_texto or {}).items()
+                if abs(n - pagina) <= 1
+            },
+            pagina,
+        )
         # Marca interna: estas nao vem de um trecho de PDF, entao passam pela
         # verificacao independentemente de conterem numeros. Removida na escrita.
         q["_complementar"] = True
@@ -1577,6 +1865,89 @@ def gerar_da_tabela(
     return aproveitadas
 
 
+# Palavras frequentes demais para distinguir uma pagina de outra. Mesma lista
+# de lib/trechos.ts e de testes/paginas.test.ts, pelo mesmo motivo.
+VAZIAS = {
+    "quando", "porque", "sobre", "podem", "podera", "devem", "devera", "dever",
+    "sendo", "pelos", "pelas", "dessa", "desse", "desta", "deste", "aquele",
+    "aquela", "outros", "outras", "todos", "todas", "mesmo", "mesma", "apenas",
+    "ainda", "entre", "cada", "seja", "sejam", "qualquer", "conforme", "casos",
+    "caso", "forma", "parte", "partir", "quais", "cujas", "cujos",
+}
+
+# Uma afirmacao curta demais nao tem termos suficientes para localizar nada.
+MIN_TERMOS_PAGINA = 8
+# A pagina candidata so' desbanca a atual se ganhar por uma diferenca que nao
+# seja ruido de extracao (MARGEM) e, alem disso, ou falar claramente do assunto
+# (MIN_COBERTURA), ou estar disputando com uma pagina que praticamente nao fala
+# dele (MAX_NA_APONTADA). A segunda alternativa e' o caso das paginas de rosto:
+# a p.1 da Cartilha pontua 0,04 numa questao de interferencia e a p.6 pontua
+# 0,46 — abaixo do "claramente", mas doze vezes melhor que a de partida.
+# Os tres numeros sao os de testes/paginas.test.ts: o mesmo julgamento, feito
+# na geracao em vez de na auditoria.
+MIN_COBERTURA = 0.5
+MARGEM_COBERTURA = 0.25
+MAX_NA_APONTADA = 0.3
+
+
+def termos_uteis(texto: str) -> set[str]:
+    """Termos que carregam significado, para casar afirmacao com pagina.
+
+    Numeros entram mesmo curtos: numa prova de radioamador e' justamente "144",
+    "25" ou "11.2" que identifica a passagem.
+    """
+    brutos = re.split(r"[^a-z0-9]+", normalizar(texto))
+    return {
+        t for t in brutos
+        if (len(t) >= 2 if any(c.isdigit() for c in t) else len(t) >= 5 and t not in VAZIAS)
+    }
+
+
+def refinar_pagina(
+    afirmacao: str, explicacao: str, paginas: dict[int, str], padrao: int
+) -> int:
+    """A pagina em que a passagem esta' de fato, entre as candidatas.
+
+    Duas origens caem no mesmo erro. O chunk atravessa varias paginas e toda
+    questao dele herdava a PRIMEIRA; o passe complementar ancora o topico
+    inteiro numa pagina declarada a mao, e a questao que derivou para o assunto
+    vizinho fica apontando para a errada. Nos dois casos quem aperta "Consultar
+    Material" cai numa pagina que so' tem o titulo da secao, com o assunto todo
+    na seguinte -- 115 das 178 entradas de `correcoes.json` sao esta mesma
+    correcao, feita a mao, uma a uma.
+
+    Feito aqui, o conserto sobrevive a regeracao. Feito em `correcoes.json`,
+    nao: o id e' o hash da afirmacao, entao reescrever o banco aposenta a
+    correcao junto com a questao que ela consertava.
+
+    Na duvida fica `padrao`, que e' o comportamento antigo: trocar a pagina por
+    um palpite fraco seria pior que a heranca.
+    """
+    if len(paginas) <= 1:
+        return padrao
+    alvo = termos_uteis(f"{afirmacao} {explicacao}")
+    if len(alvo) < MIN_TERMOS_PAGINA:
+        return padrao
+
+    def cobertura(pagina: int) -> float:
+        texto = paginas.get(pagina)
+        return len(alvo & termos_uteis(texto)) / len(alvo) if texto else 0.0
+
+    aqui = cobertura(padrao)
+    melhor, nota = padrao, aqui
+    for pagina in sorted(paginas):
+        c = cobertura(pagina)
+        if c > nota:
+            melhor, nota = pagina, c
+    if (
+        melhor != padrao
+        and nota - aqui >= MARGEM_COBERTURA
+        and (nota >= MIN_COBERTURA or aqui <= MAX_NA_APONTADA)
+    ):
+        return melhor
+    return padrao
+
+
 def pagina_da_linha(rotulo: str, paginas_texto: dict[int, str], padrao: int) -> int:
     """Pagina em que a linha aparece de fato.
 
@@ -1605,11 +1976,15 @@ def chunk_de_paginas(
     texto = "\n\n".join(b.texto for b in do_intervalo).strip()
     if len(texto) < MIN_CHARS_CHUNK_UTIL:
         return None
+    por_pagina: dict[int, str] = {}
+    for b in do_intervalo:
+        por_pagina[b.pagina] = por_pagina.get(b.pagina, "") + "\n" + b.texto
     return Chunk(
         arquivo_origem=arquivo,
         pagina=min(paginas),
         texto=texto,
         pagina_fim=max(paginas),
+        paginas=por_pagina,
     )
 
 
@@ -1723,6 +2098,7 @@ def executar_verificacao(
     lotes = [alvos[i : i + 10] for i in range(0, len(alvos), 10)]
     descartar: set[int] = set()
 
+    PROGRESSO.iniciar_fase("verificação", len(lotes))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futuros = {
             pool.submit(
@@ -1732,6 +2108,7 @@ def executar_verificacao(
         }
         for fut in as_completed(futuros):
             lote = futuros[fut]
+            PROGRESSO.passo()
             try:
                 aprovados = fut.result()
             except Exception as e:
@@ -1740,6 +2117,7 @@ def executar_verificacao(
             for idx_local, ok in enumerate(aprovados):
                 if not ok:
                     descartar.add(lote[idx_local])
+    PROGRESSO.encerrar_fase()
 
     # O veredito contra uma questao protegida nao some em silencio: se ele
     # voltar a aparecer, e' porque o modelo continua discordando da fonte, e
@@ -1752,6 +2130,110 @@ def executar_verificacao(
 
     log(f"  {len(descartar)} questões descartadas por inconsistência")
     return [q for i, q in enumerate(questoes) if i not in descartar]
+
+
+def achatar(texto: str) -> str:
+    """Minusculas, sem acento, espacos colapsados — e a pontuacao preservada.
+
+    `normalizar` nao serve aqui: ela apaga a pontuacao, e "10,50" viraria
+    "10 50". Numa tabela de radiofrequencias e' justamente a virgula que
+    distingue uma subfaixa da outra.
+    """
+    t = unicodedata.normalize("NFD", texto.lower())
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _numeros(texto: str) -> list[str]:
+    """"1.800" e "5.351,5" viram "1800" e "5351.5": comparaveis como escritos."""
+    return [
+        n.replace(".", "").replace(",", ".")
+        for n in re.findall(r"\d[\d.,]*", texto)
+    ]
+
+
+def _classes_ditas(t: str) -> str | None:
+    if "todas as classes" in t:
+        return "TODAS"
+    if re.search(r"classes? a e b\b|\bclasse b\b", t):
+        return "AB"
+    if re.search(r"\bclasse a\b", t):
+        return "A"
+    return None
+
+
+def _classes_da_celula(c: str) -> str | None:
+    t = achatar(c)
+    if "todas" in t:
+        return "TODAS"
+    if "a e b" in t:
+        return "AB"
+    return "A" if t == "a" else None
+
+
+def descartar_gabarito_da_tabela_i(
+    questoes: list[dict[str, Any]], catalogo: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """Derruba a questao cujo gabarito contradiz a Tabela I do Ato 926.
+
+    E' o erro que o passe de tabela reincide: a falsa nasce trocando o valor
+    "pelo de outra linha", e numa faixa com mais de uma subfaixa a linha
+    vizinha e' da MESMA faixa — sai "na Faixa de 4 milimetros a radiofrequencia
+    e' 77,5 - 78 GHz" marcada como falsa, sendo verdadeira. Cinco assim
+    entraram no banco antes de alguem reparar, e `testes/cobertura.test.ts`
+    nasceu disso.
+
+    A regra aqui e' a mesma do teste, so' que aplicada na geracao: se a
+    afirmacao nomeia UMA faixa, da' um par de frequencias e declara as classes,
+    da' para conferir contra a tabela sem julgamento nenhum. Exigir as tres
+    coisas e' o que evita o falso alarme — sem as classes, uma conta de
+    eletronica ("30 MHz corresponde a 10 m") cairia aqui.
+
+    Descarta em vez de inverter o gabarito: uma delas saiu com duas frequencias
+    contraditorias na mesma frase, e inverter teria produzido uma "verdadeira"
+    que continua sem sentido.
+    """
+    tabela = catalogo.get("bandas")
+    if not tabela:
+        return questoes
+
+    linhas = []
+    for celulas in tabela["linhas"]:
+        limites = _numeros(celulas[1])[:2]
+        if len(limites) == 2:
+            linhas.append(
+                (achatar(celulas[0]), limites, _classes_da_celula(celulas[2]))
+            )
+
+    fora: list[int] = []
+    avaliadas = 0
+    for i, q in enumerate(questoes):
+        a = achatar(q["afirmacao"])
+        ditas = _classes_ditas(a)
+        if ditas is None:
+            continue
+        nomeadas = [l for l in linhas if l[0] in a]
+        if len({l[0] for l in nomeadas}) != 1:
+            continue
+        nums = _numeros(q["afirmacao"])
+        pares = {f"{x}|{nums[j + 1]}" for j, x in enumerate(nums[:-1])}
+        if not pares:
+            continue
+        avaliadas += 1
+        verdadeira = any(
+            f"{l[1][0]}|{l[1][1]}" in pares and l[2] == ditas for l in nomeadas
+        )
+        if verdadeira != q["resposta_correta"]:
+            fora.append(i)
+
+    if avaliadas:
+        log(f"\n=== Tabela I: {avaliadas} questões conferidas contra a tabela ===")
+    for i in fora:
+        log(f"    x gabarito contradiz a Tabela I: {questoes[i]['afirmacao'][:80]}...")
+    if fora:
+        log(f"  {len(fora)} questões descartadas por gabarito invertido")
+    descartadas = set(fora)
+    return [q for i, q in enumerate(questoes) if i not in descartadas]
 
 
 # ---------------------------------------------------------------------------
@@ -1947,7 +2429,21 @@ def consolidar(questoes: list[dict[str, Any]]) -> list[dict[str, Any]]:
             f"descartadas")
     if descartadas_duplicadas:
         log(f"  {descartadas_duplicadas} questões duplicadas removidas")
-    return aplicar_correcoes(finais)
+    # Ordem estavel ANTES da verificacao, e nao so' na hora de gravar.
+    #
+    # As questoes chegam aqui na ordem em que o `as_completed` devolveu os
+    # chunks, que muda a cada execucao. `executar_verificacao` fatia essa lista
+    # em lotes de 10 e usa o CONTEUDO do lote como chave de cache: com a ordem
+    # embaralhada, cada execucao monta lotes diferentes, erra o cache, chama o
+    # modelo de novo e recebe vereditos novos para questoes que ninguem mexeu.
+    # Duas execucoes seguidas com o cache quente davam 941 e 940 questoes.
+    #
+    # Ordenar aqui torna os lotes estaveis, o cache util e o banco reproduzivel
+    # — que e' o que permite fixar as contagens do README.
+    return sorted(
+        aplicar_correcoes(finais),
+        key=lambda q: (q["arquivo_origem"], q["pagina"], q["id"]),
+    )
 
 
 def relatorio(questoes: list[dict[str, Any]]) -> None:
@@ -1987,9 +2483,12 @@ def relatorio(questoes: list[dict[str, Any]]) -> None:
     minimo = min((len([q for q in questoes if q["tema"] == t]) for t in TEMAS), default=0)
     log(f"\n  Simulados completos possíveis por matéria (20 questões): {minimo // 20}")
 
+    custo = custo_estimado(PROGRESSO.modelo, USO.entrada, USO.saida)
     log(
         f"\n  Tokens: {USO.entrada:,} entrada / {USO.saida:,} saída"
         f"  |  {USO.chamadas} chamadas, {USO.cache_hits} do cache"
+        + (f"  |  ~{dinheiro(custo)}" if custo is not None else "")
+        + f"  |  {duracao(time.monotonic() - PROGRESSO.t0)}"
     )
 
 
@@ -2080,7 +2579,20 @@ def main() -> int:
     log(f"Diretório : {diretorio}")
     log(f"Modelo    : {modelo}")
     log(f"PDFs      : {len(pdfs)}")
+    preco = PRECOS.get(
+        next((k for k in sorted(PRECOS, key=len, reverse=True)
+              if modelo.startswith(k)), "")
+    )
+    log(f"Preço     : {dinheiro(preco[0])} entrada / {dinheiro(preco[1])} saída "
+        f"por milhão de tokens" if preco else
+        "Preço     : modelo fora da tabela; a execução não vai estimar custo")
     log("")
+
+    # A barra so' existe no terminal. Redirecionado para arquivo, o progresso
+    # sai como uma linha de resumo a cada 30s (ver Progresso).
+    global PROGRESSO
+    PROGRESSO = Progresso(modelo, sys.stdout.isatty() and not args.dry_run)
+    PROGRESSO.comecar()
 
     # --- Extracao e chunking -------------------------------------------------
     chunks: list[Chunk] = []
@@ -2088,7 +2600,9 @@ def main() -> int:
     # especificas — e nao dos chunks, que ja misturaram a tabela com a prosa ao
     # redor.
     blocos_por_arquivo: dict[str, list[Bloco]] = {}
+    PROGRESSO.iniciar_fase("leitura dos PDFs", len(pdfs))
     for pdf in pdfs:
+        PROGRESSO.passo()
         log(f"[{pdf.name}]")
         try:
             blocos = obter_blocos(cliente, modelo, pdf, args.forcar, args.dry_run)
@@ -2104,6 +2618,8 @@ def main() -> int:
         do_pdf = montar_chunks(pdf.name, blocos)
         chunks.extend(do_pdf)
         log(f"  {len(do_pdf)} chunks")
+
+    PROGRESSO.encerrar_fase()
 
     if args.limite_chunks:
         chunks = chunks[: args.limite_chunks]
@@ -2134,6 +2650,7 @@ def main() -> int:
     else:
         log(f"\n=== Gerando questões ({args.workers} chamadas simultâneas) ===")
 
+    PROGRESSO.iniciar_fase("geração", 0 if args.so_reforco else len(chunks))
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futuros = {
             pool.submit(gerar_do_chunk, cliente, modelo, c, args.forcar): c
@@ -2142,6 +2659,7 @@ def main() -> int:
         for fut in as_completed(futuros):
             chunk = futuros[fut]
             concluidos += 1
+            PROGRESSO.passo()
             try:
                 novas = fut.result()
             except Exception as e:
@@ -2151,6 +2669,7 @@ def main() -> int:
             questoes.extend(novas)
             log(f"  [{concluidos}/{len(chunks)}] {chunk.arquivo_origem[:34]:<34} "
                 f"p.{chunk.pagina:<3} -> {len(novas)} questões")
+    PROGRESSO.encerrar_fase()
 
     # --- Passes complementares guiados pela ementa ---------------------------
     passes = [
@@ -2167,21 +2686,30 @@ def main() -> int:
          "Verifique cada conta antes de definir `resposta_correta`. Exija "
          "análise, não reconhecimento.", "A"),
     ]
+    # O passe complementar ancora cada topico numa pagina da Cartilha; o texto
+    # dela permite refinar essa ancora questao a questao.
+    paginas_complementar = {
+        b.pagina: b.texto
+        for b in blocos_por_arquivo.get(ARQUIVO_COMPLEMENTAR, [])
+    }
     if not args.sem_complementos and not args.limite_chunks and not args.so_reforco:
         for prefixo, rotulo, prompt_sis, tema, topicos, instrucao, classe in passes:
             total = sum(n for _, n, _ in topicos)
             log(f"\n=== Passe de {rotulo}: {len(topicos)} tópicos, "
                 f"~{total} questões ===")
+            PROGRESSO.iniciar_fase(rotulo, len(topicos))
             with ThreadPoolExecutor(max_workers=args.workers) as pool:
                 futuros = {
                     pool.submit(
                         gerar_complementar, cliente, modelo, prefixo, prompt_sis,
-                        instrucao, tema, t, n, pag, classe, args.forcar
+                        instrucao, tema, t, n, pag, classe, args.forcar,
+                        paginas_complementar,
                     ): t
                     for t, n, pag in topicos
                 }
                 for fut in as_completed(futuros):
                     topico = futuros[fut]
+                    PROGRESSO.passo()
                     try:
                         novas = fut.result()
                     except Exception as e:
@@ -2189,6 +2717,7 @@ def main() -> int:
                         continue
                     questoes.extend(novas)
                     log(f"  {topico[:52]:<52} -> {len(novas)} questões")
+            PROGRESSO.encerrar_fase()
 
     # --- Passe de reforco: paginas cobertas de raspao ------------------------
     # O unico que --so-reforco liga em vez de desligar: e' ele que a flag serve
@@ -2196,7 +2725,9 @@ def main() -> int:
     if not args.limite_chunks and (args.so_reforco or not args.sem_complementos):
         if PAGINAS_REFORCO:
             log(f"\n=== Passe de reforço: {len(PAGINAS_REFORCO)} páginas ===")
+            PROGRESSO.iniciar_fase("reforço", len(PAGINAS_REFORCO))
         for arquivo, paginas, assunto, quantidade in PAGINAS_REFORCO:
+            PROGRESSO.passo()
             blocos = blocos_por_arquivo.get(arquivo)
             if not blocos:
                 log(f"  ! {arquivo} não foi lido nesta execução; reforço pulado.")
@@ -2215,6 +2746,7 @@ def main() -> int:
                 continue
             questoes.extend(novas)
             log(f"  p.{str(paginas):<8} {assunto[:44]:<44} -> {len(novas)} questões")
+        PROGRESSO.encerrar_fase()
 
     # --- Passe de tabela: cobertura linha a linha ----------------------------
     if not args.sem_complementos and not args.limite_chunks and not args.so_reforco:
@@ -2253,6 +2785,7 @@ def main() -> int:
             lotes = [linhas[i : i + por_lote] for i in range(0, len(linhas), por_lote)]
             log(f"\n=== Passe da tabela '{id_tabela}': {len(linhas)} linhas em "
                 f"{len(lotes)} lotes ===")
+            PROGRESSO.iniciar_fase(f"tabela {id_tabela}", len(lotes))
             with ThreadPoolExecutor(max_workers=args.workers) as pool:
                 futuros = {
                     pool.submit(
@@ -2263,6 +2796,7 @@ def main() -> int:
                 }
                 for fut in as_completed(futuros):
                     lote = futuros[fut]
+                    PROGRESSO.passo()
                     try:
                         novas = fut.result()
                     except Exception as e:
@@ -2271,6 +2805,7 @@ def main() -> int:
                     questoes.extend(novas)
                     log(f"  {lote[0][0][:32]:<32} +{len(lote) - 1:<2} linhas "
                         f"-> {len(novas)} questões")
+            PROGRESSO.encerrar_fase()
 
     # --- Questoes autorais de cobertura --------------------------------------
     if not args.sem_complementos and not args.limite_chunks and not args.so_reforco:
@@ -2282,6 +2817,9 @@ def main() -> int:
 
     log(f"\n=== Consolidando {len(questoes)} questões brutas ===")
     finais = consolidar(questoes)
+    finais = descartar_gabarito_da_tabela_i(
+        finais, carregar_tabelas_referencia()
+    )
 
     if args.verificar:
         finais = executar_verificacao(
@@ -2337,3 +2875,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log("\nInterrompido. O cache foi preservado; rode de novo para continuar.")
         sys.exit(130)
+    finally:
+        # A barra e' a ultima linha do terminal; sem apaga-la, o shell devolve o
+        # prompt por cima dela.
+        PROGRESSO.encerrar()
